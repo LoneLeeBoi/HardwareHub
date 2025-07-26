@@ -1,4 +1,4 @@
-import { db } from '../../lib/db'; // or correct path
+import { db } from '@/app/lib/db';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { NextResponse } from 'next/server';
@@ -33,7 +33,7 @@ export async function POST(request) {
           (err) => {
             if (err) {
               console.error('Insert error:', err); 
-              resolve(NextResponse.json({ message: 'DB insert error' }, { status: 500 }));
+              resolve(NextResponse.json({ message: 'DB insert error', err }, { status: 500 }));
             } else {
               resolve(NextResponse.json({ message: 'User registered successfully' }, { status: 200 }));
             }
