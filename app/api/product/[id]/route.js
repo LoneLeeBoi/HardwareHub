@@ -25,7 +25,7 @@ export async function GET(req, { params }) {
         } else if (results.length === 0) {
           resolve(NextResponse.json({ error: 'Product not found' }, { status: 404 }));
         } else {
-          resolve(NextResponse.json(results[0]));
+          resolve(NextResponse.json(results[0], { status: 200 }));
         }
       }
     );
@@ -95,7 +95,7 @@ export async function DELETE(req, { params }) {
         resolve(NextResponse.json({ error: "Delete failed" }, { status: 500 }));
       } else {
         resolve(
-          NextResponse.json({ status: 200 },{ message: "Product deleted (soft) successfully" })
+          NextResponse.json({ message: "Product deleted (soft) successfully" }, { status: 200 })
         );
       }
     });

@@ -55,13 +55,13 @@ export async function GET(req) {
         const total = countResults[0]?.total || 0;
 
         resolve(
-          NextResponse.json({ status: 200 },{
+          NextResponse.json({
             data: results,
             page,
             limit,
             total,
             totalPages: Math.ceil(total / limit),
-          })
+          }, { status: 200 })
         );
       });
     });
@@ -105,5 +105,5 @@ export async function POST(req) {
     [id, user_id, name, price, category_id, imagePath]
   );
 
-  return NextResponse.json({ status: 200 },{ message: 'Product created successfully!' });
+  return NextResponse.json({ message: 'Product created successfully!' }, { status: 200 });
 }

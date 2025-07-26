@@ -17,7 +17,7 @@ export async function PUT(req, context) {
       if (err) {
         resolve(NextResponse.json({ error: 'Update failed' }, { status: 500 }));
       } else {
-        resolve(NextResponse.json({ status: 200 },{ message: 'Category updated successfully!' }));
+        resolve(NextResponse.json({ message: 'Category updated successfully!' }, { status: 200 }));
       }
     });
   });
@@ -36,7 +36,7 @@ export async function DELETE(req, context) {
       if (err) {
         resolve(NextResponse.json({ error: 'Delete failed' }, { status: 500 }));
       } else {
-        resolve(NextResponse.json({ status: 200 },{ message: 'Category deleted successfully' }));
+        resolve(NextResponse.json({ message: 'Category deleted successfully' }, { status: 200 }));
       }
     });
   });
