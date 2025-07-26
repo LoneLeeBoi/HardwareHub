@@ -2,11 +2,11 @@ post -/api/register
 post -/api/login
 
 
-get: /api/products → all products
-get: /api/products?category=2 → by category
-get: /api/products?search=choco → search name
-get: /api/products?page=2&limit=5 → paginate
-get: /api/products?category=2&search=choco&page=3&limit=5 → Combined filters
+get: /api/product → all products
+get: /api/product?category=2 → by category
+get: /api/product?search=choco → search name
+get: /api/product?page=2&limit=5 → paginate
+get: /api/product?category=2&search=choco&page=3&limit=5 → Combined filters
 
 create: post -/api/product                               //required authorization Bearer
 edit: put -/api/product/:id                             //required authorization Bearer
@@ -19,3 +19,19 @@ create: post -/api/product/categories                    //required authorizatio
 edit: put -/api/product/categories/:id                  //required authorization Bearer
 delete: delete -/api/product/categories/:id             //required authorization Bearer
 
+
+
+get: /api/expense → all expense
+get: /api/expense?category=2 → by category
+get: /api/expense?search=choco → search name
+get: /api/expense?page=2&limit=5 → paginate
+get: /api/expense?category=2&search=choco&page=3&limit=5 → Combined filters
+
+create: post -/api/expense                               //required authorization Bearer
+edit: put -/api/expense/:id                             //required authorization Bearer
+delete: delete -/api/expense/:id                        //required authorization Bearer
+Get specific expense: get -/api/expense/:id   
+
+
+
+test

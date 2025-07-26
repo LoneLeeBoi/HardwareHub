@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 25, 2025 at 06:10 PM
+-- Generation Time: Jul 26, 2025 at 06:27 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.4.8
 
@@ -47,6 +47,33 @@ INSERT INTO `categories` (`row`, `id`, `name`, `created_at`, `updated_at`, `dele
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `expenses`
+--
+
+CREATE TABLE `expenses` (
+  `row` int(11) NOT NULL,
+  `id` varchar(36) NOT NULL,
+  `user_id` varchar(36) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `date` varchar(50) NOT NULL,
+  `category` varchar(100) DEFAULT NULL,
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deleted_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `expenses`
+--
+
+INSERT INTO `expenses` (`row`, `id`, `user_id`, `name`, `amount`, `date`, `category`, `updated_at`, `deleted_at`) VALUES
+(1, '2e24fe56-2709-4b2b-bb51-7e9f3480fdb5', 'abc123', 'macdo12', 149.75, '2025-07-26', 'like', '2025-07-26 14:26:47', '2025-07-26 14:26:47'),
+(2, 'eba44b19-94af-4ab0-9af0-f1085417add5', 'test', 'macdo', 149.75, '2025-07-26', 'like', '2025-07-26 14:19:46', NULL),
+(3, 'fae3c02f-d29b-4574-a183-5eadd50c9d9c', 'test22', 'macdo12', 149.75, '2025-07-26', 'like', '2025-07-26 14:25:35', NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `products`
 --
 
@@ -68,7 +95,8 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`row`, `id`, `user_id`, `name`, `price`, `category_id`, `image`, `units`, `updated_at`, `deleted_at`) VALUES
-(1, '58e6c88c-0529-412f-a703-3727fb869317', 'a95067e7-37b2-4b7e-aa15-3e7a757a90cc', 'Lansang', 10.12, '20b68568-7915-4f05-bdd5-294fec83ed7f', '/uploads/1753466390120-76308119-b923-401b-942c-e136bae49f8b.jpg', NULL, '2025-07-26 01:59:50', NULL),
+(4, '11c4854d-a6e5-414e-a87d-f2376fa5a1a1', '123456', 'test', 12.99, '12213213', '/uploads/1753509619304-3399585a-a23c-44ff-a7a0-299ed136ce28.jpg', NULL, '2025-07-26 14:00:19', NULL),
+(1, '58e6c88c-0529-412f-a703-3727fb869317', 'a95067e7-37b2-4b7e-aa15-3e7a757a90cc', 'Lansang', 10.12, '1', '/uploads/1753466390120-76308119-b923-401b-942c-e136bae49f8b.jpg', NULL, '2025-07-26 13:52:30', '2025-07-26 13:52:30'),
 (3, 'ee37cbf7-00d2-4cc6-a198-f235cbb762c6', 'a95067e7-37b2-4b7e-aa15-3e7a757a90cc', 'martilyo', 10.12, '20b68568-7915-4f05-bdd5-294fec83ed7f', '/uploads/1753466447130-3bbbedae-c15b-497f-a3e7-1980dc57b944.jpg', NULL, '2025-07-26 02:00:47', NULL),
 (2, 'ef31e349-91cb-46d7-8a45-2171379c284e', 'a95067e7-37b2-4b7e-aa15-3e7a757a90cc', 'kutsilyo', 10.12, '20b68568-7915-4f05-bdd5-294fec83ed7f', '/uploads/1753465759699-b445a57d-e439-4cfb-8ee1-a43ddacfa0c3.jpg', NULL, '2025-07-26 01:50:16', NULL);
 
@@ -106,6 +134,13 @@ ALTER TABLE `categories`
   ADD UNIQUE KEY `row` (`row`);
 
 --
+-- Indexes for table `expenses`
+--
+ALTER TABLE `expenses`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `row` (`row`);
+
+--
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
@@ -135,10 +170,16 @@ ALTER TABLE `categories`
   MODIFY `row` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `expenses`
+--
+ALTER TABLE `expenses`
+  MODIFY `row` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `row` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `row` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`

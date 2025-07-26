@@ -61,7 +61,7 @@ export async function GET(req) {
             limit,
             total,
             totalPages: Math.ceil(total / limit),
-          })
+          }, { status: 200 })
         );
       });
     });
@@ -105,5 +105,5 @@ export async function POST(req) {
     [id, user_id, name, price, category_id, imagePath]
   );
 
-  return NextResponse.json({ message: 'Product created successfully!' });
+  return NextResponse.json({ message: 'Product created successfully!' }, { status: 200 });
 }
