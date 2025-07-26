@@ -55,7 +55,7 @@ export async function GET(req) {
         const total = countResults[0]?.total || 0;
 
         resolve(
-          NextResponse.json({
+          NextResponse.json({ status: 200 },{
             data: results,
             page,
             limit,
@@ -105,5 +105,5 @@ export async function POST(req) {
     [id, user_id, name, price, category_id, imagePath]
   );
 
-  return NextResponse.json({ message: 'Product created successfully!' });
+  return NextResponse.json({ status: 200 },{ message: 'Product created successfully!' });
 }

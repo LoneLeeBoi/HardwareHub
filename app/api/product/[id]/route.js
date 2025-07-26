@@ -74,7 +74,7 @@ export async function PUT(req, { params }) {
       if (err) {
         resolve(NextResponse.json({ error: "Update failed" }, { status: 500 }));
       } else {
-        resolve(NextResponse.json({ message: "Product updated successfully" }));
+        resolve(NextResponse.json({ message: "Product updated successfully" },{ status: 200 }));
       }
     });
   });
@@ -95,7 +95,7 @@ export async function DELETE(req, { params }) {
         resolve(NextResponse.json({ error: "Delete failed" }, { status: 500 }));
       } else {
         resolve(
-          NextResponse.json({ message: "Product deleted (soft) successfully" })
+          NextResponse.json({ status: 200 },{ message: "Product deleted (soft) successfully" })
         );
       }
     });

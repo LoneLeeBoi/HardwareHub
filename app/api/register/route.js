@@ -35,14 +35,14 @@ export async function POST(request) {
               console.error('Insert error:', err); 
               resolve(NextResponse.json({ message: 'DB insert error' }, { status: 500 }));
             } else {
-              resolve(NextResponse.json({ message: 'User registered successfully' }, { status: 201 }));
+              resolve(NextResponse.json({ message: 'User registered successfully' }, { status: 200 }));
             }
           }
         );
       });
     });
   } catch (e) {
-    console.error('Unexpected error:', e); // 👈 catch unexpected runtime errors
+    console.error('Unexpected error:', e); 
     return NextResponse.json({ message: 'Server error' }, { status: 500 });
   }
 }

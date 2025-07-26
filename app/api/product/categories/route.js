@@ -10,7 +10,7 @@ export async function GET(req) {
       if (err) {
         resolve(NextResponse.json({ error: 'Database error' }, { status: 500 }));
       } else {
-        resolve(NextResponse.json(results));
+        resolve(NextResponse.json({ status: 200 },results));
       }
     });
   });
@@ -30,7 +30,7 @@ export async function POST(req) {
       if (err) {
         resolve(NextResponse.json({ error: 'Insert failed' }, { status: 500 }));
       } else {
-        resolve(NextResponse.json({ message: 'Category added successfully', id }));
+        resolve(NextResponse.json({ status: 200 },{ message: 'Category added successfully', id }));
       }
     });
   });
