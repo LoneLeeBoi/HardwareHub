@@ -4,21 +4,44 @@ import React, { useState } from "react";
 import LoginFunction from "../functions/LoginFunctions";
 import globalState from "@/app/store/globalState";
 import { toast } from "react-toastify";
+import Image from "next/image";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export function Login({ toggleForm }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const isLogin = globalState((state) => state.isLogin);
-  
+
+  const router = useRouter();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const res = await LoginFunction({ email, password });
 
-    if (res.success) {
+    console.log(res);
+
+    if (res.status === 200) {
+      globalState.setState({ isLogged: true });
+      localStorage.setItem("token", res?.data?.token);
+
+      Cookies.set("token", res?.data?.token, {
+        expires: 1,
+        secure: true,
+        sameSite: "strict",
+      });
+
       toast.success("Welcome dear user.");
+
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
     } else {
-      toast.error("Invalid login credentials.");
+      if (res.status === 401) {
+        toast.error("Invalid email or password.");
+      } else {
+        toast.error(res.err);
+      }
     }
   };
 
@@ -26,9 +49,15 @@ export function Login({ toggleForm }) {
     <div className="relative z-10 flex items-center justify-center h-full">
       <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
         <div className="flex items-center gap-4 mb-6">
-          <div className="bg-gray-500 w-[50px] h-[150px] flex items-center justify-center text-white text-lg font-bold">
-            Logo
+          <div className="relative  w-[150px] h-[150px] flex items-center justify-center text-white text-lg font-bold">
+            <Image
+              src="/images/LogoTwo.png"
+              alt="logo"
+              fill
+              className="object-cover w-full h-full"
+            />
           </div>
+
           <div className="flex flex-col">
             <span className="text-3xl font-semibold">Hardware Hub</span>
             <span className="text-lg font-light">Powering Possibility</span>

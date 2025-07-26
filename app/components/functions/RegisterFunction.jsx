@@ -1,5 +1,3 @@
-"use server";
-
 export default async function RegisterFunction({ username, email, password }) {
   const baseUrl = "http://localhost:3000";
   const url = `${baseUrl}/api/register`;
@@ -13,14 +11,27 @@ export default async function RegisterFunction({ username, email, password }) {
       body: JSON.stringify({ username, email, password }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error("Registration failed");
+      return {
+        success: false,
+        status: response.status,
+        message: data.message || "Registration failed",
+      };
     }
 
-    const data = await response.json();
-    return data;
+    return {
+      success: true,
+      status: response.status,
+      data,
+    };
   } catch (error) {
     console.error("Register error:", error.message);
-    return { error: error.message };
+    return {
+      success: false,
+      status: 500, // Default for server/network error
+      message: error.message || "Something went wrong",
+    };
   }
 }

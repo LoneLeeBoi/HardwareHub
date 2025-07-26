@@ -1,20 +1,26 @@
+import axios from "axios";
+
 export default async function LoginFunction({ email, password }) {
+  const baseUrl = "http://localhost:3000";
+  const url = `${baseUrl}/api/login`;
+
   try {
-    const res = await fetch("/api/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-      headers: { "Content-Type": "application/json" },
-    });
+    const res = await axios.post(url, { email, password });
 
-    const data = await res.json();
-
-    if (data.success) {
-      return { success: true };
-    } else {
-      return { success: false };
-    }
+    return {
+      success: true,
+      status: res.status,
+      data: res.data,
+    };
   } catch (err) {
-    console.error("Login error:", err);
-    return { success: false, error: true };
+    const status = err.response?.status || 500;
+    const message =
+      err.response?.data?.message || "Login failed. Please try again.";
+
+    return {
+      success: false,
+      status: status,
+      err: message,
+    };
   }
 }

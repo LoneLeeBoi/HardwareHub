@@ -19,3 +19,6 @@ button {
 .link {
   @apply cursor-pointer;
 }
+svg {
+  @apply cursor-pointer;
+}
