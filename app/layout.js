@@ -3,6 +3,7 @@ import "./globals.css";
 import "./custom.css";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import { Footer } from "./_layout/Footer";
 
 export const metadata = {
   title: "Create Next App",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
 
           <Header />
           <main className="">{children}</main>
+          <Footer />
         </div>
       </body>
     </html>
