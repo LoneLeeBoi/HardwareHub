@@ -1,8 +1,30 @@
+"use client";
+
+import { Close } from "@/public/icons/close";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
+import globalState from "../store/globalState";
+import { Plus } from "@/public/icons/plus";
+import { Minus } from "@/public/icons/minus";
 
 export function AddToCartModal({ isOpen, onClose, product }) {
+  const { cart, setCart } = globalState();
+  const [quantity, setQuantity] = useState(1);
+
   if (!product) return null;
+
+  const handleAddToCart = () => {
+    const existingIndex = cart.findIndex((item) => item.id === product.id);
+    if (existingIndex !== -1) {
+      const updatedCart = [...cart];
+      updatedCart[existingIndex].quantity += quantity;
+      setCart(updatedCart);
+    } else {
+      setCart([...cart, { ...product, quantity }]);
+    }
+    onClose();
+    setQuantity(1); // reset quantity
+  };
 
   return (
     <>
@@ -12,46 +34,80 @@ export function AddToCartModal({ isOpen, onClose, product }) {
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
+        aria-hidden={!isOpen}
       />
 
-      {/* Slide-in Modal */}
+      {/* Modal */}
       <div
-        className={`fixed top-0 right-0 z-[102] bg-white h-screen w-full sm:w-1/3 p-6 shadow-xl overflow-y-auto transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 right-0 z-[102] bg-white h-screen w-full sm:w-1/3 p-6 shadow-xl overflow-hidden transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4">
-          <button onClick={onClose} className="text-gray-600 hover:text-black">
-            ✕
-          </button>
-        </div>
+        <div className="flex flex-col h-full">
+          {/* Close Icon */}
+          <div className="flex justify-end" onClick={onClose}>
+            <Close className="size-6 stroke-3 cursor-pointer" />
+          </div>
 
-        {/* Product Details */}
-        <div className="relative h-full">
-          <div className="text-center">
+          {/* Header */}
+          <div className="text-xl font-black mb-4">ADD TO CART</div>
+
+          {/* Product */}
+          <div>
             <Image
-              src={product.image}
+              src={product.image || "/images/fallback.png"}
               alt={product.name}
               width={300}
               height={200}
-              className="w-32 h-32 object-contain mx-auto mb-4"
+              className="w-full h-[250px] object-cover mb-4"
             />
-            <p className="font-semibold text-lg">{product.name}</p>
-            <p className="text-sm text-gray-500">{product.description}</p>
-            <p className="text-lg mt-2 text-primary font-bold">
-              ${product.price}
-            </p>
+            <div className="flex justify-between font-serif font-semibold text-lg uppercase mb-2">
+              <p className="tracking-widest">{product.name}</p>
+              <p className="text-primary">${product.price}</p>
+            </div>
+
+            {/* Quantity */}
+            <div className="mb-4 w-fit flex items-center gap-3">
+              <button
+                className="w-fit p-1 rounded hover:bg-gray-200 transition"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                aria-label="Decrease quantity"
+              >
+                <Minus className="size-4 stroke-3" />
+              </button>
+              <span className="text-xl font-semibold">{quantity}</span>
+              <button
+                className="w-fit p-1 rounded hover:bg-gray-200 transition"
+                onClick={() => setQuantity(quantity + 1)}
+                aria-label="Increase quantity"
+              >
+                <Plus className="size-4 stroke-3" />
+              </button>
+            </div>
           </div>
 
-          <div className="absolute bottom-0 w-full">
-            <button
-              onClick={() => {
-                onClose(); // auto-close after adding
-              }}
-              className="w-full bg-red-700 hover:bg-red-800 text-white py-2 rounded-md"
-            >
-              Confirm Add to Cart
-            </button>
+          {/* Actions */}
+          <div className="mt-auto">
+            <div className="grid grid-cols-3 gap-2 text-white uppercase text-sm font-semibold">
+              <div
+                className="py-3 bg-red-600 text-center hover:bg-red-700 transition cursor-pointer"
+                onClick={onClose}
+              >
+                Close
+              </div>
+              <div className="py-3 bg-blue-600 text-center hover:bg-blue-700 transition cursor-pointer">
+                Buy
+              </div>
+              <div
+                className="py-3 bg-green-600 text-center hover:bg-green-700 transition cursor-pointer"
+                onClick={handleAddToCart}
+              >
+                Add
+              </div>
+            </div>
           </div>
         </div>
       </div>

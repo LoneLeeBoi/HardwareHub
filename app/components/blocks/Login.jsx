@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import jwt from "jsonwebtoken";
 
 export function Login({ toggleForm }) {
   const [email, setEmail] = useState("");
@@ -20,19 +21,30 @@ export function Login({ toggleForm }) {
     const res = await LoginFunction({ email, password });
 
     if (res.status === 200) {
-      globalState.setState({ isLogged: true });
-      localStorage.setItem("token", res?.data?.token);
+      const token = res?.data?.token;
 
-      Cookies.set("token", res?.data?.token, {
+      const decoded = jwt.decode(token);
+      const role = decoded?.role;
+
+      globalState.setState({ isLogged: true });
+      localStorage.setItem("token", token);
+
+      Cookies.set("token", token, {
         expires: 1,
         secure: true,
         sameSite: "strict",
       });
 
-      toast.success("Welcome dear user.");
-
       setTimeout(() => {
-        router.push("/");
+        if (role === "admin") {
+          toast.success("Welcome admin.");
+
+          router.push("/admin");
+        } else {
+          toast.success("Welcome dear user.");
+
+          router.push("/");
+        }
       }, 1000);
     } else {
       if (res.status === 401) {
