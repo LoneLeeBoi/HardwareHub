@@ -1,5 +1,8 @@
 import { Header } from "./_layout/Header";
 import "./globals.css";
+import "./custom.css";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 export const metadata = {
   title: "Create Next App",
@@ -9,10 +12,23 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`antialiased`}>
-        <div className="">
+      <body className="antialiased bg-white text-gray-900">
+        <div className="relative min-h-screen">
+          <ToastContainer
+            position="top-right"
+            autoClose={1000}
+            hideProgressBar={false}
+            pauseOnFocusLoss={false}
+            draggable
+            theme="colored"
+            className="z-[9999]"
+            toastClassName="rounded-lg shadow-md text-sm"
+            bodyClassName="p-3"
+            closeButton={false}
+          />
+
           <Header />
-          {children}
+          <main className="">{children}</main>
         </div>
       </body>
     </html>

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import RegisterFunction from "../functions/RegisterFunction";
 import globalState from "@/app/store/globalState";
 
-export function Register() {
+export function Register({ toggleForm }) {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -31,7 +31,7 @@ export function Register() {
   };
 
   return (
-    <div className="relative h-screen bg-gray-100 flex items-center justify-center">
+    <div className="relative z-10 flex items-center justify-center h-full">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -74,7 +74,7 @@ export function Register() {
           <span
             className="font-bold text-[14px] text-blue-500"
             onClick={() => {
-              globalState.setState({ isLog: false });
+              toggleForm();
             }}
           >
             Login

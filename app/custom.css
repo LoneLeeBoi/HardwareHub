@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+.text-primary {
+  color: #d6b913;
+}
+
+.bg-primary {
+  background-color: #d6b913;
+}
+
+input {
+  @apply py-3 px-4 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+button {
+  @apply py-3 px-4 bg-blue-600 text-white rounded-lg hover:opacity-90 transition w-full cursor-pointer;
+}
+
+.link {
+  @apply cursor-pointer;
+}

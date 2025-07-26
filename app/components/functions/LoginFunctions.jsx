@@ -1,5 +1,3 @@
-import globalState from "@/app/store/globalState";
-
 export default async function LoginFunction({ email, password }) {
   try {
     const res = await fetch("/api/login", {
@@ -11,11 +9,12 @@ export default async function LoginFunction({ email, password }) {
     const data = await res.json();
 
     if (data.success) {
-      globalState.setState({ isLog: true });
+      return { success: true };
     } else {
-      alert("Invalid login");
+      return { success: false };
     }
   } catch (err) {
     console.error("Login error:", err);
+    return { success: false, error: true };
   }
 }
