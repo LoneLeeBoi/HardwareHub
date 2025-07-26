@@ -19,8 +19,6 @@ export function Login({ toggleForm }) {
 
     const res = await LoginFunction({ email, password });
 
-    console.log(res);
-
     if (res.status === 200) {
       globalState.setState({ isLogged: true });
       localStorage.setItem("token", res?.data?.token);

@@ -7,6 +7,9 @@
 .bg-primary {
   background-color: #d6b913;
 }
+.border-primary {
+  @apply border-[#d6b913];
+}
 
 input {
   @apply py-3 px-4 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
