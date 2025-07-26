@@ -1,2 +1,13 @@
-/api/register
-/api/login
+post -/api/register
+post -/api/login
+
+post -/api/product
+get -/api/product
+put -/api/product/:id
+delete -/api/product/:id
+
+post -/api/product/categories
+get -/api/product/categories
+put -/api/product/categories/:id
+delete -/api/product/categories/:id
+

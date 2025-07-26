@@ -1,8 +1,36 @@
 CREATE TABLE users (
    row INT NOT NULL AUTO_INCREMENT,
   id VARCHAR(36) PRIMARY KEY,
-  username VARCHAR(100) UNIQUE NOT NULL,
+  username VARCHAR(100) UNIQUE,
   email VARCHAR(50) UNIQUE NOT NULL,
   password VARCHAR(100) NOT NULL,
-  UNIQUE KEY (row) -- required for AUTO_INCREMENT
+  UNIQUE KEY (row) 
+);
+
+CREATE TABLE categories (
+  row INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  id VARCHAR(36) PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+  UNIQUE KEY (row)
+);
+
+CREATE TABLE products (
+  id VARCHAR(36) NOT NULL PRIMARY KEY,          
+  row BIGINT UNSIGNED NOT NULL AUTO_INCREMENT, 
+  user_id VARCHAR(36) NOT NULL,               
+  name VARCHAR(255) NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  category_id VARCHAR(36),                     
+  image VARCHAR(255),                         
+  units INT DEFAULT 0,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at DATETIME DEFAULT NULL,
+
+  UNIQUE (row),                               
+  INDEX (user_id),
+  INDEX (category_id),
+  INDEX (deleted_at)
 );
