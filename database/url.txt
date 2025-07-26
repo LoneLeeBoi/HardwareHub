@@ -1,13 +1,21 @@
 post -/api/register
 post -/api/login
 
-post -/api/product
-get -/api/product
-put -/api/product/:id
-delete -/api/product/:id
 
-post -/api/product/categories
-get -/api/product/categories
-put -/api/product/categories/:id
-delete -/api/product/categories/:id
+get: /api/products → all products
+get: /api/products?category=2 → by category
+get: /api/products?search=choco → search name
+get: /api/products?page=2&limit=5 → paginate
+get: /api/products?category=2&search=choco&page=3&limit=5 → Combined filters
+
+create: post -/api/product                               //required authorization Bearer
+edit: put -/api/product/:id                             //required authorization Bearer
+delete: delete -/api/product/:id                        //required authorization Bearer
+Get specific product: get -/api/product/:id   
+
+
+Read: get -/api/product/categories
+create: post -/api/product/categories                    //required authorization Bearer
+edit: put -/api/product/categories/:id                  //required authorization Bearer
+delete: delete -/api/product/categories/:id             //required authorization Bearer
 
