@@ -4,9 +4,6 @@ import { isAuthorized } from '@/app/lib/auth';
 import { NextResponse } from 'next/server';
 
 export async function GET(req) {
-  if (!isAuthorized(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
 
   return new Promise((resolve) => {
     db.query('SELECT * FROM categories WHERE deleted_at IS NULL', (err, results) => {

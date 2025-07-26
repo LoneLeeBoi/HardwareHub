@@ -4,6 +4,34 @@ import { db } from "@/app/lib/db";
 import path from "path";
 import { writeFile, mkdir } from "fs/promises";
 import { randomUUID } from "crypto";
+
+
+export async function GET(req, { params }) {
+
+
+  const { id } = await params;
+
+  if (!id) {
+    return NextResponse.json({ error: 'Product ID required' }, { status: 400 });
+  }
+
+  return new Promise((resolve) => {
+    db.query(
+      'SELECT * FROM products WHERE id = ? AND deleted_at IS NULL',
+      [id],
+      (err, results) => {
+        if (err) {
+          resolve(NextResponse.json({ error: 'Database error' }, { status: 500 }));
+        } else if (results.length === 0) {
+          resolve(NextResponse.json({ error: 'Product not found' }, { status: 404 }));
+        } else {
+          resolve(NextResponse.json(results[0]));
+        }
+      }
+    );
+  });
+}
+
 export async function PUT(req, { params }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
