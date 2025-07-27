@@ -31,10 +31,11 @@ export function Login({ toggleForm }) {
     try {
       const res = await LoginFunction({ email, password });
 
-      if (res.status === 200) {
+      if (res.status === 200) { 
         const token = res?.data?.token;
         const decoded = jwt.decode(token);
         const role = decoded?.role;
+        const name = decoded?.name || "User";
 
         globalState.setState({ isLogged: true });
         localStorage.setItem("token", token);
@@ -46,9 +47,9 @@ export function Login({ toggleForm }) {
         });
 
         if (role === "admin") {
-          toast.success("Welcome admin.");
+          toast.success("Welcome, Admin.");
         } else {
-          toast.success("Welcome dear user.");
+          toast.success(`Welcome, ${res.data.name}.`);
         }
 
         // Delay to allow animation to show before redirect

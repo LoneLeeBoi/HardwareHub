@@ -13,14 +13,7 @@ import {
 import { Bar } from "react-chartjs-2";
 
 // Register chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export function Chart({ reportType }) {
   const [loading, setLoading] = useState(true);
@@ -31,7 +24,6 @@ export function Chart({ reportType }) {
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
   ];
 
-  // Simulate different data for each report type
   const getMockData = (type) => {
     switch (type) {
       case "daily sales":
@@ -61,11 +53,9 @@ export function Chart({ reportType }) {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [reportType]); // ✅ Always a string
+  }, [reportType]);
 
-  const placeholderData = months.map(() =>
-    Math.floor(Math.random() * 1200 + 200)
-  );
+  const placeholderData = months.map(() => Math.floor(Math.random() * 1200 + 200));
 
   const chartData = {
     labels: months,
@@ -74,19 +64,20 @@ export function Chart({ reportType }) {
         label: reportType.toUpperCase(),
         data: loading ? placeholderData : salesData,
         backgroundColor: loading
-          ? "rgba(209, 213, 219, 0.7)"
-          : "rgba(54, 162, 235, 0.6)",
+          ? "rgba(229, 231, 235, 0.7)"
+          : "rgba(59, 130, 246, 0.6)",
         borderColor: loading
-          ? "rgba(209, 213, 219, 1)"
-          : "rgba(54, 162, 235, 1)",
+          ? "rgba(229, 231, 235, 1)"
+          : "rgba(59, 130, 246, 1)",
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 6,
       },
     ],
   };
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     animation: {
       duration: loading ? 1000 : 500,
       easing: loading ? "easeInOutBounce" : "easeOutQuart",
@@ -95,13 +86,31 @@ export function Chart({ reportType }) {
       legend: {
         display: !loading,
         position: "top",
+        labels: {
+          font: {
+            size: 12,
+            weight: "bold",
+          },
+        },
       },
       title: {
         display: true,
         text: `${reportType.toUpperCase()} Performance`,
+        font: {
+          size: 16,
+          weight: "bold",
+        },
+        color: "#374151",
+        padding: {
+          top: 10,
+          bottom: 20,
+        },
       },
       tooltip: {
         enabled: !loading,
+        backgroundColor: "#1f2937",
+        titleFont: { weight: "bold" },
+        padding: 8,
       },
     },
     scales: {
@@ -110,13 +119,26 @@ export function Chart({ reportType }) {
         ticks: {
           stepSize: 500,
         },
+        grid: {
+          color: "#e5e7eb",
+        },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
       },
     },
   };
 
   return (
-    <div className="p-6 bg-white rounded-2xl shadow-lg border border-gray-200">
-      <Bar data={chartData} options={options} />
+    <div className="p-6 bg-white rounded-2xl shadow-md border border-gray-200 w-full">
+      <div className="aspect-[2/1] relative">
+        {loading && (
+          <div className="absolute inset-0 bg-gray-100 animate-pulse rounded-md z-10" />
+        )}
+        <Bar data={chartData} options={options} />
+      </div>
     </div>
   );
 }
