@@ -33,7 +33,8 @@ export function Register({ toggleForm }) {
     switch (result.status) {
       case 201:
       case 200:
-        toast.success("Thank you.");
+        toast.success("Thank you for registering, you can now login!.");
+        toggleForm();
         break;
 
       case 400:

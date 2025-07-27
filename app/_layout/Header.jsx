@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 
 export function Header() {
   const [showHeader, setShowHeader] = useState(false);
-  const [animate, setAnimate] = useState(false); // trigger animation
+  const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
     const checkToken = () => {
@@ -18,13 +18,8 @@ export function Header() {
 
       try {
         const decoded = jwt.decode(token);
-        if (decoded?.role === "user") {
-          setShowHeader(true);
-        } else {
-          setShowHeader(false);
-        }
-      } catch (error) {
-        console.error("Invalid token:", error);
+        setShowHeader(decoded?.role === "user");
+      } catch {
         setShowHeader(false);
       }
     };
@@ -43,7 +38,6 @@ export function Header() {
 
   useEffect(() => {
     if (showHeader) {
-      // delay to allow animation to run after render
       setTimeout(() => setAnimate(true), 10);
     } else {
       setAnimate(false);
@@ -53,34 +47,40 @@ export function Header() {
   if (!showHeader) return null;
 
   return (
-    <div
-      className={`sticky top-0 z-50 border-b border-gray-200 shadow-lg bg-white transform transition-all duration-700 ease-in-out ${
+    <header
+      className={`sticky top-0 z-50 bg-white border-b border-gray-200 shadow-md transition-all duration-700 ease-in-out transform ${
         animate ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0"
       }`}
     >
-      <div className="container mx-auto flex justify-between items-center py-6 px-4">
+      <div className="container mx-auto flex flex-wrap justify-between items-center gap-4 px-4 py-3">
         {/* Logo */}
-        <Link href="/" className="relative w-[70px] h-[70px] cursor-pointer">
-          <Image
-            src="/images/Logo.png"
-            alt="logo"
-            fill
-            className="object-contain"
-            sizes="70px"
-            priority
-          />
+        <Link href="/" className="flex items-center gap-2 w-auto">
+          <div className="relative w-[60px] h-[60px]">
+            <Image
+              src="/images/Logo.png"
+              alt="logo"
+              fill
+              className="object-contain"
+              sizes="60px"
+              priority
+            />
+          </div>
+          <h2 className="text-xl font-bold text-gray-800">HardwareHub</h2>
         </Link>
 
+
         {/* Search Bar */}
-        <div className="search relative w-full max-w-md mx-4 flex items-center border border-gray-300 rounded-full px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500 transition">
-          <Search />
+        <div className="flex-1 min-w-[200px] max-w-lg w-full">
+          <div className="flex items-center px-4 py-2 border border-gray-300 rounded-full transition focus-within:ring-2 focus-within:ring-blue-500 bg-white shadow-sm">
+            <Search />
+          </div>
         </div>
 
-        {/* Right Buttons */}
-        <div className="flex gap-1 items-center">
+        {/* Menu / Buttons */}
+        <div className="flex items-center gap-3">
           <Menu />
         </div>
       </div>
-    </div>
+    </header>
   );
 }

@@ -25,50 +25,29 @@ export function CategorySelection() {
     fetchCategories();
   }, []);
 
-  // const categories = [
-  //   {
-  //     id: 1,
-  //     label: "T-Shirts",
-  //     image: "/images/tshirt.jpg",
-  //   },
-  //   {
-  //     id: 2,
-  //     label: "Hoodies",
-  //     image: "/images/hoodie.jpg",
-  //   },
-  //   {
-  //     id: 3,
-  //     label: "Sneakers",
-  //     image: "/images/sneakers.jpg",
-  //   },
-  //   {
-  //     id: 4,
-  //     label: "Accessories",
-  //     image: "/images/accessories.jpg",
-  //   },
-  // ];
-
   return (
-    <div className="py-4">
-      <h2 className="text-[30px] font-bold mb-4">Select a Category</h2>
+    <div className="py-6 px-4">
+      <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-center">
+        Select a Category
+      </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6">
         {categories.map((category) => (
           <div
             key={category.id}
             onClick={() =>
               searchState.setState({ searchParams: category.name })
             }
-            className="border rounded-lg p-4 flex flex-col items-center hover:shadow transition cursor-pointer"
+            className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center hover:shadow-md hover:scale-[1.03] transition-all duration-200 ease-in-out cursor-pointer"
           >
             <Image
               src={"/images/fallback.png"}
               alt={category.name || "image"}
-              width={100}
-              height={100}
-              className="rounded object-cover size-[100px]"
+              width={110}
+              height={110}
+              className="rounded-lg object-cover w-[110px] h-[110px]"
             />
-            <div className="mt-2 text-center font-bold text-sm uppercase">
+            <div className="mt-3 text-center font-medium text-sm text-gray-700 uppercase tracking-wide">
               {category.name}
             </div>
           </div>

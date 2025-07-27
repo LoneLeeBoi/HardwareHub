@@ -11,8 +11,8 @@ const FALLBACK_IMAGE = "/images/fallback.png";
 export function Products() {
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null); // ⭐ Modal product state
-  const [isModalOpen, setIsModalOpen] = useState(false); // ⭐ Modal visibility state
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const setProducts = searchState((state) => state.setProducts);
   const products = searchState((state) => state.products);
@@ -41,51 +41,61 @@ export function Products() {
   const visibleProducts = showAll ? products : products.slice(0, 20);
 
   return (
-    <div className="container">
-      <div className="uppercase text-center border-t-8 bg-gray-300 py-4 text-[20px] text-primary font-bold border-primary w-full">
-        discover more
+    <div className="container mx-auto px-4">
+      {/* Discover Banner */}
+      <div className="uppercase text-center border-t-8 bg-gray-100 py-4 text-[22px] text-primary font-bold border-primary w-full tracking-wide">
+        Discover More
       </div>
 
-      <div className="py-4">
+      <div className="py-8">
         {error ? (
           <div className="text-red-500 text-center">{error}</div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {visibleProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white shadow-md rounded-xl px-4 pb-4 text-center border border-gray-200 hover:bg-gray-200"
                   onClick={() => handleAddToCartClick(product)}
+                  className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md hover:bg-gray-50 transition-all cursor-pointer"
                 >
-                  <div className="relative w-full h-48 mb-2">
+                  {/* Image */}
+                  <div className="relative w-full h-48 mb-4 overflow-hidden rounded-xl">
                     <Image
                       src={product.image || FALLBACK_IMAGE}
                       alt={product.name || "Product"}
                       fill
-                      className="object-contain rounded-lg"
+                      className="object-contain"
                     />
                   </div>
-                  <div className="font-semibold uppercase text-sm">
+
+                  {/* Name */}
+                  <div className="text-center font-medium text-sm uppercase text-gray-700 mb-2 truncate">
                     {product.name}
                   </div>
-                  <div className="w-full flex justify-center">
+
+                  {/* Button */}
+                  <div className="flex justify-center">
                     <button
-                      onClick={() => handleAddToCartClick(product)} // 👈 handle click
-                      className="mt-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit"
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent parent click
+                        handleAddToCartClick(product);
+                      }}
+                      className="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-full transition"
                     >
-                      ADD TO CART
+                      Add to Cart
                     </button>
                   </div>
                 </div>
               ))}
             </div>
 
+            {/* Show More */}
             {products.length > 20 && !showAll && (
-              <div className="text-center mt-6">
+              <div className="text-center mt-10">
                 <button
                   onClick={() => setShowAll(true)}
-                  className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition"
+                  className="px-6 py-2 bg-black text-white rounded-full font-medium hover:bg-opacity-80 transition"
                 >
                   Show More
                 </button>
@@ -94,7 +104,7 @@ export function Products() {
           </>
         )}
 
-        {/* ⭐ Modal */}
+        {/* Modal */}
         <AddToCartModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
