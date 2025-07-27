@@ -22,11 +22,11 @@ export async function POST(req) {
   }
 
   const body = await req.json();
-  const { name } = body;
+  const { user_id, name } = body;
   const id = randomUUID();
 
   return new Promise((resolve) => {
-    db.query('INSERT INTO categories (id, name) VALUES (?, ?)', [id, name], (err) => {
+    db.query('INSERT INTO categories (id,user_id, name) VALUES (?, ?,?)', [id,user_id, name], (err) => {
       if (err) {
         resolve(NextResponse.json({ error: 'Insert failed' }, { status: 500 }));
       } else {
