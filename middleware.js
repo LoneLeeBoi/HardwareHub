@@ -9,9 +9,7 @@ export function middleware(request) {
   const publicPaths = ["/auth", "/api", "/_next", "/favicon.ico", "/images"];
   const isPublic = publicPaths.some((path) => pathname.startsWith(path));
 
-  // Allow access to public paths
   if (isPublic) {
-    // If already logged in, redirect away from /auth
     if (pathname.startsWith("/auth") && token) {
       try {
         const decoded = jwt.decode(token);

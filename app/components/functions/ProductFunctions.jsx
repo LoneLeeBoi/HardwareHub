@@ -71,3 +71,31 @@ export async function ProductPopular(params = {}) {
     };
   }
 }
+
+export async function AddProduct(productData) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+
+  const url = `${baseUrl}/api/product`;
+
+  const form = new FormData();
+  form.append("user_id", productData.user_id);
+  form.append("name", productData.name);
+  form.append("price", productData.price);
+  form.append("category_id", productData.category_id);
+  form.append("image", productData.image);
+
+  try {
+    const res = await axios.post(url, form, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Failed to add product:", error);
+    return false;
+  }
+}
