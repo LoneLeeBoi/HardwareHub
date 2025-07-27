@@ -17,7 +17,14 @@ export function Search() {
       setProducts(result.data.data || []);
     } else {
       console.error("Search failed:", result.err);
-      setProducts([]); 
+      setProducts([]);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch();
     }
   };
 
@@ -27,6 +34,7 @@ export function Search() {
         type="text"
         value={searchParams}
         onChange={(e) => setSearchParams(e.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder="Search..."
         className="w-full pl-3 pr-10 py-2 text-sm bg-transparent border-none outline-none"
         style={{
