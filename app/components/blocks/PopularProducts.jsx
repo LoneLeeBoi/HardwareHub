@@ -39,7 +39,9 @@ export function PopularProducts() {
 
   return (
     <div className="container my-[24px]">
-      <h2 className="text-[30px] font-bold text-center">Our Popular Products</h2>
+      <h2 className="text-[30px] font-bold text-center">
+        Our Popular Products
+      </h2>
 
       <div className="py-4">
         {error ? (
@@ -51,6 +53,7 @@ export function PopularProducts() {
                 <div
                   key={product.id}
                   className="bg-white shadow-md rounded-xl p-4 text-center border border-gray-200 relative hover:bg-gray-100"
+                  onClick={() => handleAddToCartClick(product)}
                 >
                   <div className="relative w-full h-48 mb-2">
                     <Image

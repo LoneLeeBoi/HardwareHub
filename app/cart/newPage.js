@@ -1,21 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import globalState from "@/app/store/globalState";
 import { CheckoutModal } from "../popups/checkoutModal";
-import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
-export default function CartPage() {
+import { Plus } from "@/public/icons/plus";
+
+export default function NewPage() {
   const { cart, removeFromCart, updateQuantity } = globalState();
   const [selectedItems, setSelectedItems] = useState([]);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading delay
-    const timer = setTimeout(() => setIsLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
 
   const handleRemoveItem = (itemId) => {
     removeFromCart(itemId);
@@ -49,44 +43,16 @@ export default function CartPage() {
     selectedItems.includes(item.id)
   );
 
-  const SkeletonItem = () => (
-    <div className="p-6 flex items-center justify-between animate-pulse">
-      <div className="flex items-center space-x-4 flex-1">
-        <div className="w-4 h-4 bg-gray-300 rounded" />
-        <div className="w-20 h-20 bg-gray-200 rounded-lg" />
-        <div className="flex-1 space-y-2">
-          <div className="w-1/2 h-4 bg-gray-300 rounded" />
-          <div className="w-2/3 h-3 bg-gray-200 rounded" />
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gray-300 rounded" />
-            <div className="w-4 h-4 bg-gray-300 rounded" />
-            <div className="w-6 h-6 bg-gray-300 rounded" />
-            <div className="w-20 h-3 bg-gray-200 rounded ml-4" />
-          </div>
-        </div>
-      </div>
-      <div className="w-20 h-8 bg-gray-300 rounded" />
-    </div>
-  );
-
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
         <p className="text-gray-600 mt-2">
-          {isLoading
-            ? "Loading items..."
-            : `${cart.length} item(s) in your cart`}
+          {cart.length} {cart.length === 1 ? "item" : "items"} in your cart
         </p>
       </header>
 
-      {isLoading ? (
-        <div className="bg-white rounded-lg shadow-sm border divide-y divide-gray-200">
-          {[...Array(3)].map((_, i) => (
-            <SkeletonItem key={i} />
-          ))}
-        </div>
-      ) : cart.length === 0 ? (
+      {cart.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-gray-400 mb-4 flex justify-center">
             <img
@@ -112,6 +78,7 @@ export default function CartPage() {
                   className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors duration-150"
                 >
                   <div className="flex items-center space-x-4 flex-1">
+                    {/* Checkbox */}
                     <input
                       type="checkbox"
                       checked={selectedItems.includes(item.id)}
@@ -119,6 +86,8 @@ export default function CartPage() {
                       className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-1"
                       style={{ width: "fit-content" }}
                     />
+
+                    {/* Product Image */}
                     <div className="flex-shrink-0">
                       <img
                         src={item.image || "/placeholder-product.jpg"}
@@ -126,6 +95,8 @@ export default function CartPage() {
                         className="w-20 h-20 object-cover rounded-lg border border-gray-200"
                       />
                     </div>
+
+                    {/* Product Details */}
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">
                         {item.name}
@@ -142,9 +113,9 @@ export default function CartPage() {
                               item.quantity > 1 &&
                               updateQuantity(item.id, item.quantity - 1)
                             }
-                            className="cursor-pointer p-1 hover:bg-gray-100 rounded"
+                            className=" "
                           >
-                            <Minus className="size-4 stroke-2" />
+                            <Minus className={`size-4 fill-white stroke-3`} />
                           </div>
                           <span className="px-2 text-lg">
                             {item.quantity || 1}
@@ -153,9 +124,9 @@ export default function CartPage() {
                             onClick={() =>
                               updateQuantity(item.id, (item.quantity || 1) + 1)
                             }
-                            className="cursor-pointer p-1 hover:bg-gray-100 rounded"
+                            className=" "
                           >
-                            <Plus className="size-4 stroke-2" />
+                            <Plus className={`size-4 fill-white stroke-3`} />
                           </div>
                         </div>
                         <span>•</span>
@@ -168,6 +139,7 @@ export default function CartPage() {
                     </div>
                   </div>
 
+                  {/* Remove Button */}
                   <div className="flex-shrink-0 ml-4">
                     <button
                       onClick={() => handleRemoveItem(item.id)}

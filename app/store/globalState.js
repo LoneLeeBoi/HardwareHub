@@ -1,27 +1,53 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-const globalState = create((set) => ({
-  isLog: true,
-  isLogged: false,
-  cart: [],
+const globalState = create(
+  persist(
+    (set, get) => ({
+      isLog: true,
+      isLogged: false,
+      cart: [],
 
-  // Set the whole cart
-  setCart: (newCart) => set({ cart: newCart }),
+      setLogout: (status) =>
+        set({
+          isLogged: status,
+          cart: [], // Clear the cart on logout
+        }),
 
-  // Add item to cart
-  addToCart: (item) =>
-    set((state) => ({
-      cart: [...state.cart, item],
-    })),
+      setCart: (newCart) => set({ cart: newCart }),
 
-  // Remove item from cart by ID (assuming item has an `id` field)
-  removeFromCart: (id) =>
-    set((state) => ({
-      cart: state.cart.filter((item) => item.id !== id),
-    })),
+      addToCart: (item) =>
+        set((state) => {
+          const existing = state.cart.find((i) => i.id === item.id);
+          if (existing) {
+            return {
+              cart: state.cart.map((i) =>
+                i.id === item.id
+                  ? { ...i, quantity: (i.quantity || 1) + (item.quantity || 1) }
+                  : i
+              ),
+            };
+          } else {
+            return { cart: [...state.cart, item] };
+          }
+        }),
 
-  // Toggle login state
-  setLoggedIn: (value) => set({ isLogged: value }),
-}));
+      removeFromCart: (itemId) =>
+        set((state) => ({
+          cart: state.cart.filter((item) => item.id !== itemId),
+        })),
+
+      updateQuantity: (itemId, quantity) =>
+        set((state) => ({
+          cart: state.cart.map((item) =>
+            item.id === itemId ? { ...item, quantity } : item
+          ),
+        })),
+    }),
+    {
+      name: "app-cart-storage",
+    }
+  )
+);
 
 export default globalState;

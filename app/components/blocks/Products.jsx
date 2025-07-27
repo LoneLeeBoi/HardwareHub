@@ -56,6 +56,7 @@ export function Products() {
                 <div
                   key={product.id}
                   className="bg-white shadow-md rounded-xl px-4 pb-4 text-center border border-gray-200 hover:bg-gray-200"
+                  onClick={() => handleAddToCartClick(product)}
                 >
                   <div className="relative w-full h-48 mb-2">
                     <Image

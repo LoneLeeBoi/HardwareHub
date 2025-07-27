@@ -12,46 +12,55 @@ import jwt from "jsonwebtoken";
 export function Login({ toggleForm }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // to disable the button
 
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // disable button
 
-    const res = await LoginFunction({ email, password });
+    try {
+      const res = await LoginFunction({ email, password });
 
-    if (res.status === 200) {
-      const token = res?.data?.token;
+      if (res.status === 200) {
+        const token = res?.data?.token;
+        const decoded = jwt.decode(token);
+        const role = decoded?.role;
 
-      const decoded = jwt.decode(token);
-      const role = decoded?.role;
+        globalState.setState({ isLogged: true });
+        localStorage.setItem("token", token);
 
-      globalState.setState({ isLogged: true });
-      localStorage.setItem("token", token);
+        Cookies.set("token", token, {
+          expires: 1,
+          secure: true,
+          sameSite: "strict",
+        });
 
-      Cookies.set("token", token, {
-        expires: 1,
-        secure: true,
-        sameSite: "strict",
-      });
-
-      setTimeout(() => {
         if (role === "admin") {
           toast.success("Welcome admin.");
-
-          router.push("/admin");
         } else {
           toast.success("Welcome dear user.");
-
-          router.push("/");
         }
-      }, 1000);
-    } else {
-      if (res.status === 401) {
-        toast.error("Invalid email or password.");
+
+        setTimeout(() => {
+          if (role === "admin") {
+            router.push("/admin");
+          } else {
+            router.push("/");
+          }
+        }, 1000);
       } else {
-        toast.error(res.err);
+        if (res.status === 401) {
+          toast.error("Invalid email or password.");
+        } else {
+          toast.error(res.err || "Something went wrong.");
+        }
       }
+    } catch (err) {
+      toast.error("Server error. Please try again.");
+    } finally {
+      setLoading(false); // enable button again
     }
   };
 
@@ -89,17 +98,16 @@ export function Login({ toggleForm }) {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">LOG IN</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "LOG IN"}
+          </button>
         </form>
 
         <div className="pt-4 text-center">
           <span className="text-sm">Don’t have an account? </span>
           <span
-            type="button"
-            className="text-blue-500 font-semibold hover:underline link"
-            onClick={() => {
-              toggleForm();
-            }}
+            className="text-blue-500 font-semibold hover:underline link cursor-pointer"
+            onClick={() => toggleForm()}
           >
             Create Account
           </span>
