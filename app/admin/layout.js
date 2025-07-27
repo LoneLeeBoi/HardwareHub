@@ -5,16 +5,16 @@ export default function RootLayout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
       <AdminHeader />
-
-      {/* Sidebar + Page Content   */}
+      {/* Sidebar + Page Content */}
       <div className="flex flex-1">
-        {/* Sidebar */}
-        <aside className="w-64 bg-gray-100 border-r">
+        {/* Sidebar - Fixed width */}
+        <aside className="w-64 bg-gray-100 border-r flex-shrink-0">
           <Sidebar />
         </aside>
-
-        {/* Page content */}
-        <main className="flex-1 px-4 w-full overflow-hidden">{children}</main>
+        {/* Page content - Takes remaining width */}
+        <main className="flex-1 min-w-0 overflow-hidden">
+          {children}
+        </main>
       </div>
     </div>
   );
