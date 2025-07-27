@@ -9,16 +9,24 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 
+// Spinner component
+function Spinner() {
+  return (
+    <div className="fixed flex inset-0 w-full h-full justify-center items-center bg-black/50 mt-4">
+      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+}
+
 export function Login({ toggleForm }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // to disable the button
-
+  const [loading, setLoading] = useState(false); // loading state
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // disable button
+    setLoading(true); // show spinner
 
     try {
       const res = await LoginFunction({ email, password });
@@ -43,6 +51,7 @@ export function Login({ toggleForm }) {
           toast.success("Welcome dear user.");
         }
 
+        // Delay to allow animation to show before redirect
         setTimeout(() => {
           if (role === "admin") {
             router.push("/admin");
@@ -60,15 +69,15 @@ export function Login({ toggleForm }) {
     } catch (err) {
       toast.error("Server error. Please try again.");
     } finally {
-      setLoading(false); // enable button again
+      setLoading(false); // hide spinner
     }
   };
 
   return (
-    <div className="relative z-10 flex items-center justify-center h-full">
+    <div className="relative z-10 flex items-center justify-center h-full min-h-screen bg-gray-100">
       <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
         <div className="flex items-center gap-4 mb-6">
-          <div className="relative  w-[150px] h-[150px] flex items-center justify-center text-white text-lg font-bold">
+          <div className="relative w-[150px] h-[150px] flex items-center justify-center text-white text-lg font-bold">
             <Image
               src="/images/LogoTwo.png"
               alt="logo"
@@ -76,7 +85,6 @@ export function Login({ toggleForm }) {
               className="object-cover w-full h-full"
             />
           </div>
-
           <div className="flex flex-col">
             <span className="text-3xl font-semibold">Hardware Hub</span>
             <span className="text-lg font-light">Powering Possibility</span>
@@ -90,6 +98,7 @@ export function Login({ toggleForm }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="border border-gray-300 rounded px-4 py-2"
           />
           <input
             type="password"
@@ -97,16 +106,27 @@ export function Login({ toggleForm }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="border border-gray-300 rounded px-4 py-2"
           />
-          <button type="submit" disabled={loading}>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`py-2 px-4 font-semibold text-white rounded transition-all ${
+              loading
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
+          >
             {loading ? "Logging in..." : "LOG IN"}
           </button>
+
+          {loading && <Spinner />}
         </form>
 
         <div className="pt-4 text-center">
           <span className="text-sm">Don’t have an account? </span>
           <span
-            className="text-blue-500 font-semibold hover:underline link cursor-pointer"
+            className="text-blue-500 font-semibold hover:underline cursor-pointer"
             onClick={() => toggleForm()}
           >
             Create Account
