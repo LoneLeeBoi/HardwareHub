@@ -1,37 +1,35 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AddExpenseModal } from "@/app/popups/addExpenseModal";
+import { ExpenseFunctions } from "@/app/components/functions/ExpenseFunctions";
 import { Plus } from "@/public/icons/plus";
 import { Edit } from "@/public/icons/edit";
 
 export default function ExpensePage() {
-  const [expenses, setExpenses] = useState([
-    {
-      id: 1,
-      name: "Electric Bill",
-      amount: 1200,
-      date: "2025-07-10",
-      category: "Utilities",
-    },
-    {
-      id: 2,
-      name: "Lunch with Members",
-      amount: 450,
-      date: "2025-07-15",
-      category: "Food",
-    },
-  ]);
-
+  const [expenses, setExpenses] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
+   const fetchExpenses = async () => {
+     const result = await ExpenseFunctions();
+     if (result.success) {
+       const data = result?.data?.data || [];
+       setExpenses(data);
+     } else {
+       setError(result.err || "Failed to fetch Expense.");
+     }
+   };
+   useEffect(() => {
+     fetchExpenses();
+   }, []);
   const [newExpense, setNewExpense] = useState({
     name: "",
     amount: "",
     date: "",
     category: "",
+       user_id: "",
   });
 
   const handleInputChange = (field, value) => {
@@ -115,7 +113,7 @@ export default function ExpensePage() {
                   </td>
                 </tr>
               ) : (
-                expenses.map((expense) => (
+                expenses?.map((expense) => (
                   <tr key={expense.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
@@ -134,7 +132,7 @@ export default function ExpensePage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {expense.category}
+                        {expense.category_id}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -158,8 +156,9 @@ export default function ExpensePage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         newExpense={newExpense}
-        handleInputChange={handleInputChange}
+    handleInputChange={handleInputChange}
         handleAddExpense={handleAddExpense}
+        refreshExpense={fetchExpenses}
         isEditing={isEditing}
       />
     </div>
