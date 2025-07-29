@@ -1,5 +1,7 @@
-import { Close } from "@/public/icons/close";
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { Close } from "@/public/icons/close"; // Make sure this exists or replace with text/icon
 
 export function AddExpenseModal({
   isOpen,
@@ -7,99 +9,103 @@ export function AddExpenseModal({
   newExpense,
   handleInputChange,
   handleAddExpense,
+  isEditing = false,
 }) {
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Start animation after render
+      setTimeout(() => setShowModal(true), 10);
+    } else {
+      setShowModal(false);
+    }
+  }, [isOpen]);
+
+  const handleClose = () => {
+    setShowModal(false);
+    setTimeout(() => onClose(), 300); // match transition duration
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Add New Expense
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={handleClose}
+        className="fixed inset-0 z-[101] bg-black/50"
+      ></div>
+
+      {/* Animated Modal */}
+      <div
+        className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl  ${
+          showModal ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between px-4 py-3 border-b">
+          <h2 className="text-lg font-semibold">
+            {isEditing ? "Edit Expense" : "Add New Expense"}
+          </h2>
+          <div
+            onClick={handleClose}
+            className="text-gray-600 hover:text-gray-900"
           >
-            <Close className="size-6" />
-          </button>
+            <Close className={`size-6 stroke-3`} />
+          </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="p-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Expense Name
-            </label>
+            <label className="block text-sm font-medium">Name</label>
             <input
               type="text"
               value={newExpense.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter expense name"
+              className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Amount (₱)
-            </label>
+            <label className="block text-sm font-medium">Amount</label>
             <input
               type="number"
               value={newExpense.amount}
               onChange={(e) => handleInputChange("amount", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="0.00"
+              className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date
-            </label>
+            <label className="block text-sm font-medium">Date</label>
             <input
               type="date"
               value={newExpense.date}
               onChange={(e) => handleInputChange("date", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category
-            </label>
-            <select
+            <label className="block text-sm font-medium">Category</label>
+            <input
+              type="text"
               value={newExpense.category}
               onChange={(e) => handleInputChange("category", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="flex justify-end pt-4">
+            <button
+              onClick={handleAddExpense}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              <option value="">Select a category</option>
-              <option value="Utilities">Utilities</option>
-              <option value="Food">Food</option>
-              <option value="Transportation">Transportation</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Shopping">Shopping</option>
-              <option value="Other">Other</option>
-            </select>
+              {isEditing ? "Update" : "Add"}
+            </button>
           </div>
         </div>
-
-        <div className="flex space-x-3 mt-6">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleAddExpense}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Add Expense
-          </button>
-        </div>
       </div>
-    </div>
+    </>
   );
 }

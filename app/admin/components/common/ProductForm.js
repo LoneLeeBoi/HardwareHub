@@ -15,7 +15,7 @@ export default function ProductForm({ onSubmit }) {
     price: "",
     category_id: "",
     units: "",
-    image: null, // image file
+    image: null, 
   });
 
   const [categories, setCategories] = useState([]);
