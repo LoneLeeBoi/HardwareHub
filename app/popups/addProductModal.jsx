@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Close } from "@/public/icons/close";
-import { AddProduct } from "../components/functions/ProductFunctions";
+import { AddProduct, EditProduct } from "../components/functions/ProductFunctions";
 import { toast } from "react-toastify";
 import jwt from "jsonwebtoken";
 
@@ -16,7 +16,8 @@ export function AddProductModal({
   categories = [],
 }) {
   const [showModal, setShowModal] = useState(false);
-  const [userId, setUserId] = useState();
+  const [userId, setUserId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -32,11 +33,10 @@ export function AddProductModal({
 
     try {
       const decoded = jwt.decode(token);
-      if (decoded && (decoded.id || decoded.sub)) {
-        const id = decoded.id || decoded.sub;
+      const id = decoded?.id || decoded?.sub;
+      if (id) {
         setUserId(id);
         handleInputChange("user_id", id); // Auto-fill user ID
-        console.log("User ID:", id);
       }
     } catch (error) {
       console.error("Token decode error:", error);
@@ -50,17 +50,22 @@ export function AddProductModal({
 
   const handleSubmit = async () => {
     try {
-      const success = await AddProduct(newProduct);
+      setLoading(true);
+      const submitAction = isEditing ? EditProduct : AddProduct;
+      const success = await submitAction(newProduct);
+
       if (success) {
-        toast.success("Product added successfully!");
+        toast.success(isEditing ? "Product updated successfully!" : "Product added successfully!");
         handleClose();
         if (typeof refreshProducts === "function") refreshProducts();
       } else {
-        toast.error("Failed to add product. Please try again.");
+        toast.error(isEditing ? "Failed to update product." : "Failed to add product.");
       }
     } catch (error) {
       console.error(error);
       toast.error("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,7 +76,7 @@ export function AddProductModal({
       {/* Backdrop */}
       <div onClick={handleClose} className="fixed inset-0 z-[101] bg-black/50" />
 
-      {/* Slide-in Panel */}
+      {/* Slide-in Modal */}
       <div
         className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl ${
           showModal ? "translate-x-0" : "translate-x-full"
@@ -107,7 +112,7 @@ export function AddProductModal({
           <div>
             <label className="block text-sm font-medium mb-1">Category</label>
             <select
-              value={newProduct.category_id}
+              value={newProduct.category_id || ""}
               onChange={(e) => handleInputChange("category_id", e.target.value)}
               className="w-full border rounded px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -134,7 +139,7 @@ export function AddProductModal({
             onChange={(val) => handleInputChange("stock", val)}
           />
 
-          {/* Hidden or read-only field for User ID */}
+          {/* Hidden user_id */}
           <div className="hidden">
             <label className="block text-sm font-medium mb-1">User ID</label>
             <input
@@ -148,9 +153,10 @@ export function AddProductModal({
           <div className="flex justify-end">
             <button
               onClick={handleSubmit}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              disabled={loading}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
             >
-              {isEditing ? "Update" : "Add"}
+              {loading ? "Saving..." : isEditing ? "Update" : "Add"}
             </button>
           </div>
         </div>
@@ -172,9 +178,7 @@ function InputField({ label, type, value, onChange }) {
             : onChange(e.target.value)
         }
         className="w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder={
-          type !== "file" ? `Enter ${label.toLowerCase()}` : undefined
-        }
+        placeholder={type !== "file" ? `Enter ${label.toLowerCase()}` : undefined}
       />
     </div>
   );

@@ -6,7 +6,7 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 
 export function Register({ toggleForm }) {
-  const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
@@ -34,6 +34,7 @@ export function Register({ toggleForm }) {
       case 201:
       case 200:
         toast.success("Thank you.");
+        toggleForm();
         break;
 
       case 400:
