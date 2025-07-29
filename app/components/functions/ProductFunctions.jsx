@@ -103,18 +103,20 @@ export async function AddProduct(productData) {
 export async function EditProduct(productData) {
   const baseUrl = "http://localhost:3000";
   const token = localStorage.getItem("token");
-
-  const url = `${baseUrl}/api/product`;
+  const url = `${baseUrl}/api/product/${productData.id}`;
 
   const form = new FormData();
   form.append("user_id", productData.user_id);
   form.append("name", productData.name);
   form.append("price", productData.price);
   form.append("category_id", productData.category_id);
-  form.append("image", productData.image);
+
+  if (productData.image instanceof File) {
+    form.append("image", productData.image);
+  }
 
   try {
-    const res = await axios.post(url, form, {
+    const res = await axios.put(url, form, {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
         "Content-Type": "multipart/form-data",
@@ -123,10 +125,11 @@ export async function EditProduct(productData) {
 
     return true;
   } catch (error) {
-    console.error("Failed to add product:", error);
+    console.error("Failed to edit product:", error.response?.data || error.message);
     return false;
   }
 }
+
 
 export async function DeleteProduct(productId) {
   const baseUrl = "http://localhost:3000";

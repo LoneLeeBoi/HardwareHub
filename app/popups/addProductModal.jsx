@@ -2,7 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { Close } from "@/public/icons/close";
-import { AddProduct, EditProduct } from "../components/functions/ProductFunctions";
+import {
+  AddProduct,
+  EditProduct,
+} from "../components/functions/ProductFunctions";
 import { toast } from "react-toastify";
 import jwt from "jsonwebtoken";
 
@@ -55,11 +58,17 @@ export function AddProductModal({
       const success = await submitAction(newProduct);
 
       if (success) {
-        toast.success(isEditing ? "Product updated successfully!" : "Product added successfully!");
+        toast.success(
+          isEditing
+            ? "Product updated successfully!"
+            : "Product added successfully!"
+        );
         handleClose();
         if (typeof refreshProducts === "function") refreshProducts();
       } else {
-        toast.error(isEditing ? "Failed to update product." : "Failed to add product.");
+        toast.error(
+          isEditing ? "Failed to update product." : "Failed to add product."
+        );
       }
     } catch (error) {
       console.error(error);
@@ -74,7 +83,10 @@ export function AddProductModal({
   return (
     <>
       {/* Backdrop */}
-      <div onClick={handleClose} className="fixed inset-0 z-[101] bg-black/50" />
+      <div
+        onClick={handleClose}
+        className="fixed inset-0 z-[101] bg-black/50"
+      />
 
       {/* Slide-in Modal */}
       <div
@@ -108,7 +120,6 @@ export function AddProductModal({
             value={newProduct.image}
             onChange={(val) => handleInputChange("image", val)}
           />
-
           <div>
             <label className="block text-sm font-medium mb-1">Category</label>
             <select
@@ -178,7 +189,9 @@ function InputField({ label, type, value, onChange }) {
             : onChange(e.target.value)
         }
         className="w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder={type !== "file" ? `Enter ${label.toLowerCase()}` : undefined}
+        placeholder={
+          type !== "file" ? `Enter ${label.toLowerCase()}` : undefined
+        }
       />
     </div>
   );

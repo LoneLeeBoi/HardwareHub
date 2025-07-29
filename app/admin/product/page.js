@@ -8,18 +8,22 @@ import { Plus } from "@/public/icons/plus";
 import { Edit } from "@/public/icons/edit";
 import { Trash } from "@/public/icons/trash";
 import useProductHandlers from "./productHandllers";
-import { DeleteProduct } from "@/app/components/functions/ProductFunctions";
 
 export default function Page() {
   const {
+    isConfirm,
     products,
     categories,
     newProduct,
     newCategory,
     isModalOpen,
     isEditing,
-    isConfirm,
     isCategoryModalOpen,
+    isEditingCategory,
+    editCategoryId,
+    setConfirm,
+    setEditCategoryId,
+    setIsEditingCategory,
     setIsModalOpen,
     setIsCategoryModalOpen,
     handleInputChange,
@@ -27,14 +31,17 @@ export default function Page() {
     handleAddProduct,
     handleUpdateProduct,
     handleEditProduct,
-    handleAddCategory,
     handleCloseModal,
     fetchProducts,
     fetchCategories,
     handleDeleteProduct,
-    setConfirm,
+    handleDeleteCategory,
+    handleEditCategory,
+    setIsEditing,
+    setNewCategory
   } = useProductHandlers();
 
+  const [isCatConfirm, setIsCatConfirm] = useState("");
   return (
     <div className="p-4 container">
       <h2 className="text-2xl font-bold mb-4 text-gray-900">PRODUCTS</h2>
@@ -101,7 +108,10 @@ export default function Page() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex gap-2">
                       <div
-                        onClick={() => handleEditProduct(product)}
+                        onClick={() => {
+                          handleEditProduct(product);
+                          setIsEditing(true);
+                        }}
                         className="text-blue-600 hover:text-blue-800 cursor-pointer"
                       >
                         <Edit className="size-6" />
@@ -131,6 +141,9 @@ export default function Page() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Category
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -138,6 +151,20 @@ export default function Page() {
                   <tr key={category.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap uppercase font-bold">
                       {category.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap flex gap-2">
+                      <div
+                        onClick={() => handleEditCategory(category)}
+                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                      >
+                        <Edit className="size-6" />
+                      </div>
+                      <div
+                        onClick={() => setIsCatConfirm(category.id)}
+                        className="text-red-600 hover:text-red-800 cursor-pointer"
+                      >
+                        <Trash className="size-6" />
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -159,26 +186,42 @@ export default function Page() {
         refreshProducts={fetchProducts}
       />
 
-      <AddCategoryModal
-        isOpen={isCategoryModalOpen}
-        onClose={() => setIsCategoryModalOpen(false)}
-        newCategory={newCategory}
-        handleInputChange={handleCategoryInputChange}
-        handleAddCategory={handleAddCategory}
-        isEditing={false}
-        refreshCategories={fetchCategories}
-      />
-
       <ConfirmationModal
-        isOpen={isConfirm}
+        isOpen={isConfirm || isCatConfirm}
         onClose={() => {
-          setConfirm("");
+          if (isConfirm) {
+            setConfirm("");
+          } else if (isCatConfirm) {
+            setIsCatConfirm("");
+          }
         }}
         onConfirm={() => {
-          handleDeleteProduct(isConfirm);
+          if (isConfirm) {
+            handleDeleteProduct(isConfirm);
+            setConfirm("");
+          } else if (isCatConfirm) {
+            handleDeleteCategory(isCatConfirm);
+            setIsCatConfirm("");
+          }
         }}
         title="Are you sure?"
         message="This action cannot be undone."
+      />
+
+      <AddCategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => {
+          setIsCategoryModalOpen(false);
+          setEditCategoryId(null);
+          setIsEditingCategory(false);
+          setNewCategory({ id: "", name: "" });
+        }}
+        newCategory={newCategory}
+        handleInputChange={handleCategoryInputChange}
+        refreshCategories={fetchCategories}
+        isEditing={isEditingCategory}
+        isEditingCategory={isEditingCategory}
+        editCategoryId={editCategoryId}
       />
     </div>
   );

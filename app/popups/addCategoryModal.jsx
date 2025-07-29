@@ -3,7 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { Close } from "@/public/icons/close";
 import { toast } from "react-toastify";
-import { AddCategory } from "../components/functions/CategoryFunctions";
+import {
+  AddCategory,
+  EditCategory,
+} from "../components/functions/CategoryFunctions";
 
 export function AddCategoryModal({
   isOpen,
@@ -11,7 +14,8 @@ export function AddCategoryModal({
   newCategory,
   handleInputChange,
   refreshCategories,
-  isEditing = false,
+  isEditingCategory = false,
+  editCategoryId = null,
 }) {
   const [showModal, setShowModal] = useState(false);
 
@@ -25,7 +29,7 @@ export function AddCategoryModal({
 
   const handleClose = () => {
     setShowModal(false);
-    setTimeout(() => onClose(), 300); // Transition duration
+    setTimeout(() => onClose(), 300); // match transition duration
   };
 
   const handleSubmit = async () => {
@@ -34,14 +38,23 @@ export function AddCategoryModal({
       return;
     }
 
-    const result = await AddCategory({ name: newCategory.name });
+    let result;
+
+    if (isEditingCategory && editCategoryId) {
+      result = await EditCategory({
+        id: editCategoryId,
+        name: newCategory.name,
+      });
+    } else {
+      result = await AddCategory({ name: newCategory.name });
+    }
 
     if (result.success) {
-      toast.success("Category added successfully!");
+      toast.success(isEditingCategory ? "Category updated!" : "Category added!");
       refreshCategories();
       handleClose();
     } else {
-      toast.error(result.err);
+      toast.error(result.err || "Something went wrong.");
     }
   };
 
@@ -55,7 +68,7 @@ export function AddCategoryModal({
         className="fixed inset-0 z-[101] bg-black/50"
       ></div>
 
-      {/* Modal */}
+      {/* Modal Panel */}
       <div
         className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl ${
           showModal ? "translate-x-0" : "translate-x-full"
@@ -63,7 +76,7 @@ export function AddCategoryModal({
       >
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <h2 className="text-lg font-semibold">
-            {isEditing ? "Edit Category" : "Add New Category"}
+            {isEditingCategory ? "Edit Category" : "Add New Category"}
           </h2>
           <div
             onClick={handleClose}
@@ -89,7 +102,7 @@ export function AddCategoryModal({
               onClick={handleSubmit}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              {isEditing ? "Update" : "Add"}
+              {isEditingCategory ? "Update" : "Add"}
             </button>
           </div>
         </div>
