@@ -21,6 +21,7 @@ export default function Page() {
     isCategoryModalOpen,
     isEditingCategory,
     editCategoryId,
+    isCategoryFormOpen,
     setConfirm,
     setEditCategoryId,
     setIsEditingCategory,
