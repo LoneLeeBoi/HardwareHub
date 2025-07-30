@@ -64,6 +64,15 @@ export default function Page() {
           <Plus className="size-5 stroke-3" />
           CATEGORY
         </div>
+        {isCategoryFormOpen && (
+          <div className="h-full w-screen fixed top-0 left-0 flex items-center justify-center">
+            <span
+              className="fixed top-0 left-0 bg-black/40 w-screen h-full"
+              onClick={closeCategoryForm}
+            />
+            <CategoryForm />
+          </div>
+        )}
       </div>
 
       <div className="flex gap-6">
@@ -147,7 +156,7 @@ export default function Page() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {categories.map((category) => (
+                {categories?.map((category) => (
                   <tr key={category.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap uppercase font-bold">
                       {category.name}

@@ -3,16 +3,16 @@ import { db } from "@/app/lib/db";
 import { randomUUID } from "crypto";
 import { isAuthorized } from "@/app/lib/auth";
 
+// GET: Fetch inventory with filters and pagination
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const search = searchParams.get("search");
-  const category_id = searchParams.get("category_id");
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const offset = (page - 1) * limit;
 
-  let baseSql = "FROM expenses WHERE deleted_at IS NULL";
+  let baseSql = "FROM inventory WHERE deleted_at IS NULL";
   const conditions = [];
   const values = [];
 
@@ -26,16 +26,11 @@ export async function GET(req) {
     values.push(`%${search}%`);
   }
 
-  if (category_id) {
-    conditions.push("category_id = ?");
-    values.push(category_id);
-  }
-
   if (conditions.length > 0) {
     baseSql += " AND " + conditions.join(" AND ");
   }
 
-  const dataSql = `SELECT * ${baseSql} ORDER BY date DESC LIMIT ? OFFSET ?`;
+  const dataSql = `SELECT * ${baseSql} ORDER BY updated_at DESC LIMIT ? OFFSET ?`;
   const countSql = `SELECT COUNT(*) AS total ${baseSql}`;
   const dataValues = [...values, limit, offset];
 
@@ -71,17 +66,20 @@ export async function GET(req) {
   });
 }
 
+// POST: Add new inventory record
 export async function POST(req) {
   if (!isAuthorized(req))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { user_id, name, amount, date, category_id } = await req.json();
+
+  const { user_id, name, unit, stock, acquisition, retail } = await req.json();
   const id = randomUUID();
 
   return new Promise((resolve) => {
     db.query(
-      `INSERT INTO expenses (id, user_id, name, amount, date, category_id)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, user_id, name, amount, date, category_id],
+      `INSERT INTO inventory 
+        (id, user_id, name, unit, stock, acquisition, retail) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [id, user_id, name, unit, stock, acquisition, retail],
       (err) => {
         if (err) {
           return resolve(
@@ -89,7 +87,7 @@ export async function POST(req) {
           );
         }
         resolve(
-          NextResponse.json({ message: "Expense added", id }, { status: 200 })
+          NextResponse.json({ message: "Inventory added", id }, { status: 200 })
         );
       }
     );
