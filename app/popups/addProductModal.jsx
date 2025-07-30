@@ -39,7 +39,7 @@ export function AddProductModal({
       const id = decoded?.id || decoded?.sub;
       if (id) {
         setUserId(id);
-        handleInputChange("user_id", id); // Auto-fill user ID
+        handleInputChange("user_id", id); 
       }
     } catch (error) {
       console.error("Token decode error:", error);
@@ -55,6 +55,7 @@ export function AddProductModal({
     try {
       setLoading(true);
       const submitAction = isEditing ? EditProduct : AddProduct;
+      
       const success = await submitAction(newProduct);
 
       if (success) {
@@ -146,8 +147,8 @@ export function AddProductModal({
           <InputField
             label="Stock Quantity"
             type="number"
-            value={newProduct.stock}
-            onChange={(val) => handleInputChange("stock", val)}
+            value={newProduct.units}
+            onChange={(val) => handleInputChange("units", val)}
           />
 
           {/* Hidden user_id */}

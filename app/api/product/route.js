@@ -180,7 +180,7 @@ export async function POST(req) {
   const imagePath = `/uploads/${uniqueName}`;
 
   try {
-    await db.query(
+    db.query(
       `INSERT INTO products (id, user_id, name, price, category_id, units, image)
      VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [id, user_id, name, price, category_id, units, imagePath]

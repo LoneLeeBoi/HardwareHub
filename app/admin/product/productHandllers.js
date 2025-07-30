@@ -25,7 +25,7 @@ export default function useProductHandlers() {
     image: "",
     category_id: "",
     price: "",
-    stock: "",
+    units: "",
     status: "Active",
     user_id: "",
   });
@@ -111,13 +111,16 @@ export default function useProductHandlers() {
   const handleEditProduct = (product) => {
     setIsEditing(true);
     setEditingProductId(product.id);
+
+    console.log('product',product);
+    
     setNewProduct({
       id: product.id || "",
       name: product.name || "",
       image: product.image || "",
       category_id: product.category_id || "",
       price: product.price || "",
-      stock: product.stock || "",
+      units: product.units || "",
       status: product.status || "Active",
       user_id: product.user_id || "",
     });
@@ -200,7 +203,7 @@ export default function useProductHandlers() {
       image: "",
       category_id: "",
       price: "",
-      stock: "",
+      units: 0,
       status: "Active",
       user_id: "",
     });

@@ -39,7 +39,7 @@ export default function Page() {
     handleDeleteCategory,
     handleEditCategory,
     setIsEditing,
-    setNewCategory
+    setNewCategory,
   } = useProductHandlers();
 
   const [isCatConfirm, setIsCatConfirm] = useState("");
@@ -114,7 +114,7 @@ export default function Page() {
                       {product.price}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {product.stock}
+                      {product.units}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex gap-2">
                       <div
