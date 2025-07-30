@@ -1,18 +1,20 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import globalState from "@/app/store/globalState";
 import { CheckoutModal } from "../popups/checkoutModal";
 import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
+
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity } = globalState();
   const [selectedItems, setSelectedItems] = useState([]);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    // Simulate loading delay
     const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
@@ -30,14 +32,13 @@ export default function CartPage() {
     );
   };
 
-  const calculateTotal = () => {
-    return cart.reduce((total, item) => {
+  const calculateTotal = () =>
+    cart.reduce((total, item) => {
       if (selectedItems.includes(item.id)) {
         return total + item.price * (item.quantity || 1);
       }
       return total;
     }, 0);
-  };
 
   const formatPrice = (price) =>
     new Intl.NumberFormat("en-US", {
@@ -98,9 +99,15 @@ export default function CartPage() {
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Your cart is empty
           </h2>
-          <p className="text-gray-500 mb-6">
-            Add some items to get started with your order.
+          <p className="text-gray-400 mb-10 border-b-1">
+            Looks like you haven't added any orders to your cart yet
           </p>
+          <button
+            onClick={() => router.push("/")}
+            className="text-white bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg shadow transition"
+          >
+            Go fill this cart now!
+          </button>
         </div>
       ) : (
         <>
@@ -109,16 +116,17 @@ export default function CartPage() {
               {cart.map((item, index) => (
                 <div
                   key={`${item.id}-${index}`}
-                  className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors duration-150"
+                  className="p-6 flex items-start justify-between hover:bg-gray-50 transition-colors duration-150"
                 >
-                  <div className="flex items-center space-x-4 flex-1">
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(item.id)}
-                      onChange={() => handleCheckboxChange(item.id)}
-                      className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-1"
-                      style={{ width: "fit-content" }}
-                    />
+                  <div className="flex space-x-4 flex-1">
+                    <div className="flex items-center pt-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(item.id)}
+                        onChange={() => handleCheckboxChange(item.id)}
+                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-1"
+                      />
+                    </div>
                     <div className="flex-shrink-0">
                       <img
                         src={item.image || "/placeholder-product.jpg"}
@@ -135,7 +143,7 @@ export default function CartPage() {
                           {item.description}
                         </p>
                       )}
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                      <div className="flex items-center flex-wrap gap-3 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                           <div
                             onClick={() =>
@@ -167,7 +175,6 @@ export default function CartPage() {
                       </div>
                     </div>
                   </div>
-
                   <div className="flex-shrink-0 ml-4">
                     <button
                       onClick={() => handleRemoveItem(item.id)}
@@ -208,7 +215,6 @@ export default function CartPage() {
         </>
       )}
 
-      {/* Checkout Modal */}
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}

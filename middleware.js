@@ -6,7 +6,7 @@ export function middleware(request) {
   const token = request.cookies.get("token")?.value;
 
   // Public paths that don't need protection
-  const publicPaths = ["/auth", "/api", "/_next", "/favicon.ico", "/images"];
+  const publicPaths = ["/","/auth", "/api", "/_next", "/favicon.ico", "/images"];
   const isPublic = publicPaths.some((path) => pathname.startsWith(path));
 
   if (isPublic) {
@@ -32,7 +32,7 @@ export function middleware(request) {
 
   // If not logged in, redirect to /auth
   if (!token) {
-    return NextResponse.redirect(new URL("/auth", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   try {

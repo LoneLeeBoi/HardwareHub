@@ -5,30 +5,52 @@ import React, { useEffect, useState } from "react";
 import { Menu } from "./component/Menu";
 import Link from "next/link";
 import { Search } from "./component/Search";
+import { Cart } from "@/public/icons/cart";
 import jwt from "jsonwebtoken";
 
 export function Header() {
-  const [showHeader, setShowHeader] = useState(false);
+  const [role, setRole] = useState("guest");
   const [animate, setAnimate] = useState(false);
+  const [cart, setCart] = useState([]);
 
   useEffect(() => {
     const checkToken = () => {
       const token = localStorage.getItem("token");
-      if (!token) return setShowHeader(false);
+      if (!token) {
+        setRole("guest");
+        return;
+      }
 
       try {
         const decoded = jwt.decode(token);
-        setShowHeader(decoded?.role === "user");
+        setRole(decoded?.role || "guest");
       } catch {
-        setShowHeader(false);
+        setRole("guest");
+      }
+    };
+
+    const checkCart = () => {
+      try {
+        const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+        setCart(storedCart);
+      } catch {
+        setCart([]);
       }
     };
 
     checkToken();
+    checkCart();
 
-    const onStorage = () => checkToken();
+    const onStorage = () => {
+      checkToken();
+      checkCart();
+    };
+
     window.addEventListener("storage", onStorage);
-    const interval = setInterval(checkToken, 1000);
+    const interval = setInterval(() => {
+      checkToken();
+      checkCart();
+    }, 1000);
 
     return () => {
       window.removeEventListener("storage", onStorage);
@@ -37,14 +59,10 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    if (showHeader) {
-      setTimeout(() => setAnimate(true), 10);
-    } else {
-      setAnimate(false);
-    }
-  }, [showHeader]);
+    setAnimate(true);
+  }, [role]);
 
-  if (!showHeader) return null;
+  if (role === "admin") return null;
 
   return (
     <header
@@ -68,7 +86,6 @@ export function Header() {
           <h2 className="text-xl font-bold text-gray-800">HardwareHub</h2>
         </Link>
 
-
         {/* Search Bar */}
         <div className="flex-1 min-w-[200px] max-w-lg w-full">
           <div className="flex items-center px-4 py-2 border border-gray-300 rounded-full transition focus-within:ring-2 focus-within:ring-blue-500 bg-white shadow-sm">
@@ -76,9 +93,34 @@ export function Header() {
           </div>
         </div>
 
-        {/* Menu / Buttons */}
-        <div className="flex items-center gap-3">
-          <Menu />
+        {/* Right side: Menu for user, Cart + Login for guest */}
+        <div className="flex items-center gap-4">
+          {role === "user" ? (
+            <Menu />
+          ) : (
+            <>
+              <Link
+                href="/cart"
+                className="relative px-2 py-2 hover:bg-gray-200 rounded-full text-sm group"
+              >
+                <Cart className="w-5 h-5" />
+                {cart.length > 0 && (
+                  <div className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-md">
+                    {cart.length}
+                  </div>
+                )}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition pointer-events-none z-50 whitespace-nowrap">
+                  View Cart
+                </div>
+              </Link>
+              <Link
+                href="/auth"
+                className="text-sm text-blue-600 hover:underline"
+              >
+                Login / Register
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

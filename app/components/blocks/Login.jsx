@@ -12,8 +12,14 @@ import jwt from "jsonwebtoken";
 // Spinner component
 function Spinner() {
   return (
-    <div className="fixed flex inset-0 w-full h-full justify-center items-center bg-black/50 mt-4">
-      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+      <div className="relative w-16 h-16">
+        {/* Outer glowing ring */}
+        <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-blue-500 animate-spin" />
+        
+        {/* Inner glowing dot */}
+        <div className="absolute top-1/2 left-1/2 w-3 h-3 bg-blue-500 rounded-full shadow-lg animate-ping transform -translate-x-1/2 -translate-y-1/2" />
+      </div>
     </div>
   );
 }

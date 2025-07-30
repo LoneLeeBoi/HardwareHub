@@ -68,3 +68,69 @@ export async function AddCategory(props) {
     };
   }
 }
+
+export async function EditCategory(props) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+  const url = `${baseUrl}/api/product/categories/${props.id}`;
+
+  try {
+    const res = await axios.put(
+      url,
+      { name: props.name },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return {
+      success: true,
+      status: res.status,
+      data: res.data,
+    };
+  } catch (err) {
+    const status = err.response?.status || 500;
+    const message =
+      err.response?.data?.message ||
+      "Updating category failed. Please try again.";
+
+    return {
+      success: false,
+      status: status,
+      err: message,
+    };
+  }
+}
+
+export async function DeleteCategory(id) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+  const url = `${baseUrl}/api/product/categories/${id}`;
+
+  try {
+    const res = await axios.delete(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return {
+      success: true,
+      status: res.status,
+      data: res.data,
+    };
+  } catch (err) {
+    const status = err.response?.status || 500;
+    const message =
+      err.response?.data?.message ||
+      "Deleting category failed. Please try again.";
+
+    return {
+      success: false,
+      status: status,
+      err: message,
+    };
+  }
+}

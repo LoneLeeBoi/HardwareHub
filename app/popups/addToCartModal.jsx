@@ -6,6 +6,8 @@ import React, { useState } from "react";
 import globalState from "../store/globalState";
 import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
+import { toast } from "react-toastify";
+
 
 export function AddToCartModal({ isOpen, onClose, product }) {
   const { cart, setCart } = globalState();
@@ -22,6 +24,16 @@ export function AddToCartModal({ isOpen, onClose, product }) {
     } else {
       setCart([...cart, { ...product, quantity }]);
     }
+
+    toast.success(`${product.name} added to cart! 🛒`, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
     onClose();
     setQuantity(1); // reset quantity
   };
