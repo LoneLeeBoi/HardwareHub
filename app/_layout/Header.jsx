@@ -9,11 +9,16 @@ import { Cart } from "@/public/icons/cart";
 import { Cogs } from "@/public/icons/cogs";
 import jwt from "jsonwebtoken";
 
+// ✅ IMPORT your zustand store
+import globalState from "@/app/store/globalState";
+
 export function Header() {
   const [role, setRole] = useState("guest");
   const [animate, setAnimate] = useState(false);
-  const [cart, setCart] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // ✅ Get the reactive cart from global state
+  const cart = globalState((state) => state.cart);
 
   useEffect(() => {
     const checkToken = () => {
@@ -31,31 +36,12 @@ export function Header() {
       }
     };
 
-    const checkCart = () => {
-      try {
-        const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
-        setCart(storedCart);
-      } catch {
-        setCart([]);
-      }
-    };
-
     checkToken();
-    checkCart();
-
-    const onStorage = () => {
-      checkToken();
-      checkCart();
-    };
-
-    window.addEventListener("storage", onStorage);
     const interval = setInterval(() => {
       checkToken();
-      checkCart();
     }, 1000);
 
     return () => {
-      window.removeEventListener("storage", onStorage);
       clearInterval(interval);
     };
   }, []);
