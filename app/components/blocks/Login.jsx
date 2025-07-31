@@ -8,44 +8,41 @@ import Image from "next/image";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
+import Link from "next/link";
 
-// Spinner component
 function Spinner() {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
       <div className="relative w-16 h-16">
-        {/* Outer glowing ring */}
         <div className="absolute inset-0 rounded-full border-4 border-t-transparent border-blue-500 animate-spin" />
-        
-        {/* Inner glowing dot */}
         <div className="absolute top-1/2 left-1/2 w-3 h-3 bg-blue-500 rounded-full shadow-lg animate-ping transform -translate-x-1/2 -translate-y-1/2" />
       </div>
     </div>
   );
 }
 
-export function Login({ toggleForm }) {
+export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // loading state
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // show spinner
+    setLoading(true);
 
     try {
       const res = await LoginFunction({ email, password });
 
-      if (res.status === 200) { 
+      if (res.status === 200) {
         const token = res?.data?.token;
         const decoded = jwt.decode(token);
         const role = decoded?.role;
         const name = decoded?.name || "User";
 
         globalState.setState({ isLogged: true });
-        localStorage.setItem("token", token);
 
+        localStorage.setItem("token", token);
         Cookies.set("token", token, {
           expires: 1,
           secure: true,
@@ -55,28 +52,23 @@ export function Login({ toggleForm }) {
         if (role === "admin") {
           toast.success("Welcome, Admin.");
         } else {
-          toast.success(`Welcome, ${res.data.name}.`);
+          toast.success(`Welcome,  ${res.data.name}.`);
         }
 
-        // Delay to allow animation to show before redirect
         setTimeout(() => {
-          if (role === "admin") {
-            router.push("/admin");
-          } else {
-            router.push("/");
-          }
+          router.push(role === "admin" ? "/admin" : "/");
         }, 1000);
       } else {
-        if (res.status === 401) {
-          toast.error("Invalid email or password.");
-        } else {
-          toast.error(res.err || "Something went wrong.");
-        }
+        toast.error(
+          res.status === 401
+            ? "Invalid email or password."
+            : res.err || "Something went wrong."
+        );
       }
-    } catch (err) {
+    } catch {
       toast.error("Server error. Please try again.");
     } finally {
-      setLoading(false); // hide spinner
+      setLoading(false);
     }
   };
 
@@ -132,12 +124,12 @@ export function Login({ toggleForm }) {
 
         <div className="pt-4 text-center">
           <span className="text-sm">Don’t have an account? </span>
-          <span
-            className="text-blue-500 font-semibold hover:underline cursor-pointer"
-            onClick={() => toggleForm()}
+          <Link
+            href="/auth/register"
+            className="text-blue-500 font-semibold hover:underline"
           >
             Create Account
-          </span>
+          </Link>
         </div>
       </div>
     </div>

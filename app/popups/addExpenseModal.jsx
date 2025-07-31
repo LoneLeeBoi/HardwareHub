@@ -1,21 +1,23 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Close } from "@/public/icons/close"; // Make sure this exists or replace with text/icon
+import { Close } from "@/public/icons/close";
+import jwt from "jsonwebtoken";
+import { AddExpense, UpdateExpense } from "../components/functions/ExpenseFunctions";
+import { toast } from "react-toastify";
 
 export function AddExpenseModal({
   isOpen,
   onClose,
   newExpense,
   handleInputChange,
-  handleAddExpense,
+  refreshExpense,
   isEditing = false,
 }) {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      // Start animation after render
       setTimeout(() => setShowModal(true), 10);
     } else {
       setShowModal(false);
@@ -24,20 +26,46 @@ export function AddExpenseModal({
 
   const handleClose = () => {
     setShowModal(false);
-    setTimeout(() => onClose(), 300); // match transition duration
+    setTimeout(() => onClose(), 300);
+  };
+
+  const handleSubmit = async () => {
+    const token = localStorage.getItem("token");
+    const decoded = jwt.decode(token);
+    const userId = decoded?.id || decoded?.sub;
+
+    const payload = {
+      ...newExpense,
+      user_id: userId,
+    };
+
+    try {
+      let success = false;
+      if (isEditing && newExpense?.id) {
+        success = await UpdateExpense(newExpense.id, payload);
+      } else {
+        success = await AddExpense(payload);
+      }
+
+      if (success) {
+        toast.success(`Expense ${isEditing ? "updated" : "added"} successfully!`);
+        handleClose();
+        if (typeof refreshExpense === "function") refreshExpense();
+      } else {
+        toast.error(`Failed to ${isEditing ? "update" : "add"} expense. Please try again.`);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An unexpected error occurred.");
+    }
   };
 
   if (!isOpen) return null;
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        onClick={handleClose}
-        className="fixed inset-0 z-[101] bg-black/50"
-      ></div>
+      <div onClick={handleClose} className="fixed inset-0 z-[101] bg-black/50"></div>
 
-      {/* Animated Modal */}
       <div
         className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl  ${
           showModal ? "translate-x-0" : "translate-x-full"
@@ -47,10 +75,7 @@ export function AddExpenseModal({
           <h2 className="text-lg font-semibold">
             {isEditing ? "Edit Expense" : "Add New Expense"}
           </h2>
-          <div
-            onClick={handleClose}
-            className="text-gray-600 hover:text-gray-900"
-          >
+          <div onClick={handleClose} className="text-gray-600 hover:text-gray-900">
             <Close className={`size-6 stroke-3`} />
           </div>
         </div>
@@ -98,7 +123,7 @@ export function AddExpenseModal({
 
           <div className="flex justify-end pt-4">
             <button
-              onClick={handleAddExpense}
+              onClick={handleSubmit}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               {isEditing ? "Update" : "Add"}

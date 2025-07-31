@@ -5,7 +5,7 @@ import { isAuthorized } from "@/app/lib/auth";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("user_id");
+  const id = searchParams.get("id");
   const search = searchParams.get("search");
   const category = searchParams.get("category");
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -16,9 +16,9 @@ export async function GET(req) {
   const conditions = [];
   const values = [];
 
-  if (userId) {
-    conditions.push("user_id = ?");
-    values.push(userId);
+  if (id) {
+    conditions.push("id = ?");
+    values.push(id);
   }
 
   if (search) {

@@ -6,12 +6,14 @@ import { Menu } from "./component/Menu";
 import Link from "next/link";
 import { Search } from "./component/Search";
 import { Cart } from "@/public/icons/cart";
+import { Cogs } from "@/public/icons/cogs";
 import jwt from "jsonwebtoken";
 
 export function Header() {
   const [role, setRole] = useState("guest");
   const [animate, setAnimate] = useState(false);
   const [cart, setCart] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const checkToken = () => {
@@ -93,12 +95,13 @@ export function Header() {
           </div>
         </div>
 
-        {/* Right side: Menu for user, Cart + Login for guest */}
-        <div className="flex items-center gap-4">
+        {/* Right side */}
+        <div className="flex items-center gap-4 relative">
           {role === "user" ? (
             <Menu />
           ) : (
             <>
+              {/* Cart */}
               <Link
                 href="/cart"
                 className="relative px-2 py-2 hover:bg-gray-200 rounded-full text-sm group"
@@ -113,12 +116,35 @@ export function Header() {
                   View Cart
                 </div>
               </Link>
-              <Link
-                href="/auth"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Login / Register
-              </Link>
+
+              {/* Cogs Dropdown for Login/Register */}
+              <div className="relative">
+                <div
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="p-2 rounded-full hover:bg-gray-200 focus:outline-none"
+                >
+                  <Cogs className="w-5 h-5 text-gray-700" />
+                </div>
+
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-md z-50">
+                    <Link
+                      href="/auth/login"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Register
+                    </Link>
+                  </div>
+                )}
+              </div>
             </>
           )}
         </div>

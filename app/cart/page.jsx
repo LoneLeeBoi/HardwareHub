@@ -6,9 +6,17 @@ import globalState from "@/app/store/globalState";
 import { CheckoutModal } from "../popups/checkoutModal";
 import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
+import { toast } from "react-toastify";
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity } = globalState();
+  const {
+    cart,
+    removeFromCart,
+    updateQuantity,
+    isLogged,
+    role, // 🔥 NEW: pull role from global state
+  } = globalState();
+
   const [selectedItems, setSelectedItems] = useState([]);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,6 +58,14 @@ export default function CartPage() {
     selectedItems.includes(item.id)
   );
 
+  const handleCheckout = () => {
+    if (!isLogged || role === "guest") {
+      toast.error("Please login first to proceed to checkout");
+      return;
+    }
+    setIsCheckoutOpen(true);
+  };
+
   const SkeletonItem = () => (
     <div className="p-6 flex items-center justify-between animate-pulse">
       <div className="flex items-center space-x-4 flex-1">
@@ -77,7 +93,7 @@ export default function CartPage() {
         <p className="text-gray-600 mt-2">
           {isLoading
             ? "Loading items..."
-            : `${cart.length} item(s) in your cart`}
+            : `${cart.reduce((sum, item) => sum + (item.quantity || 1), 0)} item(s) in your cart`}
         </p>
       </header>
 
@@ -116,7 +132,7 @@ export default function CartPage() {
               {cart.map((item, index) => (
                 <div
                   key={`${item.id}-${index}`}
-                  className="p-6 flex items-start justify-between hover:bg-gray-50 transition-colors duration-150"
+                  className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors duration-150"
                 >
                   <div className="flex space-x-4 flex-1">
                     <div className="flex items-center pt-2">
@@ -175,14 +191,14 @@ export default function CartPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex-shrink-0 ml-4">
-                    <button
+                  <div className="flex-shrink-0 ml-4 flex items-center">
+                    <span
                       onClick={() => handleRemoveItem(item.id)}
-                      className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                      className="px-4 py-2 text-sm font-medium bg-red-400 text-white hover:text-red-700 hover:bg-red-300 rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                       aria-label={`Remove ${item.name} from cart`}
                     >
                       Remove
-                    </button>
+                    </span>
                   </div>
                 </div>
               ))}
@@ -200,7 +216,7 @@ export default function CartPage() {
             </div>
             <div className="mt-6 text-right">
               <button
-                onClick={() => setIsCheckoutOpen(true)}
+                onClick={handleCheckout}
                 disabled={selectedItems.length === 0}
                 className={`px-6 py-3 rounded-lg transition font-semibold text-sm uppercase ${
                   selectedItems.length === 0

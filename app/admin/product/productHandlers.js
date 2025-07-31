@@ -11,34 +11,54 @@ import {
   EditProduct,
 } from "@/app/components/functions/ProductFunctions";
 import { toast } from "react-toastify";
+import jwt from "jsonwebtoken";
 
 export default function useProductHandlers() {
-  // Product States
+  // ==============================
+  // States
+  // ==============================
+  const [userId, setUserId] = useState("");
+
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({
     name: "",
     image: "",
     category_id: "",
     price: "",
-    stock: "",
+    units: "",
     status: "Active",
     user_id: "",
   });
+
+  const [categories, setCategories] = useState([]);
+  const [newCategory, setNewCategory] = useState({
+    id: "",
+    name: "",
+  });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
 
-  // Category States
-  const [categories, setCategories] = useState([]);
-  const [newCategory, setNewCategory] = useState({ id: "", name: "" });
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isEditingCategory, setIsEditingCategory] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState(null);
 
-  // Confirmation Modal
   const [isConfirm, setConfirm] = useState();
 
+  // ==============================
+  // Effects
+  // ==============================
+  useEffect(() => {
+    const decoded = jwt.decode(localStorage.getItem("token"));
+    setUserId(decoded?.id || "");
+    fetchCategories();
+    fetchProducts();
+  }, []);
+
+  // ==============================
   // Fetchers
+  // ==============================
   const fetchCategories = async () => {
     const res = await CategoryFunctions();
     res.success
@@ -53,12 +73,9 @@ export default function useProductHandlers() {
       : toast.error(res.err || "Failed to fetch products");
   };
 
-  useEffect(() => {
-    fetchCategories();
-    fetchProducts();
-  }, []);
-
-  // Input Handlers
+  // ==============================
+  // Handlers: Input
+  // ==============================
   const handleInputChange = (field, value) => {
     setNewProduct((prev) => ({ ...prev, [field]: value }));
   };
@@ -67,10 +84,11 @@ export default function useProductHandlers() {
     setNewCategory((prev) => ({ ...prev, [field]: value }));
   };
 
+  // ==============================
   // Product Actions
+  // ==============================
   const handleAddProduct = async () => {
     try {
-      // Integrate AddProduct API if needed
       toast.success("Product added successfully");
       handleCloseModal();
       fetchProducts();
@@ -93,13 +111,16 @@ export default function useProductHandlers() {
   const handleEditProduct = (product) => {
     setIsEditing(true);
     setEditingProductId(product.id);
+
+    console.log('product',product);
+    
     setNewProduct({
       id: product.id || "",
       name: product.name || "",
       image: product.image || "",
       category_id: product.category_id || "",
       price: product.price || "",
-      stock: product.stock || "",
+      units: product.units || "",
       status: product.status || "Active",
       user_id: product.user_id || "",
     });
@@ -118,13 +139,17 @@ export default function useProductHandlers() {
     }
   };
 
+  // ==============================
   // Category Actions
+  // ==============================
   const handleAddCategory = () => {
     if (!newCategory.name.trim()) return;
+
     const newCat = {
       id: Math.max(...categories.map((c) => c.id), 0) + 1,
       name: newCategory.name,
     };
+
     setCategories((prev) => [...prev, newCat]);
     setNewCategory({ id: "", name: "" });
     setIsCategoryModalOpen(false);
@@ -139,7 +164,7 @@ export default function useProductHandlers() {
 
   const handleUpdateCategory = async () => {
     if (!editCategoryId) return;
-  
+
     try {
       await EditCategory(editCategoryId, newCategory.name);
       toast.success("Category updated.");
@@ -150,10 +175,9 @@ export default function useProductHandlers() {
       setEditCategoryId(null);
       setIsEditingCategory(false);
       setIsCategoryModalOpen(false);
-      setNewCategory({ id: "", name: "" }); // reset input
+      setNewCategory({ id: "", name: "" });
     }
   };
-  
 
   const handleDeleteCategory = async (id) => {
     try {
@@ -167,7 +191,9 @@ export default function useProductHandlers() {
     }
   };
 
+  // ==============================
   // Utility
+  // ==============================
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setIsEditing(false);
@@ -177,15 +203,16 @@ export default function useProductHandlers() {
       image: "",
       category_id: "",
       price: "",
-      stock: "",
+      units: 0,
       status: "Active",
       user_id: "",
     });
-    
   };
 
+  // ==============================
+  // Return Hook API
+  // ==============================
   return {
-    // States
     products,
     categories,
     newProduct,
@@ -197,7 +224,6 @@ export default function useProductHandlers() {
     isConfirm,
     editCategoryId,
 
-    // Setters
     setConfirm,
     setIsModalOpen,
     setIsEditing,
@@ -206,21 +232,18 @@ export default function useProductHandlers() {
     setEditCategoryId,
     setNewCategory,
 
-    // Product Actions
     handleInputChange,
     handleAddProduct,
     handleUpdateProduct,
     handleEditProduct,
     handleDeleteProduct,
 
-    // Category Actions
     handleCategoryInputChange,
     handleAddCategory,
     handleEditCategory,
     handleUpdateCategory,
     handleDeleteCategory,
 
-    // Utility
     handleCloseModal,
     fetchProducts,
     fetchCategories,
