@@ -18,12 +18,12 @@ export function Sidebar() {
             </Link>
           </li>
           <li className="ml-4">
-            <Link href="/inventories" className="hover:text-blue-600 block">
+            <Link href="/admin/inventory" className="hover:text-blue-600 block">
               Inventories
             </Link>
           </li>
           <li className="ml-4">
-            <Link href="/walk-in" className="hover:text-blue-600 block">
+            <Link href="/admin/walk-in" className="hover:text-blue-600 block">
               Walk In
             </Link>
           </li>
