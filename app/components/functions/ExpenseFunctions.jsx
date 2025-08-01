@@ -1,8 +1,8 @@
 import axios from "axios";
 
-// GET EXPENSES
+const baseUrl = "http://localhost:3000";
+
 export async function ExpenseFunctions(params = {}) {
-  const baseUrl = "http://localhost:3000";
   const token = localStorage.getItem("token");
 
   const queryString = Object.keys(params).length
@@ -37,11 +37,8 @@ export async function ExpenseFunctions(params = {}) {
   }
 }
 
-// ADD NEW EXPENSE
 export async function AddExpense(expenseData) {
-  const baseUrl = "http://localhost:3000";
   const token = localStorage.getItem("token");
-
   const url = `${baseUrl}/api/expense`;
 
   try {
@@ -59,15 +56,18 @@ export async function AddExpense(expenseData) {
   }
 }
 
-// UPDATE EXISTING EXPENSE
-export async function UpdateExpense(expenseId, updatedData) {
-  const baseUrl = "http://localhost:3000";
+export async function EditExpense(expenseData) {
   const token = localStorage.getItem("token");
 
-  const url = `${baseUrl}/api/expense/${expenseId}`;
+  if (!expenseData.id) {
+    console.error("Missing expense ID for update.");
+    return false;
+  }
+
+  const url = `${baseUrl}/api/expense/${expenseData.id}`;
 
   try {
-    const res = await axios.put(url, updatedData, {
+    const res = await axios.put(url, expenseData, {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
         "Content-Type": "application/json",
@@ -77,6 +77,30 @@ export async function UpdateExpense(expenseId, updatedData) {
     return true;
   } catch (error) {
     console.error("Failed to update expense:", error);
+    return false;
+  }
+}
+
+export async function DeleteExpense(id) {
+  const token = localStorage.getItem("token");
+
+  if (!id) {
+    console.error("Missing expense ID for deletion.");
+    return false;
+  }
+
+  const url = `${baseUrl}/api/expense/${id}`;
+
+  try {
+    const res = await axios.delete(url, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Failed to delete expense:", error);
     return false;
   }
 }

@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Close } from "@/public/icons/close";
+import { Close } from "@/public/icons/close"; // Replace if missing
 import jwt from "jsonwebtoken";
-import { AddExpense, UpdateExpense } from "../components/functions/ExpenseFunctions";
+import { AddExpense, EditExpense } from "../components/functions/ExpenseFunctions";
 import { toast } from "react-toastify";
 
 export function AddExpenseModal({
@@ -40,15 +40,17 @@ export function AddExpenseModal({
     };
 
     try {
-      let success = false;
-      if (isEditing && newExpense?.id) {
-        success = await UpdateExpense(newExpense.id, payload);
+      let success;
+      if (isEditing) {
+        success = await EditExpense(payload);
       } else {
         success = await AddExpense(payload);
       }
 
       if (success) {
-        toast.success(`Expense ${isEditing ? "updated" : "added"} successfully!`);
+        toast.success(
+          isEditing ? "Expense updated successfully!" : "Expense added successfully!"
+        );
         handleClose();
         if (typeof refreshExpense === "function") refreshExpense();
       } else {
@@ -64,10 +66,12 @@ export function AddExpenseModal({
 
   return (
     <>
-      <div onClick={handleClose} className="fixed inset-0 z-[101] bg-black/50"></div>
+      {/* Backdrop */}
+      <div onClick={handleClose} className="fixed inset-0 z-[101] bg-black/50" />
 
+      {/* Modal */}
       <div
-        className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl  ${
+        className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl ${
           showModal ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -76,7 +80,7 @@ export function AddExpenseModal({
             {isEditing ? "Edit Expense" : "Add New Expense"}
           </h2>
           <div onClick={handleClose} className="text-gray-600 hover:text-gray-900">
-            <Close className={`size-6 stroke-3`} />
+            <Close className="size-6 stroke-3" />
           </div>
         </div>
 

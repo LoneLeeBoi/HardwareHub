@@ -23,7 +23,7 @@ export default function useProductHandlers() {
   const [newProduct, setNewProduct] = useState({
     name: "",
     image: "",
-    category_id: "",
+    category: "",
     price: "",
     units: "",
     status: "Active",
@@ -118,7 +118,7 @@ export default function useProductHandlers() {
       id: product.id || "",
       name: product.name || "",
       image: product.image || "",
-      category_id: product.category_id || "",
+      category: product.category || "",
       price: product.price || "",
       units: product.units || "",
       status: product.status || "Active",
@@ -201,9 +201,9 @@ export default function useProductHandlers() {
     setNewProduct({
       name: "",
       image: "",
-      category_id: "",
+      category: "",
       price: "",
-      units: 0,
+      units: "",
       status: "Active",
       user_id: "",
     });

@@ -2,30 +2,22 @@
 
 import React, { useState, useEffect } from "react";
 import { AddExpenseModal } from "@/app/popups/addExpenseModal";
-import { ExpenseFunctions } from "@/app/components/functions/ExpenseFunctions";
+import {
+  ExpenseFunctions,
+  DeleteExpense,
+} from "@/app/components/functions/ExpenseFunctions";
 import { Plus } from "@/public/icons/plus";
 import { Edit } from "@/public/icons/edit";
+import { Trash } from "@/public/icons/trash";
+import { toast } from "react-toastify";
+import { ConfirmationModal } from "@/app/popups/confirmationModal";
 
 export default function ExpensePage() {
   const [expenses, setExpenses] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [error, setError] = useState(null);
-
-   const fetchExpenses = async () => {
-     const result = await ExpenseFunctions();
-     if (result.success) {
-       const data = result?.data?.data || [];
-       setExpenses(data);
-       setError(null);
-     } else {
-       setError(result.err || "Failed to fetch Expense.");
-     }
-   };
-   useEffect(() => {
-     fetchExpenses();
-   }, []);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [newExpense, setNewExpense] = useState({
     name: "",
     amount: "",
@@ -33,6 +25,22 @@ export default function ExpensePage() {
     category: "",
     user_id: "",
   });
+
+  const fetchExpenses = async () => {
+    const result = await ExpenseFunctions();
+    if (result.success) {
+      const data = result?.data?.data || [];
+      const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+      setExpenses(sorted);
+    } else {
+      toast.error(result.err || "Failed to fetch Expense.");
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
 
   const handleInputChange = (field, value) => {
     setNewExpense({ ...newExpense, [field]: value });
@@ -62,9 +70,27 @@ export default function ExpensePage() {
     setModalOpen(true);
   };
 
+  const handleDelete = (id) => {
+    setConfirmDeleteId(id);
+  };
+
+  const confirmDeleteExpense = async () => {
+    if (!confirmDeleteId) return;
+
+    const success = await DeleteExpense(confirmDeleteId);
+    if (success) {
+      toast.success("Expense deleted successfully");
+      fetchExpenses();
+    } else {
+      toast.error("Failed to delete expense");
+    }
+
+    setConfirmDeleteId(null);
+  };
+
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className=" mb-6">
+    <div className="p-4 max-w-6xl mx-auto">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Expense Tracker</h1>
 
         <div
@@ -107,10 +133,7 @@ export default function ExpensePage() {
             <tbody className="bg-white divide-y divide-gray-200">
               {expenses.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan="5"
-                    className="px-6 py-8 text-center text-gray-400"
-                  >
+                  <td colSpan="5" className="px-6 py-8 text-center text-gray-400">
                     No expenses found.
                   </td>
                 </tr>
@@ -118,31 +141,33 @@ export default function ExpensePage() {
                 expenses?.map((expense) => (
                   <tr key={expense.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {expense.name}
-                      </div>
+                      <div className="text-sm font-medium text-gray-900">{expense.name}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
-                        ₱{expense.amount}
-                      </div>
+                      <div className="text-sm font-semibold text-gray-900">₱{expense.amount}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {expense.date}
-                      </div>
+                      <div className="text-sm text-gray-900">{expense.date}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {expense.category}
-                      </div>
+                      <div className="text-sm text-gray-900">{expense.category}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div
-                        onClick={() => handleEdit(expense)}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline"
-                      >
-                        <Edit className={`size-6`} />
+                      <div className="flex gap-3">
+                        <span
+                          onClick={() => handleEdit(expense)}
+                          title="Edit"
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <Edit className={`size-5`} />
+                        </span>
+                        <span
+                          onClick={() => handleDelete(expense.id)}
+                          title="Delete"
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <Trash className={`size-5`} />
+                        </span>
                       </div>
                     </td>
                   </tr>
@@ -153,15 +178,23 @@ export default function ExpensePage() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modals */}
       <AddExpenseModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         newExpense={newExpense}
-    handleInputChange={handleInputChange}
+        handleInputChange={handleInputChange}
         handleAddExpense={handleAddExpense}
         refreshExpense={fetchExpenses}
         isEditing={isEditing}
+      />
+
+      <ConfirmationModal
+        isOpen={!!confirmDeleteId}
+        onClose={() => setConfirmDeleteId(null)}
+        onConfirm={confirmDeleteExpense}
+        title="Are you sure?"
+        message="This action cannot be undone."
       />
     </div>
   );

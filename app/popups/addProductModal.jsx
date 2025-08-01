@@ -39,7 +39,7 @@ export function AddProductModal({
       const id = decoded?.id || decoded?.sub;
       if (id) {
         setUserId(id);
-        handleInputChange("user_id", id); // Auto-fill user ID
+        handleInputChange("user_id", id);
       }
     } catch (error) {
       console.error("Token decode error:", error);
@@ -52,12 +52,25 @@ export function AddProductModal({
   };
 
   const handleSubmit = async () => {
+    // Validate required fields
+    if (
+      !newProduct.name?.trim() ||
+      !newProduct.price ||
+      !newProduct.units ||
+      !newProduct.category_id ||
+      (!isEditing && !newProduct.image)
+    ) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
     try {
       setLoading(true);
       const submitAction = isEditing ? EditProduct : AddProduct;
-      const success = await submitAction(newProduct);
 
-      if (success) {
+      const result = await submitAction(newProduct);
+
+      if (result?.success || result === true) {
         toast.success(
           isEditing
             ? "Product updated successfully!"
@@ -66,9 +79,7 @@ export function AddProductModal({
         handleClose();
         if (typeof refreshProducts === "function") refreshProducts();
       } else {
-        toast.error(
-          isEditing ? "Failed to update product." : "Failed to add product."
-        );
+        toast.error(result?.message || "Failed to save product.");
       }
     } catch (error) {
       console.error(error);
@@ -90,9 +101,8 @@ export function AddProductModal({
 
       {/* Slide-in Modal */}
       <div
-        className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl ${
-          showModal ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl ${showModal ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <h2 className="text-lg font-semibold">
@@ -106,7 +116,7 @@ export function AddProductModal({
           </div>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(100vh-60px)]">
           <InputField
             label="Product Name"
             type="text"
@@ -120,11 +130,25 @@ export function AddProductModal({
             value={newProduct.image}
             onChange={(val) => handleInputChange("image", val)}
           />
+
+          {isEditing && typeof newProduct.image === "string" && (
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Current Image:</p>
+              <img
+                src={newProduct.image}
+                alt="Product Preview"
+                className="w-full h-32 object-contain rounded border"
+              />
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium mb-1">Category</label>
             <select
               value={newProduct.category_id || ""}
-              onChange={(e) => handleInputChange("category_id", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("category_id", e.target.value)
+              }
               className="w-full border rounded px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a category</option>
@@ -146,8 +170,8 @@ export function AddProductModal({
           <InputField
             label="Stock Quantity"
             type="number"
-            value={newProduct.stock}
-            onChange={(val) => handleInputChange("stock", val)}
+            value={newProduct.units}
+            onChange={(val) => handleInputChange("units", val)}
           />
 
           {/* Hidden user_id */}
@@ -189,9 +213,7 @@ function InputField({ label, type, value, onChange }) {
             : onChange(e.target.value)
         }
         className="w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder={
-          type !== "file" ? `Enter ${label.toLowerCase()}` : undefined
-        }
+        placeholder={type !== "file" ? `Enter ${label.toLowerCase()}` : undefined}
       />
     </div>
   );

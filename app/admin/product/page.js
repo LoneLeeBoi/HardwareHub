@@ -43,6 +43,18 @@ export default function Page() {
   } = useProductHandlers();
 
   const [isCatConfirm, setIsCatConfirm] = useState("");
+
+  const itemsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const paginatedProducts = products.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
   return (
     <div className="p-4 container">
       <h2 className="text-2xl font-bold mb-4 text-gray-900">PRODUCTS</h2>
@@ -107,8 +119,7 @@ export default function Page() {
                       {product.name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {categories.find((c) => c.id === product.category_id)
-                        ?.name || "Unknown"}
+                    <p>{product.category_name}</p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap font-semibold">
                       {product.price}
@@ -124,13 +135,13 @@ export default function Page() {
                         }}
                         className="text-blue-600 hover:text-blue-800 cursor-pointer"
                       >
-                        <Edit className="size-6" />
+                        <Edit className="size-5" />
                       </div>
                       <div
                         onClick={() => setConfirm(product.id)}
                         className="text-red-600 hover:text-red-800 cursor-pointer"
                       >
-                        <Trash className="size-6" />
+                        <Trash className="size-5" />
                       </div>
                     </td>
                   </tr>
@@ -167,13 +178,13 @@ export default function Page() {
                         onClick={() => handleEditCategory(category)}
                         className="text-blue-600 hover:text-blue-800 cursor-pointer"
                       >
-                        <Edit className="size-6" />
+                        <Edit className="size-5" />
                       </div>
                       <div
                         onClick={() => setIsCatConfirm(category.id)}
                         className="text-red-600 hover:text-red-800 cursor-pointer"
                       >
-                        <Trash className="size-6" />
+                        <Trash className="size-5" />
                       </div>
                     </td>
                   </tr>

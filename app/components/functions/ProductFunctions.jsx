@@ -84,6 +84,8 @@ export async function AddProduct(productData) {
   form.append("price", productData.price);
   form.append("category_id", productData.category_id);
   form.append("image", productData.image);
+  form.append("units", productData.units);
+
 
   try {
     const res = await axios.post(url, form, {
@@ -105,15 +107,17 @@ export async function EditProduct(productData) {
   const token = localStorage.getItem("token");
   const url = `${baseUrl}/api/product/${productData.id}`;
 
+  
   const form = new FormData();
   form.append("user_id", productData.user_id);
   form.append("name", productData.name);
   form.append("price", productData.price);
   form.append("category_id", productData.category_id);
+  form.append("units", productData.units);
 
   if (productData.image instanceof File) {
     form.append("image", productData.image);
-  }
+  } 
 
   try {
     const res = await axios.put(url, form, {

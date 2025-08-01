@@ -41,6 +41,7 @@ export async function AddCategory(props) {
     const res = await axios.post(
       url,
       {
+        user_id: props.user_id,
         name: props.name,
       },
       {
