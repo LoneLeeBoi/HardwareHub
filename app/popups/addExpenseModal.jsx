@@ -3,7 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { Close } from "@/public/icons/close"; // Make sure this exists or replace with text/icon
 import jwt from "jsonwebtoken";
-import { AddExpense } from "../components/functions/ExpenseFunctions";
+import {
+  AddExpense,
+  EditExpense,
+} from "../components/functions/ExpenseFunctions";
 import { toast } from "react-toastify";
 export function AddExpenseModal({
   isOpen,
@@ -14,7 +17,20 @@ export function AddExpenseModal({
   isEditing = false,
 }) {
   const [showModal, setShowModal] = useState(false);
- const [userId, setUserId] = useState();
+  const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => setShowModal(true), 10);
+      fetch("/api/product/categories")
+        .then((res) => res.json())
+        .then((data) => setCategories(data))
+        .catch((err) => console.error("Failed to load categories", err));
+    } else {
+      setShowModal(false);
+    }
+  }, [isOpen]);
+
+  const [userId, setUserId] = useState();
   useEffect(() => {
     if (isOpen) {
       // Start animation after render
@@ -29,30 +45,31 @@ export function AddExpenseModal({
     setTimeout(() => onClose(), 300); // match transition duration
   };
 
+  const handleAddExpense = async () => {
+    const token = localStorage.getItem("token");
+    const decoded = jwt.decode(token);
+    const id = decoded?.id || decoded?.sub;
 
-   const handleAddExpense = async () => {
-      const token = localStorage.getItem("token");
-  const decoded = jwt.decode(token);
-  const id = decoded?.id || decoded?.sub;
-
-  const payload = {
-    ...newExpense,
-    user_id: id,
-  };
-      try {
-        const success = await AddExpense(payload);
-        if (success) {
-          toast.success("Expense added successfully!");
-          handleClose();
-          if (typeof refreshExpense === "function") refreshExpense();
-        } else {
-          toast.error("Failed to add expense. Please try again.");
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error("An unexpected error occurred.");
-      }
+    const payload = {
+      ...newExpense,
+      user_id: id,
     };
+    try {
+      const submitAction = isEditing ? EditExpense : AddExpense;
+
+      const success = await submitAction(payload);
+      if (success) {
+        toast.success("Expense added successfully!");
+        handleClose();
+        if (typeof refreshExpense === "function") refreshExpense();
+      } else {
+        toast.error("Failed to add expense. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An unexpected error occurred.");
+    }
+  };
   if (!isOpen) return null;
 
   return (
@@ -83,8 +100,8 @@ export function AddExpenseModal({
 
         <div className="p-4 space-y-4">
           <div>
-              {/* Hidden or read-only field for User ID */}
-         
+            {/* Hidden or read-only field for User ID */}
+
             <label className="block text-sm font-medium">Name</label>
             <input
               type="text"
@@ -116,12 +133,18 @@ export function AddExpenseModal({
 
           <div>
             <label className="block text-sm font-medium">Category</label>
-            <input
-              type="text"
-              value={newExpense.category}
-              onChange={(e) => handleInputChange("category", e.target.value)}
+            <select
+              value={newExpense.category_id}
+              onChange={(e) => handleInputChange("category_id", e.target.value)}
               className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            >
+              <option value="">Select Category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="flex justify-end pt-4">
