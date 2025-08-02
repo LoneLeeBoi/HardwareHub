@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const Page = () => {
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('');
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [inventory, setInventory] = useState([]);
@@ -14,18 +14,20 @@ const Page = () => {
     const fetchInventory = async () => {
       try {
         const queryParams = new URLSearchParams();
-        if (search) queryParams.append('search', search);
-        if (category) queryParams.append('category', category);
-        queryParams.append('page', page.toString());
-        queryParams.append('limit', limit.toString());
+        if (search) queryParams.append("search", search);
+        if (category) queryParams.append("category", category);
+        queryParams.append("page", page.toString());
+        queryParams.append("limit", limit.toString());
 
-        const res = await fetch(`http://localhost:3000/api/inventory?${queryParams}`);
+        const res = await fetch(
+          `http://localhost:3000/api/inventory?${queryParams}`
+        );
         const json = await res.json();
 
         setInventory(json.data || []);
         setTotalPages(json.totalPages || 1);
       } catch (error) {
-        console.error('Error fetching inventory:', error);
+        console.error("Error fetching inventory:", error);
         setInventory([]);
         setTotalPages(1);
       }
@@ -36,6 +38,40 @@ const Page = () => {
 
   const handlePrev = () => setPage((p) => Math.max(p - 1, 1));
   const handleNext = () => setPage((p) => Math.min(p + 1, totalPages));
+
+  const getDesktopPages = () => {
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (page <= 4) {
+        pages.push(1, 2, 3, 4, 5, "...", totalPages);
+      } else if (page >= totalPages - 3) {
+        pages.push(
+          1,
+          "...",
+          totalPages - 4,
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages
+        );
+      } else {
+        pages.push(
+          1,
+          "...",
+          page - 1,
+          page,
+          page + 1,
+          "...",
+          totalPages
+        );
+      }
+    }
+    return pages;
+  };
 
   return (
     <div className="p-4">
@@ -78,7 +114,7 @@ const Page = () => {
           </select>
         </div>
 
-        {/* Table */}
+        {/* Inventory Table */}
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-gray-100 text-left">
@@ -91,15 +127,23 @@ const Page = () => {
           </thead>
           <tbody>
             {inventory.length > 0 ? (
-              inventory.map((item) => (
-                <tr key={item.id}>
-                  <td className="p-2">{item.name}</td>
-                  <td className="p-2">{item.unit}</td>
-                  <td className="p-2">{item.stock}</td>
-                  <td className="p-2">{item.acquisition}</td>
-                  <td className="p-2">{item.retail}</td>
-                </tr>
-              ))
+              inventory
+                .slice()
+                .sort((a, b) => {
+                  if (a.stock !== b.stock) {
+                    return a.stock - b.stock; // Lowest stock first
+                  }
+                  return new Date(b.created_at) - new Date(a.created_at); // Newest first
+                })
+                .map((item) => (
+                  <tr key={item.id}>
+                    <td className="p-2">{item.name}</td>
+                    <td className="p-2">{item.unit}</td>
+                    <td className="p-2">{item.stock}</td>
+                    <td className="p-2">{item.acquisition}</td>
+                    <td className="p-2">{item.retail}</td>
+                  </tr>
+                ))
             ) : (
               <tr>
                 <td colSpan="5" className="text-center p-2">
@@ -111,24 +155,40 @@ const Page = () => {
         </table>
 
         {/* Pagination */}
-        <div className="flex justify-between items-center mt-4 text-sm">
-          <button
+        <div className="flex flex-col items-center gap-2 mt-4 text-sm sm:flex-row justify-center">
+          {/* Previous div */}
+          <div
             onClick={handlePrev}
             disabled={page === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50 w-95"
+            className="px-3 py-1 border rounded disabled:opacity-50"
           >
             Prev
-          </button>
-          <span>
-            Page {page} of {totalPages}
-          </span>
-          <button
+          </div>
+
+          {/* Page Numbers */}
+          <div className="flex gap-1 flex-wrap justify-center">
+            {getDesktopPages().map((p, idx) => (
+              <div
+                key={idx}
+                onClick={() => typeof p === "number" && setPage(p)}
+                disabled={p === "..."}
+                className={`px-2 py-1 border rounded ${
+                  p === page ? "bg-black text-white" : ""
+                }`}
+              >
+                {p}
+              </div>
+            ))}
+          </div>
+
+          {/* Next div */}
+          <div
             onClick={handleNext}
             disabled={page === totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50 w-95"
+            className="px-3 py-1 border rounded disabled:opacity-50"
           >
             Next
-          </button>
+          </div>
         </div>
       </div>
     </div>
