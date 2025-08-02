@@ -28,14 +28,14 @@ export async function PUT(req, { params }) {
   }
 
   const { id } = await params;
-  const { user_id, name, unit, stock, acquisition, retail } = await req.json();
+  const { user_id, name,  stock, acquisition, retail } = await req.json();
   console.log("id:",retail)
   return new Promise((resolve) => {
     db.query(
       `UPDATE inventory 
-       SET user_id=?, name = ?, unit = ?, stock = ?, acquisition = ?, retail = ?, updated_at = CURRENT_TIMESTAMP 
+       SET user_id=?, name = ?,  stock = ?, acquisition = ?, retail = ?, updated_at = CURRENT_TIMESTAMP 
        WHERE id = ? AND deleted_at IS NULL`,
-      [user_id, name, unit, stock, acquisition, retail, id],
+      [user_id, name,  stock, acquisition, retail, id],
       (err, result) => {
         if (err) {
           return resolve(

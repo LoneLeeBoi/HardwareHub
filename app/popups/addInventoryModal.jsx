@@ -3,7 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { Close } from "@/public/icons/close";
 import { toast } from "react-toastify";
-// import { AddInventory, EditInventory } from "../components/functions/InventoryFunctions";
+import jwt from "jsonwebtoken";
+import {
+  AddInventory,
+  EditInventory,
+} from "../components/functions/InventoryFunctions";
 
 export function AddInventoryModal({
   isOpen,
@@ -14,6 +18,16 @@ export function AddInventoryModal({
   isEditing = false,
 }) {
   const [showModal, setShowModal] = useState(false);
+  const [productOptions, setProductOptions] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetch("/api/product")
+        .then((res) => res.json())
+        .then((data) => setProductOptions(data?.data))
+        .catch((err) => console.error("Failed to fetch product names:", err));
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -29,8 +43,13 @@ export function AddInventoryModal({
   };
 
   const handleSubmit = async () => {
-    const payload = { ...newInventory };
-
+    const token = localStorage.getItem("token");
+    const decoded = jwt.decode(token);
+    const id = decoded?.id || decoded?.sub;
+    const payload = {
+      ...newInventory,
+      user_id: id,
+    };
     try {
       const submitAction = isEditing ? EditInventory : AddInventory;
       const success = await submitAction(payload);
@@ -76,23 +95,19 @@ export function AddInventoryModal({
 
         <div className="p-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium">Name</label>
-            <input
-              type="text"
-              value={newInventory.name}
-              onChange={(e) => handleInputChange("name", e.target.value)}
+            <label className="block text-sm font-medium">Product Name</label>
+            <select
+              value={newInventory.product_id}
+              onChange={(e) => handleInputChange("product_id", e.target.value)}
               className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Unit</label>
-            <input
-              type="text"
-              value={newInventory.unit}
-              onChange={(e) => handleInputChange("unit", e.target.value)}
-              className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            >
+              <option value="">Select a product</option>
+              {productOptions?.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -106,7 +121,9 @@ export function AddInventoryModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Acquisition Price</label>
+            <label className="block text-sm font-medium">
+              Acquisition Price
+            </label>
             <input
               type="number"
               value={newInventory.acquisition}
