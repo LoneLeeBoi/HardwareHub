@@ -2,9 +2,20 @@
 
 import { Close } from "@/public/icons/close";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 
-export function CheckoutModal({ isOpen, onClose, cart }) {
+export function CheckoutModal({
+  isOpen,
+  onClose,
+  cart,
+  onConfirm,
+  setPaymentMethod,
+}) {
+  const methods = [
+    { id: "cash", name: "Cash on Delivery" },
+    { id: "card", name: "Credit/Debit Card" },
+  ];
+
   const calculateTotal = () =>
     cart.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
 
@@ -66,6 +77,16 @@ export function CheckoutModal({ isOpen, onClose, cart }) {
               </div>
             ))}
           </div>
+          <select
+            onChange={(e) => setPaymentMethod(e.target.value)}
+            className="border p-2 rounded"
+          >
+            {methods.map((method) => (
+              <option key={method.id} value={method.id}>
+                {method.name}
+              </option>
+            ))}
+          </select>
 
           {/* Total + Actions */}
           <div className="mt-6 border-t pt-4">
@@ -80,7 +101,10 @@ export function CheckoutModal({ isOpen, onClose, cart }) {
               >
                 Cancel
               </div>
-              <div className="py-3 text-center rounded-lg  cursor-pointer bg-green-500 hover:bg-green-600 transition">
+              <div
+                className="py-3 text-center rounded-lg  cursor-pointer bg-green-500 hover:bg-green-600 transition"
+                onClick={onConfirm}
+              >
                 Confirm Order
               </div>
             </div>

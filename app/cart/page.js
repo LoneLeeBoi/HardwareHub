@@ -11,8 +11,9 @@ export default function CartPage() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [paymentMethod, setPaymentMethod] = useState("cash");
+
   useEffect(() => {
-    // Simulate loading delay
     const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
@@ -48,6 +49,23 @@ export default function CartPage() {
   const selectedCartItems = cart.filter((item) =>
     selectedItems.includes(item.id)
   );
+
+  const handleCheckOut = () => {
+    const orderData = {
+      user_id: localStorage.getItem("id"),
+      payment_method: paymentMethod,
+      items: selectedCartItems,
+      stock: [
+        ...selectedCartItems.map((item) => ({
+          id: item.id,
+          quantity: item.quantity || 1,
+        })),
+      ],
+      total_amount: calculateTotal(),
+    };
+
+    console.log("selectedItems", orderData);
+  };
 
   const SkeletonItem = () => (
     <div className="p-6 flex items-center justify-between animate-pulse">
@@ -213,6 +231,8 @@ export default function CartPage() {
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
         cart={selectedCartItems}
+        onConfirm={handleCheckOut}
+        setPaymentMethod={setPaymentMethod}
       />
     </div>
   );

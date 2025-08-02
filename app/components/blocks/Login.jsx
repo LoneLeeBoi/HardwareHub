@@ -35,9 +35,11 @@ export function Login({ toggleForm }) {
         const token = res?.data?.token;
         const decoded = jwt.decode(token);
         const role = decoded?.role;
+        const id = decoded?.id;
 
         globalState.setState({ isLogged: true });
         localStorage.setItem("token", token);
+        localStorage.setItem("id", id);
 
         Cookies.set("token", token, {
           expires: 1,
