@@ -5,31 +5,41 @@ import { AddExpenseModal } from "@/app/popups/addExpenseModal";
 import { ExpenseFunctions } from "@/app/components/functions/ExpenseFunctions";
 import { Plus } from "@/public/icons/plus";
 import { Edit } from "@/public/icons/edit";
-
+import { Trash } from "@/public/icons/trash";
+import { ConfirmationModal } from "@/app/popups/confirmationModal";
+import useExpenseHandlers from "../expenses/expenseHandler";
 export default function ExpensePage() {
-  const [expenses, setExpenses] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
+const {
+  expenses,
+  isConfirm,
+  setExpenses,
+  setConfirm,
+  handleDeleteExpense,
+  triggerfetchExpenses,
+} = useExpenseHandlers();
 
-   const fetchExpenses = async () => {
-     const result = await ExpenseFunctions();
-     if (result.success) {
-       const data = result?.data?.data || [];
-       setExpenses(data);
-     } else {
-       setError(result.err || "Failed to fetch Expense.");
-     }
-   };
-   useEffect(() => {
-     fetchExpenses();
-   }, []);
+  const fetchExpenses = async () => {
+    const result = await ExpenseFunctions();
+    if (result.success) {
+      const data = result?.data?.data || [];
+      setExpenses(data);
+      triggerfetchExpenses();
+    } else {
+      setError(result.err || "Failed to fetch Expense.");
+    }
+  };
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
   const [newExpense, setNewExpense] = useState({
     name: "",
     amount: "",
     date: "",
     category: "",
-       user_id: "",
+    user_id: "",
   });
 
   const handleInputChange = (field, value) => {
@@ -59,6 +69,7 @@ export default function ExpensePage() {
     setIsEditing(true);
     setModalOpen(true);
   };
+
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
@@ -132,15 +143,21 @@ export default function ExpensePage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {expense.category_id}
+                        {expense.category_name}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap flex items-center  gap-6">
                       <div
                         onClick={() => handleEdit(expense)}
                         className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline"
                       >
                         <Edit className={`size-6`} />
+                      </div>
+                      <div
+                        onClick={() => setConfirm(expense.id)}
+                        className="text-red-600 hover:text-red-800 cursor-pointer"
+                      >
+                        <Trash className="size-6" />
                       </div>
                     </td>
                   </tr>
@@ -156,10 +173,27 @@ export default function ExpensePage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         newExpense={newExpense}
-    handleInputChange={handleInputChange}
+        handleInputChange={handleInputChange}
         handleAddExpense={handleAddExpense}
         refreshExpense={fetchExpenses}
         isEditing={isEditing}
+      />
+
+      <ConfirmationModal
+        isOpen={isConfirm }
+        onClose={() => {
+          if (isConfirm) {
+            setConfirm("");
+          } 
+        }}
+        onConfirm={() => {
+          if (isConfirm) {
+            handleDeleteExpense(isConfirm);
+            setConfirm("");
+          }
+        }}
+        title="Are you sure?"
+        message="This action cannot be undone."
       />
     </div>
   );

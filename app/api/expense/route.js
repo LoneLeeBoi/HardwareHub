@@ -3,6 +3,7 @@ import { db } from "@/app/lib/db";
 import { randomUUID } from "crypto";
 import { isAuthorized } from "@/app/lib/auth";
 
+
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
@@ -12,31 +13,44 @@ export async function GET(req) {
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const offset = (page - 1) * limit;
 
-  let baseSql = "FROM expenses WHERE deleted_at IS NULL";
   const conditions = [];
   const values = [];
 
   if (id) {
-    conditions.push("id = ?");
+    conditions.push("expenses.id = ?");
     values.push(id);
   }
 
   if (search) {
-    conditions.push("name LIKE ?");
+    conditions.push("expenses.name LIKE ?");
     values.push(`%${search}%`);
   }
 
   if (category_id) {
-    conditions.push("category_id = ?");
+    conditions.push("expenses.category_id = ?");
     values.push(category_id);
   }
 
-  if (conditions.length > 0) {
-    baseSql += " AND " + conditions.join(" AND ");
-  }
+  const whereClause = `
+    WHERE expenses.deleted_at IS NULL
+    ${conditions.length > 0 ? " AND " + conditions.join(" AND ") : ""}
+  `;
 
-  const dataSql = `SELECT * ${baseSql} ORDER BY date DESC LIMIT ? OFFSET ?`;
-  const countSql = `SELECT COUNT(*) AS total ${baseSql}`;
+  const dataSql = `
+    SELECT expenses.*, categories.name AS category_name
+    FROM expenses
+    LEFT JOIN categories ON expenses.category_id = categories.id
+    ${whereClause}
+    ORDER BY expenses.date DESC
+    LIMIT ? OFFSET ?
+  `;
+
+  const countSql = `
+    SELECT COUNT(*) AS total
+    FROM expenses
+    ${whereClause}
+  `;
+
   const dataValues = [...values, limit, offset];
 
   return new Promise((resolve) => {

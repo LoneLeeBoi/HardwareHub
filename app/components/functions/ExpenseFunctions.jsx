@@ -59,3 +59,47 @@ export async function AddExpense(expenseData) {
     return false;
   }
 }
+
+
+export async function EditExpense(expenseData) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+  const url = `${baseUrl}/api/expense/${expenseData.id}`;
+
+  
+ 
+  try {
+    const res = await axios.put(url, expenseData, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Failed to edit product:", error.response?.data || error.message);
+    return false;
+  }
+}
+
+
+
+export async function DeleteExpense(expenseId) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+
+  const url = `${baseUrl}/api/expense/${expenseId}`;
+
+  try {
+    const res = await axios.delete(url, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Failed to add product:", error);
+    return false;
+  }
+}
