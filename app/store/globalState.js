@@ -15,11 +15,10 @@ const globalState = create(
       setLogin: (user) => {
         const userEmail = user.email;
 
-        // ✅ Merge guest cart with user's existing cart (if any)
         const guestCart = get().carts["guest"] || [];
         const userCart = get().carts[userEmail] || [];
 
-        // Merge logic: keep guest items + existing user items (avoid duplicate IDs)
+        // Merge guest cart into user's existing cart (avoid duplicates)
         const mergedCart = [...userCart];
         guestCart.forEach((item) => {
           const existing = mergedCart.find((i) => i.id === item.id);
@@ -30,7 +29,11 @@ const globalState = create(
           }
         });
 
-        const updatedCarts = { ...get().carts, [userEmail]: mergedCart, guest: [] };
+        const updatedCarts = {
+          ...get().carts,
+          [userEmail]: mergedCart,
+          guest: [], // ✅ Clear guest cart after login
+        };
 
         set({
           isLogged: true,
@@ -44,19 +47,25 @@ const globalState = create(
         const currentUser = get().user;
         const email = currentUser?.email || "guest";
         const currentCart = get().cart;
-        const carts = { ...get().carts, [email]: currentCart };
+
+        const updatedCarts = {
+          ...get().carts,
+          [email]: currentCart,
+          guest: [], // ✅ Clear guest cart on logout to avoid stale data
+        };
+
         set({
           isLogged: false,
           user: null,
           cart: [],
-          carts,
+          carts: updatedCarts,
         });
       },
 
       // Cart actions
       setCart: (newCart) =>
         set((state) => {
-          const email = state.user?.email || "guest";
+          const email = state.isLogged ? state.user.email : "guest";
           const updatedCarts = { ...state.carts, [email]: newCart };
           return { cart: newCart, carts: updatedCarts };
         }),
@@ -75,7 +84,7 @@ const globalState = create(
             updatedCart = [...state.cart, { ...item, quantity: item.quantity || 1 }];
           }
 
-          const email = state.user?.email || "guest";
+          const email = state.isLogged ? state.user.email : "guest";
           const updatedCarts = { ...state.carts, [email]: updatedCart };
 
           return { cart: updatedCart, carts: updatedCarts };
@@ -84,7 +93,7 @@ const globalState = create(
       removeFromCart: (itemId) =>
         set((state) => {
           const updatedCart = state.cart.filter((item) => item.id !== itemId);
-          const email = state.user?.email || "guest";
+          const email = state.isLogged ? state.user.email : "guest";
           const updatedCarts = { ...state.carts, [email]: updatedCart };
           return { cart: updatedCart, carts: updatedCarts };
         }),
@@ -94,12 +103,13 @@ const globalState = create(
           const updatedCart = state.cart.map((item) =>
             item.id === itemId ? { ...item, quantity } : item
           );
-          const email = state.user?.email || "guest";
+          const email = state.isLogged ? state.user.email : "guest";
           const updatedCarts = { ...state.carts, [email]: updatedCart };
           return { cart: updatedCart, carts: updatedCarts };
         }),
 
       getCartLength: () => get().cart.length,
+
       getTotalQuantity: () =>
         get().cart.reduce((total, item) => total + (item.quantity || 1), 0),
     }),
