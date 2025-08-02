@@ -111,7 +111,7 @@ const Page = () => {
           </select>
         </div>
 
-        {/* Table */}
+        {/* Inventory Table */}
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-gray-100 text-left">
@@ -124,15 +124,23 @@ const Page = () => {
           </thead>
           <tbody>
             {inventory.length > 0 ? (
-              inventory.map((item) => (
-                <tr key={item.id}>
-                  <td className="p-2">{item.name}</td>
-                  <td className="p-2">{item.unit}</td>
-                  <td className="p-2">{item.stock}</td>
-                  <td className="p-2">{item.acquisition}</td>
-                  <td className="p-2">{item.retail}</td>
-                </tr>
-              ))
+              inventory
+                .slice()
+                .sort((a, b) => {
+                  if (a.stock !== b.stock) {
+                    return a.stock - b.stock; // Lowest stock first
+                  }
+                  return new Date(b.created_at) - new Date(a.created_at); // Newest first
+                })
+                .map((item) => (
+                  <tr key={item.id}>
+                    <td className="p-2">{item.name}</td>
+                    <td className="p-2">{item.unit}</td>
+                    <td className="p-2">{item.stock}</td>
+                    <td className="p-2">{item.acquisition}</td>
+                    <td className="p-2">{item.retail}</td>
+                  </tr>
+                ))
             ) : (
               <tr>
                 <td colSpan="5" className="text-center p-2">

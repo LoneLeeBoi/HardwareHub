@@ -93,6 +93,9 @@ export default function Page() {
                     Price
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Unit
+                  </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Stock
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -115,6 +118,9 @@ export default function Page() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {product.units}
+                    </td>
+                     <td className="px-6 py-4 whitespace-nowrap">
+                      {product.stock}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex gap-2">
                       <div

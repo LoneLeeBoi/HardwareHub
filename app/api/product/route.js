@@ -100,7 +100,7 @@ export async function GET(req) {
 
   const dataSql = `
     SELECT products.*, categories.name AS category_name
-    ${baseSql}
+    ${baseSql} ORDER BY products.created_at DESC
     LIMIT ? OFFSET ?
   `;
   const countSql = `
@@ -145,6 +145,7 @@ export async function GET(req) {
   });
 }
 
+
 export async function POST(req) {
   if (!isAuthorized(req))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -155,6 +156,7 @@ export async function POST(req) {
   const price = form.get("price");
   const category_id = form.get("category_id");
   const units = form.get("units");
+  const stock = form.get("stock");
   const file = form.get("image");
 
   const id = randomUUID();
@@ -180,19 +182,31 @@ export async function POST(req) {
   const imagePath = `/uploads/${uniqueName}`;
 
   try {
-    db.query(
-      `INSERT INTO products (id, user_id, name, price, category_id, units, image)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [id, user_id, name, price, category_id, units, imagePath]
-    );
+    const result = await new Promise((resolve, reject) => {
+      db.query(
+        `INSERT INTO products (id, user_id, name, price, stock, category_id, units, image)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [id, user_id, name, price, stock, category_id, units, imagePath],
+        (err, result) => {
+          if (err) return reject(err);
+          resolve(result);
+        }
+      );
+    });
 
-    return NextResponse.json(
-      { message: "Product created successfully!" },
-      { status: 200 }
-    );
+    if (result.affectedRows === 1) {
+      return NextResponse.json(
+        { message: "Product created successfully!" },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        { error: "No product was created." },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error("Database error:", error);
-
     return NextResponse.json(
       { error: "Failed to create product." },
       { status: 500 }

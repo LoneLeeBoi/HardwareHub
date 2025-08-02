@@ -22,8 +22,8 @@ export function Sidebar() {
               Inventories
             </Link>
           </li>
-          <li className="ml-4">
-            <Link href="/walk-in" className="hover:text-blue-600 block">
+          <li className="ml-4"> 
+            <Link href="/admin/walk-in" className="hover:text-blue-600 block">
               Walk In
             </Link>
           </li>
@@ -33,17 +33,17 @@ export function Sidebar() {
             <div className="font-semibold">Manage</div>
             <ul className="ml-4 mt-1 space-y-1 text-sm">
               <li>
-                <Link href="/manage/debt" className="hover:text-blue-600 block">
+                <Link href="/admin/manage/debt" className="hover:text-blue-600 block">
                   Debt
                 </Link>
               </li>
               <li>
-                <Link href="/manage/orders" className="hover:text-blue-600 block">
+                <Link href="/admin/manage/orders" className="hover:text-blue-600 block">
                   Orders
                 </Link>
               </li>
               <li>
-                <Link href="/manage/receipt" className="hover:text-blue-600 block">
+                <Link href="/admin/manage/receipt" className="hover:text-blue-600 block">
                   Receipt
                 </Link>
               </li>
@@ -51,7 +51,7 @@ export function Sidebar() {
           </li>
 
           <li>
-            <Link href="/users" className="hover:text-blue-600 block">
+            <Link href="/admin/users" className="hover:text-blue-600 block">
               Users
             </Link>
           </li>

@@ -112,8 +112,8 @@ export default function useProductHandlers() {
     setIsEditing(true);
     setEditingProductId(product.id);
 
-    console.log('product',product);
-    
+    console.log("product", product);
+
     setNewProduct({
       id: product.id || "",
       name: product.name || "",
@@ -121,6 +121,7 @@ export default function useProductHandlers() {
       category_id: product.category_id || "",
       price: product.price || "",
       units: product.units || "",
+      stock: product.stock || "",
       status: product.status || "Active",
       user_id: product.user_id || "",
     });
@@ -204,6 +205,7 @@ export default function useProductHandlers() {
       category_id: "",
       price: "",
       units: 0,
+      stock: 0,
       status: "Active",
       user_id: "",
     });
