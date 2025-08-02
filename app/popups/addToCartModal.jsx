@@ -8,20 +8,13 @@ import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
 
 export function AddToCartModal({ isOpen, onClose, product }) {
-  const { cart, setCart } = globalState();
+  const { addToCart } = globalState(); // ✅ use addToCart method instead of manually handling cart
   const [quantity, setQuantity] = useState(1);
 
   if (!product) return null;
 
   const handleAddToCart = () => {
-    const existingIndex = cart.findIndex((item) => item.id === product.id);
-    if (existingIndex !== -1) {
-      const updatedCart = [...cart];
-      updatedCart[existingIndex].quantity += quantity;
-      setCart(updatedCart);
-    } else {
-      setCart([...cart, { ...product, quantity }]);
-    }
+    addToCart({ ...product, quantity }); // ✅ smart method chooses tempCart or cart
     onClose();
     setQuantity(1); // reset quantity
   };

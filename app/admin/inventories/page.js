@@ -14,11 +14,11 @@ const Page = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const [newInventory, setNewInventory] = useState({
-    name: "",
-    unit: "",
+    product_id: "",
     stock: "",
     acquisition: "",
     retail: "",
+    user_id: "",
   });
 
   useEffect(() => {
@@ -99,8 +99,7 @@ const Page = () => {
         onClick={() => {
           setIsEditing(false);
           setNewInventory({
-            name: "",
-            unit: "",
+            product_id: "",
             stock: "",
             acquisition: "",
             retail: "",
@@ -119,7 +118,7 @@ const Page = () => {
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder="Search name..."
             className="p-1 text-sm border rounded w-full sm:w-[200px]"
             value={search}
             onChange={(e) => {
@@ -167,8 +166,8 @@ const Page = () => {
                 })
                 .map((item) => (
                   <tr key={item.id}>
-                    <td className="p-2">{item.name}</td>
-                    <td className="p-2">{item.unit}</td>
+                    <td className="p-2">{item.product_name}</td>
+                    <td className="p-2">{item.units}</td>
                     <td className="p-2">{item.stock}</td>
                     <td className="p-2">{item.acquisition}</td>
                     <td className="p-2">{item.retail}</td>

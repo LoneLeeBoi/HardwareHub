@@ -5,145 +5,146 @@ import { db } from "@/app/lib/db";
 import path from "path";
 import { writeFile, mkdir } from "fs/promises";
 
-// export async function GET(req) {
-//   const { searchParams } = new URL(req.url);
-
-//   const categoryId = searchParams.get('category');
-//   const searchQuery = searchParams.get('search');
-//   const page = parseInt(searchParams.get('page') || '1', 10);
-//   const limit = parseInt(searchParams.get('limit') || '10', 10);
-//   const offset = (page - 1) * limit;
-
-//   let baseSql = 'FROM products WHERE deleted_at IS NULL';
-//   const conditions = [];
-//   const values = [];
-
-//   if (categoryId) {
-//     conditions.push('category_id = ?');
-//     values.push(categoryId);
-//   }
-
-//   if (searchQuery) {
-//     conditions.push('name LIKE ?');
-//     values.push(`%${searchQuery}%`);
-//   }
-
-//   if (conditions.length > 0) {
-//     baseSql += ' AND ' + conditions.join(' AND ');
-//   }
-
-//   const dataSql = `SELECT * ${baseSql} LIMIT ? OFFSET ?`;
-//   const countSql = `SELECT COUNT(*) as total ${baseSql}`;
-//   const dataValues = [...values, limit, offset];
-
-//   return new Promise((resolve) => {
-//     db.query(dataSql, dataValues, (err, results) => {
-//       if (err) {
-//         return resolve(
-//           NextResponse.json({ error: 'Database error' }, { status: 500 })
-//         );
-//       }
-
-//       db.query(countSql, values, (countErr, countResults) => {
-//         if (countErr) {
-//           return resolve(
-//             NextResponse.json({ error: 'Count query error' }, { status: 500 })
-//           );
-//         }
-
-//         const total = countResults[0]?.total || 0;
-
-//         resolve(
-//           NextResponse.json({
-//             data: results,
-//             page,
-//             limit,
-//             total,
-//             totalPages: Math.ceil(total / limit),
-//           }, { status: 200 })
-//         );
-//       });
-//     });
-//   });
-// }
-
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
 
-  const categoryId = searchParams.get("category");
-  const searchQuery = searchParams.get("search");
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const categoryId = searchParams.get('category');
+  const searchQuery = searchParams.get('search');
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const limit = parseInt(searchParams.get('limit') || '10', 10);
   const offset = (page - 1) * limit;
 
-  let baseSql = `
-    FROM products
-    LEFT JOIN categories ON products.category_id = categories.id
-    WHERE products.deleted_at IS NULL
-  `;
+  let baseSql = 'FROM products WHERE deleted_at IS NULL';
   const conditions = [];
   const values = [];
 
   if (categoryId) {
-    conditions.push("products.category_id = ?");
+    conditions.push('category_id = ?');
     values.push(categoryId);
   }
 
   if (searchQuery) {
-    conditions.push("products.name LIKE ?");
+    conditions.push('name LIKE ?');
     values.push(`%${searchQuery}%`);
   }
 
   if (conditions.length > 0) {
-    baseSql += " AND " + conditions.join(" AND ");
+    baseSql += ' AND ' + conditions.join(' AND ');
   }
 
-  const dataSql = `
-    SELECT products.*, categories.name AS category_name
-    ${baseSql}
-    LIMIT ? OFFSET ?
-  `;
-  const countSql = `
-    SELECT COUNT(*) as total
-    FROM products
-    WHERE deleted_at IS NULL
-    ${categoryId || searchQuery ? " AND " + conditions.join(" AND ") : ""}
-  `;
+  const dataSql = `SELECT * ${baseSql} LIMIT ? OFFSET ?`;
+  const countSql = `SELECT COUNT(*) as total ${baseSql}`;
   const dataValues = [...values, limit, offset];
 
   return new Promise((resolve) => {
     db.query(dataSql, dataValues, (err, results) => {
       if (err) {
         return resolve(
-          NextResponse.json({ error: "Database error" }, { status: 500 })
+          NextResponse.json({ error: 'Database error' }, { status: 500 })
         );
       }
 
       db.query(countSql, values, (countErr, countResults) => {
         if (countErr) {
           return resolve(
-            NextResponse.json({ error: "Count query error" }, { status: 500 })
+            NextResponse.json({ error: 'Count query error' }, { status: 500 })
           );
         }
 
         const total = countResults[0]?.total || 0;
 
         resolve(
-          NextResponse.json(
-            {
-              data: results,
-              page,
-              limit,
-              total,
-              totalPages: Math.ceil(total / limit),
-            },
-            { status: 200 }
-          )
+          NextResponse.json({
+            data: results,
+            page, 
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+          }, { status: 200 })
         );
       });
     });
   });
 }
+
+// export async function GET(req) {
+//   const { searchParams } = new URL(req.url);
+
+//   const categoryId = searchParams.get("category");
+//   const searchQuery = searchParams.get("search");
+//   const page = parseInt(searchParams.get("page") || "1", 10);
+//   const limit = parseInt(searchParams.get("limit") || "10", 10);
+//   const offset = (page - 1) * limit;
+
+//   let baseSql = `
+//     FROM products
+//     LEFT JOIN categories ON products.category_id = categories.id
+//     WHERE products.deleted_at IS NULL
+//   `;
+//   const conditions = [];
+//   const values = [];
+
+//   if (categoryId) {
+//     conditions.push("products.category_id = ?");
+//     values.push(categoryId);
+//   }
+
+//   if (searchQuery) {
+//     conditions.push("products.name LIKE ?");
+//     values.push(`%${searchQuery}%`);
+//   }
+
+//   if (conditions.length > 0) {
+//     baseSql += " AND " + conditions.join(" AND ");
+//   }
+
+//   const dataSql = `
+//     SELECT products.*, categories.name AS category_name
+//     ${baseSql} ORDER BY products.created_at DESC
+//     LIMIT ? OFFSET ?
+//   `;
+//   const countSql = `
+//     SELECT COUNT(*) as total
+//     FROM products
+//     WHERE deleted_at IS NULL
+//     ${categoryId || searchQuery ? " AND " + conditions.join(" AND ") : ""}
+//   `;
+//   const dataValues = [...values, limit, offset];
+
+//   return new Promise((resolve) => {
+//     db.query(dataSql, dataValues, (err, results) => {
+//       if (err) {
+//         return resolve(
+//           NextResponse.json({ error: "Database error" }, { status: 500 })
+//         );
+//       }
+
+//       db.query(countSql, values, (countErr, countResults) => {
+//         if (countErr) {
+//           return resolve(
+//             NextResponse.json({ error: "Count query error" }, { status: 500 })
+//           );
+//         }
+
+//         const total = countResults[0]?.total || 0;
+
+//         resolve(
+//           NextResponse.json(
+//             {
+//               data: results,
+//               page,
+//               limit,
+//               total,
+//               totalPages: Math.ceil(total / limit),
+//             },
+//             { status: 200 }
+//           )
+//         );
+//       });
+//     });
+//   });
+// }
+
 
 export async function POST(req) {
   if (!isAuthorized(req))
@@ -155,6 +156,7 @@ export async function POST(req) {
   const price = form.get("price");
   const category_id = form.get("category_id");
   const units = form.get("units");
+  const stock = form.get("stock");
   const file = form.get("image");
 
   const id = randomUUID();
@@ -180,19 +182,31 @@ export async function POST(req) {
   const imagePath = `/uploads/${uniqueName}`;
 
   try {
-    db.query(
-      `INSERT INTO products (id, user_id, name, price, category_id, units, image)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [id, user_id, name, price, category_id, units, imagePath]
-    );
+    const result = await new Promise((resolve, reject) => {
+      db.query(
+        `INSERT INTO products (id, user_id, name, price, stock, category_id, units, image)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [id, user_id, name, price, stock, category_id, units, imagePath],
+        (err, result) => {
+          if (err) return reject(err);
+          resolve(result);
+        }
+      );
+    });
 
-    return NextResponse.json(
-      { message: "Product created successfully!" },
-      { status: 200 }
-    );
+    if (result.affectedRows === 1) {
+      return NextResponse.json(
+        { message: "Product created successfully!" },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        { error: "No product was created." },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error("Database error:", error);
-
     return NextResponse.json(
       { error: "Failed to create product." },
       { status: 500 }

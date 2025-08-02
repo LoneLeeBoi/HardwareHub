@@ -39,7 +39,7 @@ export function AddProductModal({
       const id = decoded?.id || decoded?.sub;
       if (id) {
         setUserId(id);
-        handleInputChange("user_id", id); 
+        handleInputChange("user_id", id);
       }
     } catch (error) {
       console.error("Token decode error:", error);
@@ -55,7 +55,7 @@ export function AddProductModal({
     try {
       setLoading(true);
       const submitAction = isEditing ? EditProduct : AddProduct;
-      
+
       const success = await submitAction(newProduct);
 
       if (success) {
@@ -118,7 +118,7 @@ export function AddProductModal({
           <InputField
             label="Image"
             type="file"
-            value={newProduct.image}
+            value={newProduct.image }
             onChange={(val) => handleInputChange("image", val)}
           />
           <div>
@@ -145,10 +145,16 @@ export function AddProductModal({
           />
 
           <InputField
-            label="Stock Quantity"
-            type="number"
+            label="Unit"
+            type="text"
             value={newProduct.units}
             onChange={(val) => handleInputChange("units", val)}
+          />
+          <InputField
+            label="Stock"
+            type="number"
+            value={newProduct.stock ?? ""}
+            onChange={(val) => handleInputChange("stock", val)}
           />
 
           {/* Hidden user_id */}

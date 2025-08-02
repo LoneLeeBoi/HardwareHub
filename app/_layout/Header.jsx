@@ -8,13 +8,22 @@ import { Search } from "./component/Search";
 import jwt from "jsonwebtoken";
 
 export function Header() {
-  const [showHeader, setShowHeader] = useState(false);
-  const [animate, setAnimate] = useState(false); // trigger animation
+  const [showHeader, setShowHeader] = useState(true);
+  const [animate, setAnimate] = useState(false);
+  const [mounted, setMounted] = useState(false); // 🚨 NEW
+
+  useEffect(() => {
+    setMounted(true); // wait until client
+  }, []);
 
   useEffect(() => {
     const checkToken = () => {
       const token = localStorage.getItem("token");
-      if (!token) return setShowHeader(false);
+
+      if (!token) {
+        setShowHeader(true);
+        return;
+      }
 
       try {
         const decoded = jwt.decode(token);
@@ -25,32 +34,28 @@ export function Header() {
         }
       } catch (error) {
         console.error("Invalid token:", error);
-        setShowHeader(false);
+        setShowHeader(true);
       }
     };
 
     checkToken();
-
-    const onStorage = () => checkToken();
-    window.addEventListener("storage", onStorage);
+    window.addEventListener("storage", checkToken);
     const interval = setInterval(checkToken, 1000);
-
     return () => {
-      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("storage", checkToken);
       clearInterval(interval);
     };
   }, []);
 
   useEffect(() => {
     if (showHeader) {
-      // delay to allow animation to run after render
       setTimeout(() => setAnimate(true), 10);
     } else {
       setAnimate(false);
     }
   }, [showHeader]);
 
-  if (!showHeader) return null;
+  if (!mounted || !showHeader) return null; 
 
   return (
     <div
@@ -59,7 +64,6 @@ export function Header() {
       }`}
     >
       <div className="container mx-auto flex justify-between items-center py-6 px-4">
-        {/* Logo */}
         <Link href="/" className="relative w-[70px] h-[70px] cursor-pointer">
           <Image
             src="/images/Logo.png"
@@ -71,12 +75,10 @@ export function Header() {
           />
         </Link>
 
-        {/* Search Bar */}
         <div className="search relative w-full max-w-md mx-4 flex items-center border border-gray-300 rounded-full px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500 transition">
           <Search />
         </div>
 
-        {/* Right Buttons */}
         <div className="flex gap-1 items-center">
           <Menu />
         </div>

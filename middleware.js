@@ -6,7 +6,14 @@ export function middleware(request) {
   const token = request.cookies.get("token")?.value;
 
   // Public paths that don't need protection
-  const publicPaths = ["/auth", "/api", "/_next", "/favicon.ico", "/images"];
+  const publicPaths = [
+    "/",
+    "/auth",
+    "/api",
+    "/_next",
+    "/favicon.ico",
+    "/images",
+  ];
   const isPublic = publicPaths.some((path) => pathname.startsWith(path));
 
   if (isPublic) {
