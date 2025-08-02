@@ -40,14 +40,7 @@ export function CategorySelection() {
             }
             className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center hover:shadow-md hover:scale-[1.03] transition-all duration-200 ease-in-out cursor-pointer"
           >
-            <Image
-              src={"/images/fallback.png"}
-              alt={category.name || "image"}
-              width={110}
-              height={110}
-              className="rounded-lg object-cover w-[110px] h-[110px]"
-            />
-            <div className="mt-3 text-center font-medium text-sm text-gray-700 uppercase tracking-wide">
+            <div className=" text-center font-black text-sm text-gray-700 uppercase tracking-wide">
               {category.name}
             </div>
           </div>

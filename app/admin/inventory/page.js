@@ -85,7 +85,7 @@ export default function Page() {
             className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-md transition-colors duration-200 font-medium"
           >
             <Edit className="size-4" />
-            Add Stock
+            Edit
           </div>
           <div
             onClick={() => setConfirmOpen(true)}

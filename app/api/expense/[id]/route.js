@@ -24,13 +24,13 @@ export async function PUT(req, { params }) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { name, amount, date, category } = await req.json();
+  const { name, amount, date, category_id } = await req.json();
   const { id } = await params;
   return new Promise((resolve) => {
     db.query(
-      `UPDATE expenses SET name = ?, amount = ?, date = ?, category = ?, updated_at = CURRENT_TIMESTAMP
+      `UPDATE expenses SET name = ?, amount = ?, date = ?, category_id = ?, updated_at = CURRENT_TIMESTAMP
        WHERE id = ? AND deleted_at IS NULL`,
-      [name, amount, date, category, id],
+      [name, amount, date, category_id, id],
       (err) => {
         if (err)
           return resolve(

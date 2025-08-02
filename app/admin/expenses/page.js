@@ -18,24 +18,37 @@ export default function ExpensePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
+   const fetchExpenses = async () => {
+     const result = await ExpenseFunctions();
+     if (result.success) {
+       const data = result?.data?.data || [];
+       setExpenses(data);
+     } else {
+       setError(result.err || "Failed to fetch Expense.");
+     }
+   };
+   useEffect(() => {
+     fetchExpenses();
+   }, []);
   const [newExpense, setNewExpense] = useState({
     name: "",
     amount: "",
     date: "",
     category: "",
-    user_id: "",
+       user_id: "",
   });
 
-  const fetchExpenses = async () => {
-    const result = await ExpenseFunctions();
-    if (result.success) {
-      const data = result?.data?.data || [];
-      const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
-      setExpenses(sorted);
-    } else {
-      toast.error(result.err || "Failed to fetch Expense.");
-    }
-  };
+  // const fetchExpenses = async () => {
+  //   const result = await ExpenseFunctions();
+  //   if (result.success) {
+  //     const data = result?.data?.data || [];
+  //     const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+  //     setExpenses(sorted);
+  //   } else {
+  //     toast.error(result.err || "Failed to fetch Expense.");
+  //   }
+  // };
   
 
   useEffect(() => {
@@ -183,7 +196,7 @@ export default function ExpensePage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         newExpense={newExpense}
-        handleInputChange={handleInputChange}
+    handleInputChange={handleInputChange}
         handleAddExpense={handleAddExpense}
         refreshExpense={fetchExpenses}
         isEditing={isEditing}

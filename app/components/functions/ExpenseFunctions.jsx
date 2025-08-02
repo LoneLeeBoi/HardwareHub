@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:3000";
 
 export async function ExpenseFunctions(params = {}) {
+  const baseUrl = "http://localhost:3000";
   const token = localStorage.getItem("token");
 
   const queryString = Object.keys(params).length
@@ -38,14 +38,16 @@ export async function ExpenseFunctions(params = {}) {
 }
 
 export async function AddExpense(expenseData) {
+  const baseUrl = "http://localhost:3000";
   const token = localStorage.getItem("token");
+
   const url = `${baseUrl}/api/expense`;
 
   try {
     const res = await axios.post(url, expenseData, {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
-        "Content-Type": "application/json",
+         "Content-Type": "application/json",
       },
     });
 

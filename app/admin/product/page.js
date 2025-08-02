@@ -7,7 +7,7 @@ import { ConfirmationModal } from "@/app/popups/confirmationModal";
 import { Plus } from "@/public/icons/plus";
 import { Edit } from "@/public/icons/edit";
 import { Trash } from "@/public/icons/trash";
-import useProductHandlers from "./productHandlers";
+import useProductHandlers from "./productHandllers";
 
 export default function Page() {
   const {
@@ -119,7 +119,8 @@ export default function Page() {
                       {product.name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                    <p>{product.category_name}</p>
+                      {categories.find((c) => c.id === product.category_id)
+                        ?.name || "Unknown"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap font-semibold">
                       {product.price}
@@ -135,13 +136,13 @@ export default function Page() {
                         }}
                         className="text-blue-600 hover:text-blue-800 cursor-pointer"
                       >
-                        <Edit className="size-5" />
+                        <Edit className="size-6" />
                       </div>
                       <div
                         onClick={() => setConfirm(product.id)}
                         className="text-red-600 hover:text-red-800 cursor-pointer"
                       >
-                        <Trash className="size-5" />
+                        <Trash className="size-6" />
                       </div>
                     </td>
                   </tr>
@@ -178,13 +179,13 @@ export default function Page() {
                         onClick={() => handleEditCategory(category)}
                         className="text-blue-600 hover:text-blue-800 cursor-pointer"
                       >
-                        <Edit className="size-5" />
+                        <Edit className="size-6" />
                       </div>
                       <div
                         onClick={() => setIsCatConfirm(category.id)}
                         className="text-red-600 hover:text-red-800 cursor-pointer"
                       >
-                        <Trash className="size-5" />
+                        <Trash className="size-6" />
                       </div>
                     </td>
                   </tr>

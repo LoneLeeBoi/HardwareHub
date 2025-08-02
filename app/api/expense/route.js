@@ -7,7 +7,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const search = searchParams.get("search");
-  const category = searchParams.get("category");
+  const category_id = searchParams.get("category_id");
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const offset = (page - 1) * limit;
@@ -26,9 +26,9 @@ export async function GET(req) {
     values.push(`%${search}%`);
   }
 
-  if (category) {
-    conditions.push("category = ?");
-    values.push(category);
+  if (category_id) {
+    conditions.push("category_id = ?");
+    values.push(category_id);
   }
 
   if (conditions.length > 0) {
@@ -74,14 +74,14 @@ export async function GET(req) {
 export async function POST(req) {
   if (!isAuthorized(req))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { user_id, name, amount, date, category } = await req.json();
+  const { user_id, name, amount, date, category_id } = await req.json();
   const id = randomUUID();
 
   return new Promise((resolve) => {
     db.query(
-      `INSERT INTO expenses (id, user_id, name, amount, date, category)
+      `INSERT INTO expenses (id, user_id, name, amount, date, category_id)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, user_id, name, amount, date, category],
+      [id, user_id, name, amount, date, category_id],
       (err) => {
         if (err) {
           return resolve(

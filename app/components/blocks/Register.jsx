@@ -6,8 +6,8 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 import Link from "next/link";
 
-export function Register() {
-  const [formData, setFormData] = useState({
+export function Register({ toggleForm }) {
+    const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
@@ -34,11 +34,8 @@ export function Register() {
     switch (result.status) {
       case 201:
       case 200:
-        toast.success("Thank you for registering, you can now login!");
-        // Optional: redirect to login page after delay
-        setTimeout(() => {
-          window.location.href = "/auth/login";
-        }, 1000);
+        toast.success("Thank you.");
+        toggleForm();
         break;
 
       case 400:

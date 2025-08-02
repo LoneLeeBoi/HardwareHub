@@ -39,7 +39,7 @@ export function AddProductModal({
       const id = decoded?.id || decoded?.sub;
       if (id) {
         setUserId(id);
-        handleInputChange("user_id", id);
+        handleInputChange("user_id", id); 
       }
     } catch (error) {
       console.error("Token decode error:", error);
@@ -67,10 +67,10 @@ export function AddProductModal({
     try {
       setLoading(true);
       const submitAction = isEditing ? EditProduct : AddProduct;
+      
+      const success = await submitAction(newProduct);
 
-      const result = await submitAction(newProduct);
-
-      if (result?.success || result === true) {
+      if (success) {
         toast.success(
           isEditing
             ? "Product updated successfully!"
@@ -79,7 +79,9 @@ export function AddProductModal({
         handleClose();
         if (typeof refreshProducts === "function") refreshProducts();
       } else {
-        toast.error(result?.message || "Failed to save product.");
+        toast.error(
+          isEditing ? "Failed to update product." : "Failed to add product."
+        );
       }
     } catch (error) {
       console.error(error);
@@ -94,6 +96,12 @@ export function AddProductModal({
   return (
     <>
       {/* Backdrop */}
+      <div
+        onClick={handleClose}
+        className="fixed inset-0 z-[101] bg-black/50"
+      />
+
+      {/* Slide-in Modal */}
       <div
         onClick={handleClose}
         className="fixed inset-0 z-[101] bg-black/50"
@@ -130,25 +138,11 @@ export function AddProductModal({
             value={newProduct.image}
             onChange={(val) => handleInputChange("image", val)}
           />
-
-          {isEditing && typeof newProduct.image === "string" && (
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Current Image:</p>
-              <img
-                src={newProduct.image}
-                alt="Product Preview"
-                className="w-full h-32 object-contain rounded border"
-              />
-            </div>
-          )}
-
           <div>
             <label className="block text-sm font-medium mb-1">Category</label>
             <select
               value={newProduct.category_id || ""}
-              onChange={(e) =>
-                handleInputChange("category_id", e.target.value)
-              }
+              onChange={(e) => handleInputChange("category_id", e.target.value)}
               className="w-full border rounded px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a category</option>
