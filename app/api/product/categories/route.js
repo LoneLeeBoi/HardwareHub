@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function GET(req) {
   return new Promise((resolve) => {
     db.query(
-      "SELECT * FROM categories WHERE deleted_at IS NULL",
+      "SELECT * FROM categories WHERE deleted_at IS NULL ORDER BY row DESC",
       (err, results) => {
         if (err) {
           resolve(

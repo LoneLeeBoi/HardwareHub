@@ -14,7 +14,11 @@ export async function GET(req) {
   const limit = parseInt(searchParams.get('limit') || '10', 10);
   const offset = (page - 1) * limit;
 
-  let baseSql = 'FROM products WHERE deleted_at IS NULL';
+let baseSql = `
+  FROM products
+  JOIN categories ON products.category_id = categories.id
+  WHERE products.deleted_at IS NULL
+`;
   const conditions = [];
   const values = [];
 
@@ -32,8 +36,17 @@ export async function GET(req) {
     baseSql += ' AND ' + conditions.join(' AND ');
   }
 
-  const dataSql = `SELECT * ${baseSql} LIMIT ? OFFSET ?`;
-  const countSql = `SELECT COUNT(*) as total ${baseSql}`;
+  const dataSql = `
+    SELECT products.*, categories.name AS category_name
+    ${baseSql} ORDER BY products.row DESC
+    LIMIT ? OFFSET ?
+  `;
+  const countSql = `
+    SELECT COUNT(*) as total
+    FROM products
+    WHERE deleted_at IS NULL
+    ${categoryId || searchQuery ? " AND " + conditions.join(" AND ") : ""}
+  `;
   const dataValues = [...values, limit, offset];
 
   return new Promise((resolve) => {
@@ -66,84 +79,6 @@ export async function GET(req) {
     });
   });
 }
-
-// export async function GET(req) {
-//   const { searchParams } = new URL(req.url);
-
-//   const categoryId = searchParams.get("category");
-//   const searchQuery = searchParams.get("search");
-//   const page = parseInt(searchParams.get("page") || "1", 10);
-//   const limit = parseInt(searchParams.get("limit") || "10", 10);
-//   const offset = (page - 1) * limit;
-
-//   let baseSql = `
-//     FROM products
-//     LEFT JOIN categories ON products.category_id = categories.id
-//     WHERE products.deleted_at IS NULL
-//   `;
-//   const conditions = [];
-//   const values = [];
-
-//   if (categoryId) {
-//     conditions.push("products.category_id = ?");
-//     values.push(categoryId);
-//   }
-
-//   if (searchQuery) {
-//     conditions.push("products.name LIKE ?");
-//     values.push(`%${searchQuery}%`);
-//   }
-
-//   if (conditions.length > 0) {
-//     baseSql += " AND " + conditions.join(" AND ");
-//   }
-
-//   const dataSql = `
-//     SELECT products.*, categories.name AS category_name
-//     ${baseSql} ORDER BY products.created_at DESC
-//     LIMIT ? OFFSET ?
-//   `;
-//   const countSql = `
-//     SELECT COUNT(*) as total
-//     FROM products
-//     WHERE deleted_at IS NULL
-//     ${categoryId || searchQuery ? " AND " + conditions.join(" AND ") : ""}
-//   `;
-//   const dataValues = [...values, limit, offset];
-
-//   return new Promise((resolve) => {
-//     db.query(dataSql, dataValues, (err, results) => {
-//       if (err) {
-//         return resolve(
-//           NextResponse.json({ error: "Database error" }, { status: 500 })
-//         );
-//       }
-
-//       db.query(countSql, values, (countErr, countResults) => {
-//         if (countErr) {
-//           return resolve(
-//             NextResponse.json({ error: "Count query error" }, { status: 500 })
-//           );
-//         }
-
-//         const total = countResults[0]?.total || 0;
-
-//         resolve(
-//           NextResponse.json(
-//             {
-//               data: results,
-//               page,
-//               limit,
-//               total,
-//               totalPages: Math.ceil(total / limit),
-//             },
-//             { status: 200 }
-//           )
-//         );
-//       });
-//     });
-//   });
-// }
 
 
 export async function POST(req) {

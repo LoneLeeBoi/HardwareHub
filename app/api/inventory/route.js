@@ -36,7 +36,7 @@ export async function GET(req) {
   const dataSql = `
     SELECT inventory.*, products.name AS product_name, products.units 
     ${baseSql} 
-    ORDER BY inventory.updated_at DESC 
+    ORDER BY inventory.row DESC 
     LIMIT ? OFFSET ?
   `;
   const countSql = `SELECT COUNT(*) AS total ${baseSql}`;
