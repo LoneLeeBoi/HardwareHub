@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { Cogs } from "@/public/icons/cogs";
 
 export function Menu() {
   const { isLogged, cart, setLogout } = globalState();
@@ -59,6 +60,29 @@ export function Menu() {
           View Cart
         </div>
       </Link>
+      <DropdownWithTooltip
+        trigger={
+          <div className="relative px-2 py-2 hover:bg-gray-200 rounded-full text-sm group">
+            <Cogs className="w-5 h-5" />
+          </div>
+        }
+        tooltip="Account"
+      >
+        <ul className="text-sm text-gray-700">
+          <Link
+            href={`/login`}
+            className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+          >
+            Login
+          </Link>{" "}
+          <Link
+            href={`/register`}
+            className="block px-4 py-2 hover:bg-gray-100 cursor-pointer"
+          >
+            Register
+          </Link>
+        </ul>
+      </DropdownWithTooltip>
 
       {/* Bell and User */}
       {isAuthenticated && (

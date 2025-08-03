@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import RegisterFunction from "../functions/RegisterFunction";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import { useRouter } from "next/router";
-export function Register() {
+import RegisterFunction from "../components/functions/RegisterFunction";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+export default function Page() {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -13,6 +14,7 @@ export function Register() {
     confirmPassword: "",
   });
   const router = useRouter();
+
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -56,7 +58,7 @@ export function Register() {
   };
 
   return (
-    <div className="relative z-10 flex items-center justify-center h-full">
+    <div className="relative z-10 flex items-center justify-center h-full my-12">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
         <div className="flex items-center gap-4 mb-6">
           <div className="relative w-[150px] h-[150px]">
@@ -119,9 +121,12 @@ export function Register() {
         </form>
         <div className="flex justify-center gap-2 pt-4">
           <span>Already have an account?</span>
-          <span className="font-bold text-[14px] text-blue-500 cursor-pointer">
+          <Link
+            href={"/login"}
+            className="font-bold text-[14px] text-blue-500 cursor-pointer"
+          >
             Login
-          </span>
+          </Link>
         </div>
       </div>
     </div>

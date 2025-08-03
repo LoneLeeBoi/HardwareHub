@@ -13,6 +13,8 @@ export function middleware(request) {
     "/_next",
     "/favicon.ico",
     "/images",
+    "/login",
+    "/register",
   ];
   const isPublic = publicPaths.some((path) => pathname.startsWith(path));
 
