@@ -41,7 +41,7 @@ export async function GET(req) {
     FROM expenses
     LEFT JOIN categories ON expenses.category_id = categories.id
     ${whereClause}
-    ORDER BY expenses.created_at DESC
+    ORDER BY expenses.row DESC
     LIMIT ? OFFSET ?
   `;
 

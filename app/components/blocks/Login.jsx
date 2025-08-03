@@ -8,11 +8,12 @@ import Image from "next/image";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
-
+import { syncCartFromStorage } from "@/app/cart/AppCartSync";
 // Spinner component
 function Spinner() {
   return (
     <div className="fixed flex inset-0 w-full h-full justify-center items-center bg-black/50 mt-4">
+   
       <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
   );
@@ -35,9 +36,11 @@ export function Login({ toggleForm }) {
         const token = res?.data?.token;
         const decoded = jwt.decode(token);
         const role = decoded?.role;
+        const id = decoded?.id;
 
         globalState.setState({ isLogged: true });
         localStorage.setItem("token", token);
+        localStorage.setItem("id", id);
 
         Cookies.set("token", token, {
           expires: 1,
@@ -51,11 +54,11 @@ export function Login({ toggleForm }) {
           toast.success("Welcome dear user.");
         }
 
-        // Delay to allow animation to show before redirect
-        setTimeout(() => {
+        setTimeout(async() => {
           if (role === "admin") {
             router.push("/admin");
           } else {
+              await syncCartFromStorage(); 
             router.push("/");
           }
         }, 1000);

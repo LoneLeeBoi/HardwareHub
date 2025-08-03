@@ -79,7 +79,6 @@ export default function Page() {
   return (
     <div className="p-4">
       <div className="border border-gray-200 rounded p-4">
-        {/* Filters */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
           <input
             type="text"
@@ -139,7 +138,7 @@ export default function Page() {
                 const status = getStatus(user);
                 return (
                   <tr key={user.id}>
-                    <td className="p-2 flex items-center gap-2">{user.name}</td>
+                    <td className="p-2  gap-2">{user.name}</td>
                     <td className="p-2">{user.email}</td>
                     <td className="p-2">{user.contact}</td>
                     <td className="p-2">{user.address}</td>

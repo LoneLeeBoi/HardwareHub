@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 02, 2025 at 08:50 AM
+-- Generation Time: Aug 03, 2025 at 07:27 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.4.8
 
@@ -20,6 +20,31 @@ SET time_zone = "+00:00";
 --
 -- Database: `store`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cart`
+--
+
+CREATE TABLE `cart` (
+  `row` int(11) NOT NULL,
+  `id` varchar(36) NOT NULL,
+  `user_id` varchar(36) NOT NULL,
+  `product_id` varchar(36) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deleted_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cart`
+--
+
+INSERT INTO `cart` (`row`, `id`, `user_id`, `product_id`, `quantity`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(25, '13fb2bde-b741-4a0e-a702-bd17a4069ccf', '3cb1ecec-a719-4315-92b6-88db72fcdfe9', 'c64e1aa4-14ed-4611-a117-cb52a1616746', 1, '2025-08-03 15:03:42', '2025-08-03 15:03:42', NULL),
+(24, '2c50b2fa-140f-437b-95e9-aa177b3a5f74', '3cb1ecec-a719-4315-92b6-88db72fcdfe9', 'f384a883-cf17-49f8-84b6-1603d41d1741', 1, '2025-08-03 15:03:42', '2025-08-03 15:03:42', NULL);
 
 -- --------------------------------------------------------
 
@@ -125,10 +150,11 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`row`, `id`, `user_id`, `name`, `price`, `stock`, `category_id`, `image`, `units`, `updated_at`, `deleted_at`, `created_at`) VALUES
-(22, '07be17c4-41c6-4771-aae1-1a7f6eafc309', '', 'Electric Drill', 3000.00, '4', 'a217ed37-ef24-4adb-b13f-87f2dae2d6e5', '/uploads/1754120907576-cc07a77f-e157-4582-b850-d49bf14e876f.webp', 'pc', '2025-08-02 15:48:27', NULL, '2025-08-02 15:48:27'),
+(22, '07be17c4-41c6-4771-aae1-1a7f6eafc309', '', 'Electric Drill', 3000.00, '12', 'a217ed37-ef24-4adb-b13f-87f2dae2d6e5', '/uploads/1754120907576-cc07a77f-e157-4582-b850-d49bf14e876f.webp', 'pc', '2025-08-03 12:32:32', NULL, '2025-08-02 15:48:27'),
 (21, '12303e9e-808c-4ff5-9f8b-d39811889c88', '', 'Screwdriver Set', 1200.50, '20', '0a9432bf-932d-4e9d-abfb-c1cd57e6d678', '/uploads/1754120769366-c4d1a6bf-c2e6-467a-bc4a-8e48670b0414.webp', 'Set', '2025-08-02 16:36:35', NULL, '2025-08-02 15:46:09'),
 (23, 'a48db5fc-02af-48e8-972f-696bfcb7c6ff', '', 'Extension Cord 5m', 200.00, '20', 'fa2b8ebe-6748-48f2-8bcb-fb7a6db7d025', '/uploads/1754120995641-b3de54f2-1454-4294-a9cb-23370b4a2d41.webp', 'pc', '2025-08-02 15:51:06', NULL, '2025-08-02 15:49:55'),
-(24, 'c64e1aa4-14ed-4611-a117-cb52a1616746', '', 'Cement Bag 40kg', 200.00, '21', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754121150738-034f5a29-c9cd-4dcb-8040-3db24a953fbd.webp', 'bag', '2025-08-02 16:35:08', NULL, '2025-08-02 15:52:30');
+(24, 'c64e1aa4-14ed-4611-a117-cb52a1616746', '', 'Cement Bag 40kg', 200.00, '21', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754121150738-034f5a29-c9cd-4dcb-8040-3db24a953fbd.webp', 'bag', '2025-08-02 16:35:08', NULL, '2025-08-02 15:52:30'),
+(25, 'f384a883-cf17-49f8-84b6-1603d41d1741', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'tetst', 100.00, '12', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754195578956-21f6d522-c337-4d49-9f39-ea4f7118bd84.png', 'pc', '2025-08-03 12:32:58', NULL, '2025-08-03 12:32:58');
 
 -- --------------------------------------------------------
 
@@ -159,6 +185,13 @@ INSERT INTO `users` (`row`, `id`, `username`, `email`, `password`, `role`) VALUE
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `cart`
+--
+ALTER TABLE `cart`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `row` (`row`);
 
 --
 -- Indexes for table `categories`
@@ -205,6 +238,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `cart`
+--
+ALTER TABLE `cart`
+  MODIFY `row` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
@@ -226,7 +265,7 @@ ALTER TABLE `inventory`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `row` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `row` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `users`

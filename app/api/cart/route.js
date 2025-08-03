@@ -26,7 +26,7 @@ export async function GET(req) {
   }
 
   const dataSql = `
-    SELECT cart.*, products.name AS product_name, products.units 
+    SELECT cart.*, products.*
     ${baseSql}
     ORDER BY cart.updated_at DESC 
     LIMIT ? OFFSET ?`;
