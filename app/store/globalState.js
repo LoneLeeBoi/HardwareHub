@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { addUserCart } from "@/app/components/functions/CartFunctions";
 
 const globalState = create(
   persist(
@@ -8,22 +9,40 @@ const globalState = create(
       isLogged: false,
       cart: [],
 
-      setLogout: (status) =>
+      setLogout: async (status) => {
+        if (get().cart.length > 0) {
+          try {
+            
+            console.log('cart',get().cart);
+            
+            await addUserCart(get().cart);
+          } catch (err) {
+            console.error("Cart sync failed:", err);
+          }
+        }
+
         set({
           isLogged: status,
-          cart: [], // Clear the cart on logout
-        }),
+          cart: [],
+        });
+      },
 
       setCart: (newCart) => set({ cart: newCart }),
 
       addToCart: (item) =>
         set((state) => {
-          const existing = state.cart.find((i) => i.id === item.id);
+          const existing = state.cart.find(
+            (i) => i.id === item.id
+          );
+
           if (existing) {
             return {
               cart: state.cart.map((i) =>
                 i.id === item.id
-                  ? { ...i, quantity: (i.quantity || 1) + (item.quantity || 1) }
+                  ? {
+                      ...i,
+                      quantity: (i.quantity || 1) + (item.quantity || 1),
+                    }
                   : i
               ),
             };
@@ -43,6 +62,26 @@ const globalState = create(
             item.id === itemId ? { ...item, quantity } : item
           ),
         })),
+
+      mergeCartOnLogin: (tempCart) => {
+        const currentCart = get().cart;
+        const mergedCart = [...currentCart];
+
+        tempCart.forEach((tempItem) => {
+          const index = mergedCart.findIndex(
+            (i) => i.id === tempItem.id
+          );
+
+          if (index > -1) {
+            mergedCart[index].quantity =
+              (mergedCart[index].quantity || 1) + (tempItem.quantity || 1);
+          } else {
+            mergedCart.push(tempItem);
+          }
+        });
+
+        set({ cart: mergedCart });
+      },
     }),
     {
       name: "app-cart-storage",

@@ -24,7 +24,6 @@ export function Products() {
       if (result.success) {
         const data = result?.data?.data || [];
         setProducts(data);
-        console.log("Fetched products:", data);
       } else {
         setError(result.err || "Failed to fetch products.");
       }

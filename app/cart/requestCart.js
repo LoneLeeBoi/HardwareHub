@@ -5,6 +5,7 @@ import globalState from "@/app/store/globalState";
 import { CheckoutModal } from "../popups/checkoutModal";
 import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
+
 export default function RequestCart() {
   const { cart, removeFromCart, updateQuantity } = globalState();
   const [selectedItems, setSelectedItems] = useState([]);
@@ -12,6 +13,7 @@ export default function RequestCart() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [paymentMethod, setPaymentMethod] = useState("cash");
+
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000);

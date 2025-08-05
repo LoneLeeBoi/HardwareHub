@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 
 import globalState from "@/app/store/globalState";
 import LoginFunction from "../components/functions/LoginFunctions";
+import {getUserCart}  from "../components/functions/CartFunctions";
 
 // Spinner Component
 const Spinner = () => (
@@ -23,6 +24,16 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { setCart } = globalState();
+
+  const fetchCart = async () => {
+    try {
+      const res = await getUserCart();
+      setCart(res?.data?.data || []);
+    } catch (err) {
+      console.error("Cart fetch error", err);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,6 +60,30 @@ export default function LoginPage() {
           role === "admin" ? "Welcome admin." : "Welcome dear user."
         );
 
+        const serverCartResponse = await getUserCart();
+        const serverCart = serverCartResponse?.data?.data || [];
+
+        const guestCart =
+          JSON.parse(localStorage.getItem("app-cart-storage"))?.state?.cart ||
+          [];
+
+        const mergedCart = [...serverCart];
+
+        guestCart.forEach((tempItem) => {
+          const index = mergedCart.findIndex(
+            (i) => i.product_id === tempItem.product_id
+          );
+
+          if (index > -1) {
+            mergedCart[index].quantity =
+              (mergedCart[index].quantity || 1) + (tempItem.quantity || 1);
+          } else {
+            mergedCart.push(tempItem);
+          }
+        });
+
+        globalState.getState().setCart(mergedCart);
+
         setTimeout(() => {
           router.push(role === "admin" ? "/admin" : "/");
         }, 1000);
@@ -59,7 +94,8 @@ export default function LoginPage() {
             : res.err || "Something went wrong."
         );
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("Server error. Please try again.");
     } finally {
       setLoading(false);
