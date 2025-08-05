@@ -119,7 +119,6 @@ export function Menu() {
           >
             <ul className="text-sm text-gray-700">
               <Link href="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
-              <Link href="/settings" className="block px-4 py-2 hover:bg-gray-100">Settings</Link>
               <li onClick={handleLogout} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
                 Logout
               </li>

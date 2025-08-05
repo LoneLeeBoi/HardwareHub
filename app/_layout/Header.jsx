@@ -55,7 +55,7 @@ export function Header() {
     }
   }, [showHeader]);
 
-  if (!mounted || !showHeader) return null; 
+  if (!mounted || !showHeader) return null;
 
   return (
     <div
@@ -64,15 +64,19 @@ export function Header() {
       }`}
     >
       <div className="container mx-auto flex justify-between items-center py-6 px-4">
-        <Link href="/" className="relative w-[70px] h-[70px] cursor-pointer">
-          <Image
-            src="/images/Logo.png"
-            alt="logo"
-            fill
-            className="object-contain"
-            sizes="70px"
-            priority
-          />
+        <Link href="/" className="flex items-center w-[70px] cursor-pointer gap-[14px]">
+            <Image
+              src="/images/Logo.png"
+              alt="logo"
+              width={70}
+              height={70}
+              className="object-contain size-[70px]"
+              sizes="70px"
+              priority
+            />
+          <span className="text-[18px] text-center font-bold">
+            HARDWARE HUB
+          </span>
         </Link>
 
         <div className="search relative w-full max-w-md mx-4 flex items-center border border-gray-300 rounded-full px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500 transition">
