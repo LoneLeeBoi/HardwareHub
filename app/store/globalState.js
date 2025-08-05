@@ -11,7 +11,7 @@ const globalState = create(
       setLogout: (status) =>
         set({
           isLogged: status,
-          cart: [], // Clear the cart on logout
+          cart: [], 
         }),
 
       setCart: (newCart) => set({ cart: newCart }),

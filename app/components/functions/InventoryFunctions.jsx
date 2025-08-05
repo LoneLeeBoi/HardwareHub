@@ -84,7 +84,7 @@ export async function EditInventory(inventoryData) {
 
 
 
-export async function Deleteinventory(inventoryId) {
+export async function DeleteInventory(inventoryId) {
   const baseUrl = "http://localhost:3000";
   const token = localStorage.getItem("token");
 

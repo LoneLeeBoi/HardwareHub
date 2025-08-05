@@ -14,7 +14,7 @@ export function AddInventoryModal({
   onClose,
   newInventory,
   handleInputChange,
-  refreshInventory,
+  fetchInventory,
   isEditing = false,
 }) {
   const [showModal, setShowModal] = useState(false);
@@ -57,7 +57,7 @@ export function AddInventoryModal({
       if (success) {
         toast.success(`Inventory ${isEditing ? "updated" : "added"}!`);
         handleClose();
-        if (typeof refreshInventory === "function") refreshInventory();
+        if (typeof fetchInventory === "function") fetchInventory();
       } else {
         toast.error("Failed to save inventory.");
       }

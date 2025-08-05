@@ -10,7 +10,7 @@ export function middleware(request) {
   const isPublicPath = publicPaths.some((path) => pathname === path || pathname.startsWith(path + "/"));
 
   // Allow all public API routes
-  if (pathname.startsWith("/api/public")) {
+  if (pathname.startsWith("/api")) {
     return NextResponse.next();
   }
 

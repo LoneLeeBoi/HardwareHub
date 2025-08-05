@@ -3,6 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { Plus } from "@/public/icons/plus";
 import { AddInventoryModal } from "@/app/popups/addInventoryModal";
+import { Edit } from "@/public/icons/edit";
+import { ConfirmationModal } from "@/app/popups/confirmationModal";
+import useInventoryHandlers from "./inventoryHandler";
+import { Trash } from "@/public/icons/trash";
 const Page = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -12,7 +16,8 @@ const Page = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-
+  const [isEditingId, setEditingId] = useState(false);
+  const { isConfirm, setConfirm, handleDeleteInventory } = useInventoryHandlers();
   const [newInventory, setNewInventory] = useState({
     product_id: "",
     stock: "",
@@ -20,32 +25,32 @@ const Page = () => {
     retail: "",
     user_id: "",
   });
+  const fetchInventory = async () => {
+    try {
+      const queryParams = new URLSearchParams();
+      if (search) queryParams.append("search", search);
+
+      queryParams.append("page", page.toString());
+      queryParams.append("limit", limit.toString());
+
+      const res = await fetch(
+        `http://localhost:3000/api/inventory?${queryParams}`
+      );
+      const json = await res.json();
+
+      setInventory(json.data || []);
+      setTotalPages(json.totalPages || 1);
+    } catch (error) {
+      console.error("Error fetching inventory:", error);
+      setInventory([]);
+      setTotalPages(1);
+    }
+  };
 
   useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        const queryParams = new URLSearchParams();
-        if (search) queryParams.append("search", search);
-
-        queryParams.append("page", page.toString());
-        queryParams.append("limit", limit.toString());
-
-        const res = await fetch(
-          `http://localhost:3000/api/inventory?${queryParams}`
-        );
-        const json = await res.json();
-
-        setInventory(json.data || []);
-        setTotalPages(json.totalPages || 1);
-      } catch (error) {
-        console.error("Error fetching inventory:", error);
-        setInventory([]);
-        setTotalPages(1);
-      }
-    };
-
     fetchInventory();
-  }, [search, page, limit]);
+  
+  }, [search, page, limit, isConfirm]);
 
   const handlePrev = () => setPage((p) => Math.max(p - 1, 1));
   const handleNext = () => setPage((p) => Math.min(p + 1, totalPages));
@@ -70,19 +75,11 @@ const Page = () => {
           totalPages
         );
       } else {
-        pages.push(
-          1,
-          "...",
-          page - 1,
-          page,
-          page + 1,
-          "...",
-          totalPages
-        );
+        pages.push(1, "...", page - 1, page, page + 1, "...", totalPages);
       }
     }
     return pages;
-  }
+  };
   const handleInputChange = (field, value) => {
     setNewInventory((prev) => ({ ...prev, [field]: value }));
   };
@@ -90,6 +87,12 @@ const Page = () => {
   const handleAddInventory = () => {
     // No POST logic — just close modal
     setModalOpen(false);
+  };
+  const handleEdit = (item) => {
+    setNewInventory(item);
+    setEditingId(item.id);
+    setIsEditing(true);
+    setModalOpen(true);
   };
 
   return (
@@ -152,6 +155,7 @@ const Page = () => {
               <th className="p-2">Stock</th>
               <th className="p-2">Acquisition</th>
               <th className="p-2">Retail</th>
+              <th className="p-2">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -171,6 +175,23 @@ const Page = () => {
                     <td className="p-2">{item.stock}</td>
                     <td className="p-2">{item.acquisition}</td>
                     <td className="p-2">{item.retail}</td>
+                    <td className="px-6 py-4 whitespace-nowrap flex gap-2">
+                      <div
+                        onClick={() => {
+                          handleEdit(item);
+                          setIsEditing(true);
+                        }}
+                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                      >
+                        <Edit className="size-6" />
+                      </div>
+                      <div
+                        onClick={() => setConfirm(item.id)}
+                        className="text-red-600 hover:text-red-800 cursor-pointer"
+                      >
+                        <Trash className="size-6" />
+                      </div>
+                    </td>
                   </tr>
                 ))
             ) : (
@@ -228,7 +249,25 @@ const Page = () => {
         newInventory={newInventory}
         handleInputChange={handleInputChange}
         handleAddInventory={handleAddInventory}
+        fetchInventory={fetchInventory}
         isEditing={isEditing}
+      />
+
+      <ConfirmationModal
+        isOpen={isConfirm}
+        onClose={() => {
+          if (isConfirm) {
+            setConfirm("");
+          }
+        }}
+        onConfirm={() => {
+          if (isConfirm) {
+            handleDeleteInventory(isConfirm);
+            setConfirm("");
+          }
+        }}
+        title="Are you sure?"
+        message="This action cannot be undone."
       />
     </div>
   );
