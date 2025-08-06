@@ -36,7 +36,7 @@ export default function ExpensePage() {
       toast.error(result.err || "Failed to fetch Expense.");
     }
   };
-  
+
 
   useEffect(() => {
     fetchExpenses();
@@ -157,17 +157,21 @@ export default function ExpensePage() {
                         <span
                           onClick={() => handleEdit(expense)}
                           title="Edit"
-                          className="text-blue-600 hover:text-blue-800"
+                          className="text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer"
                         >
-                          <Edit className={`size-5`} />
+                          <Edit className="size-5" />
+                          <span>Edit</span>
                         </span>
+
                         <span
                           onClick={() => handleDelete(expense.id)}
                           title="Delete"
-                          className="text-red-600 hover:text-red-800"
+                          className="text-red-600 hover:text-red-800 flex items-center gap-1 cursor-pointer"
                         >
-                          <Trash className={`size-5`} />
+                          <Trash className="size-5" />
+                          <span>Delete</span>
                         </span>
+
                       </div>
                     </td>
                   </tr>
