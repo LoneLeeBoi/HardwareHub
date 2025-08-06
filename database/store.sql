@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 03, 2025 at 07:27 AM
+-- Generation Time: Aug 06, 2025 at 01:22 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.4.8
 
@@ -43,8 +43,10 @@ CREATE TABLE `cart` (
 --
 
 INSERT INTO `cart` (`row`, `id`, `user_id`, `product_id`, `quantity`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(25, '13fb2bde-b741-4a0e-a702-bd17a4069ccf', '3cb1ecec-a719-4315-92b6-88db72fcdfe9', 'c64e1aa4-14ed-4611-a117-cb52a1616746', 1, '2025-08-03 15:03:42', '2025-08-03 15:03:42', NULL),
-(24, '2c50b2fa-140f-437b-95e9-aa177b3a5f74', '3cb1ecec-a719-4315-92b6-88db72fcdfe9', 'f384a883-cf17-49f8-84b6-1603d41d1741', 1, '2025-08-03 15:03:42', '2025-08-03 15:03:42', NULL);
+(36, '6caf9695-2859-46d7-8942-9ef5d8bd0e32', '3cb1ecec-a719-4315-92b6-88db72fcdfe9', 'a48db5fc-02af-48e8-972f-696bfcb7c6ff', 1, '2025-08-06 20:52:34', '2025-08-06 20:52:34', NULL),
+(37, '7df9a4b2-782a-4dac-8e6a-9b0ca1157056', '3cb1ecec-a719-4315-92b6-88db72fcdfe9', '07be17c4-41c6-4771-aae1-1a7f6eafc309', 1, '2025-08-06 20:54:37', '2025-08-06 20:54:37', NULL),
+(34, '9c88e07e-c95f-4ae9-856c-eb33fe2398ef', '3cb1ecec-a719-4315-92b6-88db72fcdfe9', 'f384a883-cf17-49f8-84b6-1603d41d1741', 1, '2025-08-06 20:49:07', '2025-08-06 20:49:07', NULL),
+(35, 'bfff9034-075e-49b0-b929-04cb2ab57a7f', '3cb1ecec-a719-4315-92b6-88db72fcdfe9', 'c64e1aa4-14ed-4611-a117-cb52a1616746', 1, '2025-08-06 20:51:29', '2025-08-06 20:51:29', NULL);
 
 -- --------------------------------------------------------
 
@@ -121,8 +123,12 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`row`, `id`, `user_id`, `product_id`, `stock`, `acquisition`, `retail`, `updated_at`, `deleted_at`) VALUES
-(6, '08d4baa7-3ad4-4b17-b7a9-a538afef0e67', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', '12303e9e-808c-4ff5-9f8b-d39811889c88', 10, 1000.00, 1200.50, '2025-08-02 16:36:35', NULL),
-(5, 'e4c259f3-e31d-4d9c-88d0-9ad7da41763f', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'c64e1aa4-14ed-4611-a117-cb52a1616746', 10, 120.00, 200.00, '2025-08-02 16:35:08', NULL);
+(7, '03662552-7cfa-44fe-9080-d9df3a9dc684', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'f384a883-cf17-49f8-84b6-1603d41d1741', 12, 12.00, 12.00, '2025-08-06 00:53:19', '2025-08-06 00:53:19'),
+(6, '08d4baa7-3ad4-4b17-b7a9-a538afef0e67', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', '12303e9e-808c-4ff5-9f8b-d39811889c88', 2000, 4000.00, 400.50, '2025-08-06 01:07:07', NULL),
+(8, '1aeef656-f6bc-4585-8647-d6a4d0ea9abc', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'c64e1aa4-14ed-4611-a117-cb52a1616746', 10, 100.00, 1000.00, '2025-08-06 00:53:31', NULL),
+(10, '6b98b544-c409-4495-8cb4-1cb521606648', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'f384a883-cf17-49f8-84b6-1603d41d1741', 12, 12.00, 12.00, '2025-08-06 01:07:16', NULL),
+(9, 'b059bb9c-d66d-4dae-b1d1-e45a8cd27e52', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'c64e1aa4-14ed-4611-a117-cb52a1616746', 23, 23.00, 23.00, '2025-08-06 01:06:54', '2025-08-06 01:06:54'),
+(5, 'e4c259f3-e31d-4d9c-88d0-9ad7da41763f', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'c64e1aa4-14ed-4611-a117-cb52a1616746', 60, 120.00, 200.00, '2025-08-04 22:42:37', '2025-08-04 22:42:37');
 
 -- --------------------------------------------------------
 
@@ -153,8 +159,8 @@ INSERT INTO `products` (`row`, `id`, `user_id`, `name`, `price`, `stock`, `categ
 (22, '07be17c4-41c6-4771-aae1-1a7f6eafc309', '', 'Electric Drill', 3000.00, '12', 'a217ed37-ef24-4adb-b13f-87f2dae2d6e5', '/uploads/1754120907576-cc07a77f-e157-4582-b850-d49bf14e876f.webp', 'pc', '2025-08-03 12:32:32', NULL, '2025-08-02 15:48:27'),
 (21, '12303e9e-808c-4ff5-9f8b-d39811889c88', '', 'Screwdriver Set', 1200.50, '20', '0a9432bf-932d-4e9d-abfb-c1cd57e6d678', '/uploads/1754120769366-c4d1a6bf-c2e6-467a-bc4a-8e48670b0414.webp', 'Set', '2025-08-02 16:36:35', NULL, '2025-08-02 15:46:09'),
 (23, 'a48db5fc-02af-48e8-972f-696bfcb7c6ff', '', 'Extension Cord 5m', 200.00, '20', 'fa2b8ebe-6748-48f2-8bcb-fb7a6db7d025', '/uploads/1754120995641-b3de54f2-1454-4294-a9cb-23370b4a2d41.webp', 'pc', '2025-08-02 15:51:06', NULL, '2025-08-02 15:49:55'),
-(24, 'c64e1aa4-14ed-4611-a117-cb52a1616746', '', 'Cement Bag 40kg', 200.00, '21', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754121150738-034f5a29-c9cd-4dcb-8040-3db24a953fbd.webp', 'bag', '2025-08-02 16:35:08', NULL, '2025-08-02 15:52:30'),
-(25, 'f384a883-cf17-49f8-84b6-1603d41d1741', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'tetst', 100.00, '12', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754195578956-21f6d522-c337-4d49-9f39-ea4f7118bd84.png', 'pc', '2025-08-03 12:32:58', NULL, '2025-08-03 12:32:58');
+(24, 'c64e1aa4-14ed-4611-a117-cb52a1616746', '', 'Cement Bag 40kg', 200.00, '45', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754121150738-034f5a29-c9cd-4dcb-8040-3db24a953fbd.webp', 'bag', '2025-08-06 00:53:40', NULL, '2025-08-02 15:52:30'),
+(25, 'f384a883-cf17-49f8-84b6-1603d41d1741', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'tetst', 100.00, '36', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754195578956-21f6d522-c337-4d49-9f39-ea4f7118bd84.png', 'pc', '2025-08-06 01:07:16', NULL, '2025-08-03 12:32:58');
 
 -- --------------------------------------------------------
 
@@ -241,7 +247,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `row` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `row` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -259,7 +265,7 @@ ALTER TABLE `expenses`
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `row` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `row` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `products`

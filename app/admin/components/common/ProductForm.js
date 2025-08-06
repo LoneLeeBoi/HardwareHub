@@ -83,7 +83,6 @@ export default function ProductForm({ onSubmit }) {
       }
 
       const result = await res.json();
-      console.log("Success:", result);
       toast.success("Product created successfully!");
       onSubmit?.(result); // <-- trigger the callback passed from parent
       closeProductForm();

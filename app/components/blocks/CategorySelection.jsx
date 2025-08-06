@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import searchState from "@/app/store/searchState";
 import CategoryFunctions from "../functions/CategoryFunctions";
 
@@ -33,12 +32,12 @@ export function CategorySelection() {
         {categories.map((category) => (
           <div
             key={category.id}
-            onClick={() =>
-              searchState.setState({ searchParams: category.name })
-            }
+            onClick={() => {
+              searchState.setState({ searchParams: category.name });
+            }}
             className="border rounded-lg p-4 flex flex-col items-center hover:shadow transition cursor-pointer"
           >
-            <div className="text-center font-bold text-sm uppercase">
+            <div className="text-center font-bold text-sm uppercase flex items-center h-full">
               {category.name}
             </div>
           </div>

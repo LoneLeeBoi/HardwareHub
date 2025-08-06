@@ -5,13 +5,16 @@ import globalState from "@/app/store/globalState";
 import { CheckoutModal } from "../popups/checkoutModal";
 import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 export default function StorageCart() {
-  const { cart, removeFromCart, updateQuantity } = globalState();
+  const { cart, removeFromCart, updateQuantity,isLogged } = globalState();
   const [selectedItems, setSelectedItems] = useState([]);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const [paymentMethod, setPaymentMethod] = useState("cash");
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000);
@@ -64,7 +67,6 @@ export default function StorageCart() {
       total_amount: calculateTotal(),
     };
 
-    console.log("selectedItems", orderData);
   };
 
   const SkeletonItem = () => (
@@ -188,7 +190,7 @@ export default function StorageCart() {
 
                   <div className="flex-shrink-0 ml-4">
                     <button
-                      onClick={() => handleRemoveItem(item.id)}
+                      onClick={() => handleRemoveItem(item.cartID)}
                       className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                       aria-label={`Remove ${item.name} from cart`}
                     >
@@ -211,7 +213,17 @@ export default function StorageCart() {
             </div>
             <div className="mt-6 text-right">
               <button
-                onClick={() => setIsCheckoutOpen(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (isLogged) {
+                    setIsCheckoutOpen(true);
+                  } else {
+                    toast.error("Please log in to proceed with checkout.");
+                    setTimeout(() => {
+                      router.push("/login");
+                    }, 1000);
+                  }
+                }}
                 disabled={selectedItems.length === 0}
                 className={`px-6 py-3 rounded-lg transition font-semibold text-sm uppercase ${
                   selectedItems.length === 0

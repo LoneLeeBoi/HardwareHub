@@ -34,7 +34,7 @@ export function Search() {
         type="text"
         value={searchParams}
         onChange={(e) => setSearchParams(e.target.value)}
-        onKeyDown={handleKeyDown}
+        onKeyUp={handleKeyDown}
         placeholder="Search..."
         className="w-full pl-3 pr-10 py-2 text-sm bg-transparent border-none outline-none"
         style={{

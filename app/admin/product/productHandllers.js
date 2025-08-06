@@ -112,7 +112,6 @@ export default function useProductHandlers() {
     setIsEditing(true);
     setEditingProductId(product.id);
 
-    console.log("product", product);
 
     setNewProduct({
       id: product.id || "",

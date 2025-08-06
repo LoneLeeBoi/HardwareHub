@@ -60,6 +60,5 @@ export async function syncCartFromStorage() {
   if (allSuccess) {
     localStorage.removeItem("app-cart-storage");
     location.reload();
-    console.log("Cart sync complete, storage cleared.");
   }
 }

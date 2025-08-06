@@ -29,7 +29,6 @@ export async function PUT(req, { params }) {
 
   const { id } = await params;
   const { user_id, product_id,  stock, acquisition, retail } = await req.json();
-  console.log("id:",product_id)
   return new Promise((resolve) => {
     db.query(
       `UPDATE inventory 

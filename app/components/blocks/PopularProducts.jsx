@@ -21,7 +21,6 @@ export function PopularProducts() {
       if (result.success) {
         const data = result?.data?.data || [];
         setProducts(data);
-        console.log("Fetched popular products:", data);
       } else {
         setError(result.err || "Failed to fetch popular products.");
       }

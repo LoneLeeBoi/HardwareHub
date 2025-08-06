@@ -26,7 +26,7 @@ export async function GET(req) {
   }
 
   const dataSql = `
-    SELECT cart.*, products.*
+    SELECT cart.id AS cartID ,cart.*, products.*
     ${baseSql}
     ORDER BY cart.updated_at DESC 
     LIMIT ? OFFSET ?`;
@@ -61,6 +61,7 @@ export async function GET(req) {
     });
   });
 }
+
 export async function POST(req) {
   if (!isAuthorized(req))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

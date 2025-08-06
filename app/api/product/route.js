@@ -8,13 +8,13 @@ import { writeFile, mkdir } from "fs/promises";
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
 
-  const categoryId = searchParams.get('category');
-  const searchQuery = searchParams.get('search');
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const limit = parseInt(searchParams.get('limit') || '10', 10);
+  const categoryId = searchParams.get("category");
+  const searchQuery = searchParams.get("search");
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
   const offset = (page - 1) * limit;
 
-let baseSql = `
+  let baseSql = `
   FROM products
   JOIN categories ON products.category_id = categories.id
   WHERE products.deleted_at IS NULL
@@ -23,17 +23,17 @@ let baseSql = `
   const values = [];
 
   if (categoryId) {
-    conditions.push('category_id = ?');
+    conditions.push("category_id = ?");
     values.push(categoryId);
   }
 
   if (searchQuery) {
-    conditions.push('name LIKE ?');
+    conditions.push("name LIKE ?");
     values.push(`%${searchQuery}%`);
   }
 
   if (conditions.length > 0) {
-    baseSql += ' AND ' + conditions.join(' AND ');
+    baseSql += " AND " + conditions.join(" AND ");
   }
 
   const dataSql = `
@@ -53,33 +53,35 @@ let baseSql = `
     db.query(dataSql, dataValues, (err, results) => {
       if (err) {
         return resolve(
-          NextResponse.json({ error: 'Database error' }, { status: 500 })
+          NextResponse.json({ error: "Database error" }, { status: 500 })
         );
       }
 
       db.query(countSql, values, (countErr, countResults) => {
         if (countErr) {
           return resolve(
-            NextResponse.json({ error: 'Count query error' }, { status: 500 })
+            NextResponse.json({ error: "Count query error" }, { status: 500 })
           );
         }
 
         const total = countResults[0]?.total || 0;
 
         resolve(
-          NextResponse.json({
-            data: results,
-            page, 
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit),
-          }, { status: 200 })
+          NextResponse.json(
+            {
+              data: results,
+              page,
+              limit,
+              total,
+              totalPages: Math.ceil(total / limit),
+            },
+            { status: 200 }
+          )
         );
       });
     });
   });
 }
-
 
 export async function POST(req) {
   if (!isAuthorized(req))

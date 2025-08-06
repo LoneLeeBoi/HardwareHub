@@ -1,5 +1,7 @@
 "use client";
 
+import { Edit } from "@/public/icons/edit";
+import { Trash } from "@/public/icons/trash";
 import React, { useState } from "react";
 
 // Sample user data
@@ -155,24 +157,24 @@ export default function Page() {
                         {status}
                       </span>
                     </td>
-                    <td className="p-2 space-x-2">
+                    <td className="p-2 space-x-1 flex">
                       <div
                         onClick={() => handleEdit(user.id)}
                         className="text-blue-600 hover:underline text-xs"
                       >
-                        Edit
+                        <Edit className={`size-6`}/>
                       </div>
                       <div
                         onClick={() => handleDelete(user.id)}
                         className="text-red-600 hover:underline text-xs"
                       >
-                        Delete
+                        <Trash className={`size-6`}/>
                       </div>
                     </td>
                   </tr>
                 );
               })
-            ) : (
+            ) : ( 
               <tr>
                 <td colSpan="8" className="text-center p-2">
                   No results found.
