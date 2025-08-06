@@ -3,40 +3,54 @@ import { db } from "@/app/lib/db";
 import { randomUUID } from "crypto";
 import { isAuthorized } from "@/app/lib/auth";
 
+
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("user_id");
+  const id = searchParams.get("id");
   const search = searchParams.get("search");
-  const category = searchParams.get("category");
+  const category_id = searchParams.get("category_id");
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const offset = (page - 1) * limit;
 
-  let baseSql = "FROM expenses WHERE deleted_at IS NULL";
   const conditions = [];
   const values = [];
 
-  if (userId) {
-    conditions.push("user_id = ?");
-    values.push(userId);
+  if (id) {
+    conditions.push("expenses.id = ?");
+    values.push(id);
   }
 
   if (search) {
-    conditions.push("name LIKE ?");
+    conditions.push("expenses.name LIKE ?");
     values.push(`%${search}%`);
   }
 
-  if (category) {
-    conditions.push("category = ?");
-    values.push(category);
+  if (category_id) {
+    conditions.push("expenses.category_id = ?");
+    values.push(category_id);
   }
 
-  if (conditions.length > 0) {
-    baseSql += " AND " + conditions.join(" AND ");
-  }
+  const whereClause = `
+    WHERE expenses.deleted_at IS NULL
+    ${conditions.length > 0 ? " AND " + conditions.join(" AND ") : ""}
+  `;
 
-  const dataSql = `SELECT * ${baseSql} ORDER BY date DESC LIMIT ? OFFSET ?`;
-  const countSql = `SELECT COUNT(*) AS total ${baseSql}`;
+  const dataSql = `
+    SELECT expenses.*, categories.name AS category_name
+    FROM expenses
+    LEFT JOIN categories ON expenses.category_id = categories.id
+    ${whereClause}
+    ORDER BY expenses.row DESC
+    LIMIT ? OFFSET ?
+  `;
+
+  const countSql = `
+    SELECT COUNT(*) AS total
+    FROM expenses
+    ${whereClause}
+  `;
+
   const dataValues = [...values, limit, offset];
 
   return new Promise((resolve) => {
@@ -74,14 +88,14 @@ export async function GET(req) {
 export async function POST(req) {
   if (!isAuthorized(req))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { user_id, name, amount, date, category } = await req.json();
+  const { user_id, name, amount, date, category_id } = await req.json();
   const id = randomUUID();
 
   return new Promise((resolve) => {
     db.query(
-      `INSERT INTO expenses (id, user_id, name, amount, date, category)
+      `INSERT INTO expenses (id, user_id, name, amount, date, category_id)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, user_id, name, amount, date, category],
+      [id, user_id, name, amount, date, category_id],
       (err) => {
         if (err) {
           return resolve(

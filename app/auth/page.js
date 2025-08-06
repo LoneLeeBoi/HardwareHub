@@ -14,9 +14,9 @@ export default function Page() {
   return (
     <>
       <div className="relative h-screen">
-        <div className="absolute inset-0 w-full h-full bg-gray-100 z-0">
+        {/* <div className="absolute inset-0 w-full h-full bg-gray-100 z-0">
           Banner
-        </div>
+        </div> */}
         {isLoginPage ? (
           <Login toggleForm={toggleForm} />
         ) : (

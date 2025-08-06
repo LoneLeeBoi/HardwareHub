@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ProductPopular } from "../functions/ProductFunctions";
 import Image from "next/image";
+import { AddToCartModal } from "@/app/popups/addToCartModal";
 
 const FALLBACK_IMAGE = "/images/fallback.png";
 
@@ -10,6 +11,8 @@ export function PopularProducts() {
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -18,20 +21,26 @@ export function PopularProducts() {
       if (result.success) {
         const data = result?.data?.data || [];
         setProducts(data);
-        console.log("Fetched products:", data);
       } else {
-        setError(result.err || "Failed to fetch products.");
+        setError(result.err || "Failed to fetch popular products.");
       }
     };
 
     fetchProducts();
   }, []);
 
+  const handleAddToCartClick = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
   const visibleProducts = showAll ? products : products.slice(0, 20);
 
   return (
     <div className="container my-[24px]">
-      <h2 className="text-[30px] font-bold">Our Popular Products</h2>
+      <h2 className="text-[30px] font-bold text-center">
+        Our Popular Products
+      </h2>
 
       <div className="py-4">
         {error ? (
@@ -42,7 +51,8 @@ export function PopularProducts() {
               {visibleProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white shadow-md rounded-xl p-4 text-center border border-gray-200 relative"
+                  className="bg-white shadow-md rounded-xl p-4 text-center border border-gray-200 relative hover:bg-gray-100"
+                  onClick={() => handleAddToCartClick(product)}
                 >
                   <div className="relative w-full h-48 mb-2">
                     <Image
@@ -57,6 +67,14 @@ export function PopularProducts() {
                   </div>
                   <div className="font-semibold uppercase text-sm">
                     {product.name}
+                  </div>
+                  <div className="w-full flex justify-center">
+                    <button
+                      onClick={() => handleAddToCartClick(product)}
+                      className="mt-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit"
+                    >
+                      ADD TO CART
+                    </button>
                   </div>
                 </div>
               ))}
@@ -75,6 +93,13 @@ export function PopularProducts() {
           </>
         )}
       </div>
+
+      {/* Add to Cart Modal */}
+      <AddToCartModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        product={selectedProduct}
+      />
     </div>
   );
 }

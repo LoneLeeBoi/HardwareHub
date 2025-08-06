@@ -4,15 +4,15 @@ import React, { useState } from "react";
 import RegisterFunction from "../functions/RegisterFunction";
 import Image from "next/image";
 import { toast } from "react-toastify";
-
-export function Register({ toggleForm }) {
+import { useRouter } from "next/router";
+export function Register() {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
-
+  const router = useRouter();
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -34,6 +34,7 @@ export function Register({ toggleForm }) {
       case 201:
       case 200:
         toast.success("Thank you.");
+        router.push("/login");
         break;
 
       case 400:
@@ -118,10 +119,7 @@ export function Register({ toggleForm }) {
         </form>
         <div className="flex justify-center gap-2 pt-4">
           <span>Already have an account?</span>
-          <span
-            className="font-bold text-[14px] text-blue-500 cursor-pointer"
-            onClick={toggleForm}
-          >
+          <span className="font-bold text-[14px] text-blue-500 cursor-pointer">
             Login
           </span>
         </div>

@@ -33,5 +33,14 @@ delete: delete -/api/expense/:id                        //required authorization
 Get specific expense: get -/api/expense/:id   
 
 
+get: /api/inventory → all inventory
+get: /api/inventory?id=2 → by category
+get: /api/inventory?search=choco → search name
+get: /api/inventory?page=2&limit=5 → paginate
+get: /api/inventory?category=2&search=choco&page=3&limit=5 → Combined filters
 
-test
+
+create: post -/api/inventory                               //required authorization Bearer
+edit: put -/api/inventory/:id                             //required authorization Bearer
+delete: delete -/api/inventory/:id                        //required authorization Bearer
+Get specific inventory: get -/api/inventory/:id  

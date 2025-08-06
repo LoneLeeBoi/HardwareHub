@@ -11,8 +11,16 @@
   @apply border-[#d6b913];
 }
 
-input {
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"] {
   @apply py-3 px-4 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+input[type="checkbox"] {
+  @apply text-blue-600 border-gray-300 rounded focus:ring-0 focus:outline-none;
 }
 
 button {
@@ -24,4 +32,36 @@ button {
 }
 svg {
   @apply cursor-pointer;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+select {
+  @apply h-[45px];
 }

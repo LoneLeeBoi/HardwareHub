@@ -4,12 +4,15 @@ import React, { useEffect, useState } from "react";
 import { ProductFunctions } from "../functions/ProductFunctions";
 import Image from "next/image";
 import searchState from "@/app/store/searchState";
+import { AddToCartModal } from "@/app/popups/addToCartModal";
 
 const FALLBACK_IMAGE = "/images/fallback.png";
 
 export function Products() {
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null); // ⭐ Modal product state
+  const [isModalOpen, setIsModalOpen] = useState(false); // ⭐ Modal visibility state
 
   const setProducts = searchState((state) => state.setProducts);
   const products = searchState((state) => state.products);
@@ -21,7 +24,6 @@ export function Products() {
       if (result.success) {
         const data = result?.data?.data || [];
         setProducts(data);
-        console.log("Fetched products:", data);
       } else {
         setError(result.err || "Failed to fetch products.");
       }
@@ -29,6 +31,11 @@ export function Products() {
 
     fetchCategories();
   }, [setProducts]);
+
+  const handleAddToCartClick = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
 
   const visibleProducts = showAll ? products : products.slice(0, 20);
 
@@ -47,7 +54,8 @@ export function Products() {
               {visibleProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white shadow-md rounded-xl p-4 text-center border border-gray-200 hover:bg-gray-200 cursor-pointer"
+                  className="bg-white shadow-md rounded-xl px-4 pb-4 text-center border border-gray-200 hover:bg-gray-200"
+                  onClick={() => handleAddToCartClick(product)}
                 >
                   <div className="relative w-full h-48 mb-2">
                     <Image
@@ -61,9 +69,12 @@ export function Products() {
                     {product.name}
                   </div>
                   <div className="w-full flex justify-center">
-                    <div className="my-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit">
+                    <button
+                      onClick={() => handleAddToCartClick(product)} // 👈 handle click
+                      className="mt-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit"
+                    >
                       ADD TO CART
-                    </div>
+                    </button>
                   </div>
                 </div>
               ))}
@@ -81,6 +92,13 @@ export function Products() {
             )}
           </>
         )}
+
+        {/* ⭐ Modal */}
+        <AddToCartModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          product={selectedProduct}
+        />
       </div>
     </div>
   );
