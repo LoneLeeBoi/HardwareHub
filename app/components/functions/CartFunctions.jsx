@@ -72,3 +72,33 @@ export async function addUserCart(cart) {
     };
   }
 }
+
+export async function removeProduct(id) {
+  const baseUrl = "http://localhost:3000";
+  const url = `${baseUrl}/api/cart/${id}`;
+  const token = localStorage.getItem("token");
+
+  try {
+    const res = await axios.delete(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return {
+      success: true,
+      status: res.status,
+      data: res.data,
+    };
+  } catch (err) {
+    const status = err.response?.status || 500;
+    const message =
+      err.response?.data?.message ||
+      "Removing product from cart failed. Please try again.";
+
+    return {
+      success: false,
+      status: status,
+      err: message,
+    };
+  }
+}

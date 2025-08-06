@@ -174,7 +174,7 @@ export default function Page() {
                   </tr>
                 );
               })
-            ) : (
+            ) : ( 
               <tr>
                 <td colSpan="8" className="text-center p-2">
                   No results found.

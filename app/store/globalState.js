@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { addUserCart } from "@/app/components/functions/CartFunctions";
+import {
+  addUserCart,
+  removeProduct,
+} from "@/app/components/functions/CartFunctions";
 
 const globalState = create(
   persist(
@@ -12,9 +15,8 @@ const globalState = create(
       setLogout: async (status) => {
         if (get().cart.length > 0) {
           try {
-            
-            console.log('cart',get().cart);
-            
+            console.log("cart", get().cart);
+
             await addUserCart(get().cart);
           } catch (err) {
             console.error("Cart sync failed:", err);
@@ -31,9 +33,7 @@ const globalState = create(
 
       addToCart: (item) =>
         set((state) => {
-          const existing = state.cart.find(
-            (i) => i.id === item.id
-          );
+          const existing = state.cart.find((i) => i.id === item.id);
 
           if (existing) {
             return {
@@ -51,10 +51,12 @@ const globalState = create(
           }
         }),
 
-      removeFromCart: (itemId) =>
+      removeFromCart: (itemId) => {
+        removeProduct(itemId);
         set((state) => ({
-          cart: state.cart.filter((item) => item.id !== itemId),
-        })),
+          cart: state.cart.filter((item) => item.cartID !== itemId),
+        }));
+      },
 
       updateQuantity: (itemId, quantity) =>
         set((state) => ({
@@ -68,9 +70,7 @@ const globalState = create(
         const mergedCart = [...currentCart];
 
         tempCart.forEach((tempItem) => {
-          const index = mergedCart.findIndex(
-            (i) => i.id === tempItem.id
-          );
+          const index = mergedCart.findIndex((i) => i.id === tempItem.id);
 
           if (index > -1) {
             mergedCart[index].quantity =
