@@ -24,7 +24,6 @@ export async function GET(req) {
   const values = [];
 
   if (categoryName && searchQuery) {
-    // 💡 Both use LIKE for partial matching
     conditions.push("(categories.name LIKE ? OR products.name LIKE ?)");
     values.push(`%${categoryName}%`, `%${searchQuery}%`);
   } else if (categoryName) {
