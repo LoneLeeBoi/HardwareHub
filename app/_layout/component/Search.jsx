@@ -10,7 +10,9 @@ export function Search() {
   const setProducts = searchState((state) => state.setProducts);
 
   const handleSearch = async () => {
-    const params = searchParams ? { search: searchParams } : {};
+    const params = searchParams
+      ? { search: searchParams, category_name: searchParams }
+      : {};
     const result = await ProductFunctions(params);
 
     if (result.success) {

@@ -8,7 +8,7 @@ import { writeFile, mkdir } from "fs/promises";
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
 
-  const categoryName = searchParams.get("category_name"); 
+  const categoryName = searchParams.get("category_name");
   const searchQuery = searchParams.get("search");
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
@@ -19,14 +19,18 @@ export async function GET(req) {
     JOIN categories ON products.category_id = categories.id
     WHERE products.deleted_at IS NULL
   `;
+
   const conditions = [];
   const values = [];
 
-  if (categoryName) {
-    conditions.push("categories.name = ?");
-    values.push(categoryName);
-  }
-  if (searchQuery) {
+  if (categoryName && searchQuery) {
+    // 💡 Both use LIKE for partial matching
+    conditions.push("(categories.name LIKE ? OR products.name LIKE ?)");
+    values.push(`%${categoryName}%`, `%${searchQuery}%`);
+  } else if (categoryName) {
+    conditions.push("categories.name LIKE ?");
+    values.push(`%${categoryName}%`);
+  } else if (searchQuery) {
     conditions.push("products.name LIKE ?");
     values.push(`%${searchQuery}%`);
   }
@@ -37,15 +41,14 @@ export async function GET(req) {
 
   const dataSql = `
     SELECT products.*, categories.name AS category_name
-    ${baseSql} ORDER BY products.row DESC
+    ${baseSql}
+    ORDER BY products.row DESC
     LIMIT ? OFFSET ?
   `;
+
   const countSql = `
     SELECT COUNT(*) as total
-    FROM products
-    JOIN categories ON products.category_id = categories.id
-    WHERE products.deleted_at IS NULL
-    ${conditions.length > 0 ? " AND " + conditions.join(" AND ") : ""}
+    ${baseSql}
   `;
 
   const dataValues = [...values, limit, offset];
