@@ -8,27 +8,26 @@ import { writeFile, mkdir } from "fs/promises";
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
 
-  const categoryId = searchParams.get("category");
+  const categoryName = searchParams.get("category_name"); 
   const searchQuery = searchParams.get("search");
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const offset = (page - 1) * limit;
 
   let baseSql = `
-  FROM products
-  JOIN categories ON products.category_id = categories.id
-  WHERE products.deleted_at IS NULL
-`;
+    FROM products
+    JOIN categories ON products.category_id = categories.id
+    WHERE products.deleted_at IS NULL
+  `;
   const conditions = [];
   const values = [];
 
-  if (categoryId) {
-    conditions.push("category_id = ?");
-    values.push(categoryId);
+  if (categoryName) {
+    conditions.push("categories.name = ?");
+    values.push(categoryName);
   }
-
   if (searchQuery) {
-    conditions.push("name LIKE ?");
+    conditions.push("products.name LIKE ?");
     values.push(`%${searchQuery}%`);
   }
 
@@ -44,9 +43,11 @@ export async function GET(req) {
   const countSql = `
     SELECT COUNT(*) as total
     FROM products
-    WHERE deleted_at IS NULL
-    ${categoryId || searchQuery ? " AND " + conditions.join(" AND ") : ""}
+    JOIN categories ON products.category_id = categories.id
+    WHERE products.deleted_at IS NULL
+    ${conditions.length > 0 ? " AND " + conditions.join(" AND ") : ""}
   `;
+
   const dataValues = [...values, limit, offset];
 
   return new Promise((resolve) => {

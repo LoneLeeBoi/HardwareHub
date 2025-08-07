@@ -79,7 +79,7 @@ export default function Page() {
       <div className="flex gap-6">
         <div className="w-3/4">
           <h3 className="text-lg font-semibold mb-3 text-gray-800">Products</h3>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-hidden overflow-y-scroll h-[700px]">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
@@ -103,7 +103,7 @@ export default function Page() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-200 ">
                 {products.map((product) => (
                   <tr key={product.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap font-medium capitalize">
