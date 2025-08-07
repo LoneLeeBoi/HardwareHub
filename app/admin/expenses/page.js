@@ -8,24 +8,30 @@ import { Edit } from "@/public/icons/edit";
 import { Trash } from "@/public/icons/trash";
 import { ConfirmationModal } from "@/app/popups/confirmationModal";
 import useExpenseHandlers from "../expenses/expenseHandler";
+import Pagination from "@/app/utils/Pagination";
 export default function ExpensePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
-const {
-  expenses,
-  isConfirm,
-  setExpenses,
-  setConfirm,
-  handleDeleteExpense,
-  triggerfetchExpenses,
-} = useExpenseHandlers();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const {
+    expenses,
+    isConfirm,
+    setExpenses,
+    setConfirm,
+    handleDeleteExpense,
+    triggerfetchExpenses,
+  } = useExpenseHandlers();
 
   const fetchExpenses = async () => {
     const result = await ExpenseFunctions();
     if (result.success) {
       const data = result?.data?.data || [];
       setExpenses(data);
+
+      setTotalPages(result?.data?.totalPages);
       triggerfetchExpenses();
     } else {
       setError(result.err || "Failed to fetch Expense.");
@@ -69,7 +75,6 @@ const {
     setIsEditing(true);
     setModalOpen(true);
   };
-
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
@@ -165,6 +170,11 @@ const {
               )}
             </tbody>
           </table>
+          <Pagination
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
 
@@ -180,11 +190,11 @@ const {
       />
 
       <ConfirmationModal
-        isOpen={isConfirm }
+        isOpen={isConfirm}
         onClose={() => {
           if (isConfirm) {
             setConfirm("");
-          } 
+          }
         }}
         onConfirm={() => {
           if (isConfirm) {

@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus } from "@/public/icons/plus";
-import { AddInventoryModal } from "@/app/popups/addInventoryModal";
 import { Edit } from "@/public/icons/edit";
+import { Trash } from "@/public/icons/trash";
+import { AddInventoryModal } from "@/app/popups/addInventoryModal";
 import { ConfirmationModal } from "@/app/popups/confirmationModal";
 import useInventoryHandlers from "./inventoryHandler";
-import { Trash } from "@/public/icons/trash";
+import Pagination from "@/app/utils/Pagination";
+
 const Page = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -17,7 +19,9 @@ const Page = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingId, setEditingId] = useState(false);
-  const { isConfirm, setConfirm, handleDeleteInventory } = useInventoryHandlers();
+  const { isConfirm, setConfirm, handleDeleteInventory } =
+    useInventoryHandlers();
+
   const [newInventory, setNewInventory] = useState({
     product_id: "",
     stock: "",
@@ -25,11 +29,11 @@ const Page = () => {
     retail: "",
     user_id: "",
   });
+
   const fetchInventory = async () => {
     try {
       const queryParams = new URLSearchParams();
       if (search) queryParams.append("search", search);
-
       queryParams.append("page", page.toString());
       queryParams.append("limit", limit.toString());
 
@@ -49,45 +53,16 @@ const Page = () => {
 
   useEffect(() => {
     fetchInventory();
-  
   }, [search, page, limit, isConfirm]);
 
-  const handlePrev = () => setPage((p) => Math.max(p - 1, 1));
-  const handleNext = () => setPage((p) => Math.min(p + 1, totalPages));
-
-  const getDesktopPages = () => {
-    const pages = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      if (page <= 4) {
-        pages.push(1, 2, 3, 4, 5, "...", totalPages);
-      } else if (page >= totalPages - 3) {
-        pages.push(
-          1,
-          "...",
-          totalPages - 4,
-          totalPages - 3,
-          totalPages - 2,
-          totalPages - 1,
-          totalPages
-        );
-      } else {
-        pages.push(1, "...", page - 1, page, page + 1, "...", totalPages);
-      }
-    }
-    return pages;
-  };
   const handleInputChange = (field, value) => {
     setNewInventory((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleAddInventory = () => {
-    // No POST logic — just close modal
     setModalOpen(false);
   };
+
   const handleEdit = (item) => {
     setNewInventory(item);
     setEditingId(item.id);
@@ -97,7 +72,6 @@ const Page = () => {
 
   return (
     <div className="p-4">
-      {/* Add Inventory Button */}
       <div
         onClick={() => {
           setIsEditing(false);
@@ -115,9 +89,7 @@ const Page = () => {
         inventory
       </div>
 
-      {/* Inventory Table + Filters */}
       <div className="border border-gray-200 rounded p-4">
-        {/* Filters */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
           <input
             type="text"
@@ -129,24 +101,8 @@ const Page = () => {
               setPage(1);
             }}
           />
-
-          <select
-            className="p-1 text-sm border rounded w-full sm:w-[100px]"
-            value={limit}
-            onChange={(e) => {
-              setLimit(Number(e.target.value));
-              setPage(1);
-            }}
-          >
-            {[5, 10, 20].map((n) => (
-              <option key={n} value={n}>
-                {n} / page
-              </option>
-            ))}
-          </select>
         </div>
 
-        {/* Inventory Table */}
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-gray-100 text-left">
@@ -163,10 +119,8 @@ const Page = () => {
               inventory
                 .slice()
                 .sort((a, b) => {
-                  if (a.stock !== b.stock) {
-                    return a.stock - b.stock; // Lowest stock first
-                  }
-                  return new Date(b.created_at) - new Date(a.created_at); // Newest first
+                  if (a.stock !== b.stock) return a.stock - b.stock;
+                  return new Date(b.created_at) - new Date(a.created_at);
                 })
                 .map((item) => (
                   <tr key={item.id}>
@@ -204,45 +158,13 @@ const Page = () => {
           </tbody>
         </table>
 
-        {/* Pagination */}
-        <div className="flex flex-col items-center gap-2 mt-4 text-sm sm:flex-row justify-center">
-          {/* Previous div */}
-          <div
-            onClick={handlePrev}
-            disabled={page === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50"
-          >
-            Prev
-          </div>
-
-          {/* Page Numbers */}
-          <div className="flex gap-1 flex-wrap justify-center">
-            {getDesktopPages().map((p, idx) => (
-              <div
-                key={idx}
-                onClick={() => typeof p === "number" && setPage(p)}
-                disabled={p === "..."}
-                className={`px-2 py-1 border rounded ${
-                  p === page ? "bg-black text-white" : ""
-                }`}
-              >
-                {p}
-              </div>
-            ))}
-          </div>
-
-          {/* Next div */}
-          <div
-            onClick={handleNext}
-            disabled={page === totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50"
-          >
-            Next
-          </div>
-        </div>
+        <Pagination
+          currentPage={page}
+          setCurrentPage={setPage}
+          totalPages={totalPages}
+        />
       </div>
 
-      {/* Modal */}
       <AddInventoryModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -256,9 +178,7 @@ const Page = () => {
       <ConfirmationModal
         isOpen={isConfirm}
         onClose={() => {
-          if (isConfirm) {
-            setConfirm("");
-          }
+          if (isConfirm) setConfirm("");
         }}
         onConfirm={() => {
           if (isConfirm) {

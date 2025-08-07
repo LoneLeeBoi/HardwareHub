@@ -18,7 +18,9 @@ export default function useProductHandlers() {
   // States
   // ==============================
   const [userId, setUserId] = useState("");
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -68,9 +70,12 @@ export default function useProductHandlers() {
 
   const fetchProducts = async () => {
     const res = await ProductFunctions();
-    res.success
-      ? setProducts(res.data?.data || [])
-      : toast.error(res.err || "Failed to fetch products");
+    if (res.success) {
+      setProducts(res.data?.data || []);
+      setTotalPages(res?.data?.totalPages);
+    } else {
+      toast.error(res.err || "Failed to fetch products");
+    }
   };
 
   // ==============================
@@ -111,7 +116,6 @@ export default function useProductHandlers() {
   const handleEditProduct = (product) => {
     setIsEditing(true);
     setEditingProductId(product.id);
-
 
     setNewProduct({
       id: product.id || "",
@@ -224,7 +228,14 @@ export default function useProductHandlers() {
     isEditingCategory,
     isConfirm,
     editCategoryId,
+    totalPages,
+    currentPage,
+    searchTerm,
 
+    setTotalPages,
+    setSearchTerm,
+    setCurrentPage,
+    setProducts,
     setProducts,
     setConfirm,
     setIsModalOpen,
