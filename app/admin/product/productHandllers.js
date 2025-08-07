@@ -225,6 +225,7 @@ export default function useProductHandlers() {
     isConfirm,
     editCategoryId,
 
+    setProducts,
     setConfirm,
     setIsModalOpen,
     setIsEditing,

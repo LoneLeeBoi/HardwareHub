@@ -8,6 +8,9 @@ import { Plus } from "@/public/icons/plus";
 import { Edit } from "@/public/icons/edit";
 import { Trash } from "@/public/icons/trash";
 import useProductHandlers from "./productHandllers";
+import { Magnify } from "@/public/icons/magnify";
+import { Chevron } from "@/public/icons/chevron";
+import { ProductFunctions } from "@/app/components/functions/ProductFunctions";
 
 export default function Page() {
   const {
@@ -22,6 +25,7 @@ export default function Page() {
     isEditingCategory,
     editCategoryId,
     isCategoryFormOpen,
+    setProducts,
     setConfirm,
     setEditCategoryId,
     setIsEditingCategory,
@@ -43,6 +47,27 @@ export default function Page() {
   } = useProductHandlers();
 
   const [isCatConfirm, setIsCatConfirm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const handleSearch = async () => {
+    try {
+      const params = searchTerm
+        ? { search: searchTerm, category_name: searchTerm }
+        : {};
+      const result = await ProductFunctions(params);
+
+      console.log("prod", result?.data?.data);
+
+      if (result.success) {
+        setProducts(result.data.data || []);
+      } else {
+        console.error("Search failed:", result.err);
+        setProducts([]);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
   return (
     <div className="p-4 container">
       <h2 className="text-2xl font-bold mb-4 text-gray-900">PRODUCTS</h2>
@@ -79,7 +104,24 @@ export default function Page() {
       <div className="flex gap-6">
         <div className="w-3/4">
           <h3 className="text-lg font-semibold mb-3 text-gray-800">Products</h3>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-hidden overflow-y-scroll h-[700px]">
+
+          {/* Search Bar */}
+          <div className="mb-4">
+            <div className="flex items-center border border-gray-300 rounded-lg px-2 py-2 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-transparent border-none !outline-none ring-0 focus:!outline-none focus:!ring-0"
+              />
+              <div className="" onClick={handleSearch}>
+                <Magnify className="h-10 w-10 text-gray-500 ml-2" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-hidden ">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
@@ -95,7 +137,7 @@ export default function Page() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Unit
                   </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Stock
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -103,7 +145,7 @@ export default function Page() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200 ">
+              <tbody className="bg-white divide-y divide-gray-200">
                 {products.map((product) => (
                   <tr key={product.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap font-medium capitalize">
@@ -119,7 +161,7 @@ export default function Page() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {product.units}
                     </td>
-                     <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {product.stock}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex gap-2">
@@ -143,6 +185,51 @@ export default function Page() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="mt-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 text-sm border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              >
+                <Chevron className="h-10 rotate-45 w-10" />
+                Previous
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5) }, (_, i) => {
+                let pageNumber = i + 1;
+                return (
+                  <div
+                    key={pageNumber}
+                    onClick={() => setCurrentPage(pageNumber)}
+                    className={`px-3 py-1 text-sm border rounded ${
+                      currentPage === pageNumber
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {pageNumber}
+                  </div>
+                );
+              })}
+              1
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1))}
+                // disabled={currentPage === totalPages}
+                className="px-3 py-1 text-sm border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              >
+                Next
+                <Chevron className="h-4 w-4" />
+              </div>
+            </div>
           </div>
         </div>
 
