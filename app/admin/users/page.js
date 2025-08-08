@@ -1,11 +1,16 @@
 "use client";
 
-import { UserFunctions } from "@/app/components/functions/UsersFunctions";
+import {
+  DeleteUser,
+  UserFunctions,
+} from "@/app/components/functions/UsersFunctions";
+import { ConfirmationModal } from "@/app/popups/confirmationModal";
 import Pagination from "@/app/utils/Pagination";
 import { Edit } from "@/public/icons/edit";
 import { Magnify } from "@/public/icons/magnify";
 import { Trash } from "@/public/icons/trash";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function Page() {
   const [search, setSearch] = useState("");
@@ -14,6 +19,10 @@ export default function Page() {
   const [page, setPage] = useState(1);
   const [users, setUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
+
+  // Delete confirmation
+  const [isConfirm, setIsConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const getStatus = (user) => (user.isActive ? "Active" : "Inactive");
 
@@ -29,9 +38,15 @@ export default function Page() {
   const paginatedUsers = filteredUsers.slice((page - 1) * limit, page * limit);
 
   const handleEdit = (id) => alert(`Edit user with ID: ${id}`);
-  const handleDelete = (id) => {
-    if (confirm("Are you sure you want to delete this user?")) {
-      alert(`Deleted user with ID: ${id}`);
+
+  const handleDelete = async (id) => {
+    try {
+      const success = await DeleteUser(id);
+      if (success) toast.success("User data deleted.");
+    } catch {
+      toast.error("Failed to delete product");
+    } finally {
+      fetchUsers();
     }
   };
 
@@ -79,8 +94,18 @@ export default function Page() {
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-gray-100 text-left">
-              {["Username", "Email", "First Name", "Last Name", "Contact", "Address", "Actions"].map((head) => (
-                <th key={head} className="p-2">{head}</th>
+              {[
+                "Username",
+                "Email",
+                "First Name",
+                "Last Name",
+                "Contact",
+                "Address",
+                "Actions",
+              ].map((head) => (
+                <th key={head} className="p-2">
+                  {head}
+                </th>
               ))}
             </tr>
           </thead>
@@ -95,10 +120,19 @@ export default function Page() {
                   <td className="p-2">{user.contact || "-"}</td>
                   <td className="p-2">{user.address || "-"}</td>
                   <td className="p-2 flex space-x-1">
-                    <div onClick={() => handleEdit(user.user_id)} className="cursor-pointer">
+                    <div
+                      onClick={() => handleEdit(user.user_id)}
+                      className="cursor-pointer"
+                    >
                       <Edit className="size-6 text-blue-600" />
                     </div>
-                    <div onClick={() => handleDelete(user.user_id)} className="cursor-pointer">
+                    <div
+                      onClick={() => {
+                        setDeleteId(user.user_id);
+                        setIsConfirm(true);
+                      }}
+                      className="cursor-pointer"
+                    >
                       <Trash className="size-6 text-red-600" />
                     </div>
                   </td>
@@ -106,7 +140,9 @@ export default function Page() {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center p-2">No results found.</td>
+                <td colSpan="7" className="text-center p-2">
+                  No results found.
+                </td>
               </tr>
             )}
           </tbody>
@@ -117,6 +153,21 @@ export default function Page() {
           currentPage={page}
           setCurrentPage={setPage}
           totalPages={totalPages}
+        />
+
+        {/* Delete Confirmation */}
+        <ConfirmationModal
+          isOpen={isConfirm}
+          onClose={() => setIsConfirm(false)}
+          onConfirm={() => {
+            if (deleteId) {
+              handleDelete(deleteId);
+              setDeleteId(null);
+            }
+            setIsConfirm(false);
+          }}
+          title="Are you sure?"
+          message="This action cannot be undone."
         />
       </div>
     </div>

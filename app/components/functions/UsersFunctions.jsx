@@ -1,3 +1,4 @@
+import { isAuthorized } from "@/app/lib/auth";
 import axios from "axios";
 
 export async function UserFunctions(params = {}) {
@@ -33,5 +34,26 @@ export async function UserFunctions(params = {}) {
       status,
       err: message,
     };
+  }
+}
+
+export async function DeleteUser(productId) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+
+  const url = `${baseUrl}/api/user/${productId}`;
+
+  try {
+    const res = await axios.delete(url, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Failed to add product:", error);
+    return false;
   }
 }

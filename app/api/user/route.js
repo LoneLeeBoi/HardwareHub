@@ -12,7 +12,7 @@ export async function GET(req) {
   let baseSql = `
     FROM users AS u
     LEFT JOIN user_details AS ud ON ud.user_id = u.id
-    WHERE 1 = 1
+    WHERE ud.deleted_at IS NULL AND ud.user_id IS NOT NULL
   `;
 
   const conditions = [];
