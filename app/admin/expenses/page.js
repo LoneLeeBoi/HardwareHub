@@ -9,12 +9,14 @@ import { Trash } from "@/public/icons/trash";
 import { ConfirmationModal } from "@/app/popups/confirmationModal";
 import useExpenseHandlers from "../expenses/expenseHandler";
 import Pagination from "@/app/utils/Pagination";
+import { Magnify } from "@/public/icons/magnify";
 export default function ExpensePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const {
     expenses,
@@ -26,13 +28,15 @@ export default function ExpensePage() {
   } = useExpenseHandlers();
 
   const fetchExpenses = async () => {
-    const result = await ExpenseFunctions();
+    const params = searchTerm
+      ? { search: searchTerm, category_name: searchTerm }
+      : {};
+    const result = await ExpenseFunctions(params);
     if (result.success) {
       const data = result?.data?.data || [];
       setExpenses(data);
-
       setTotalPages(result?.data?.totalPages);
-      triggerfetchExpenses();
+      // triggerfetchExpenses();
     } else {
       setError(result.err || "Failed to fetch Expense.");
     }
@@ -97,6 +101,27 @@ export default function ExpensePage() {
       {/* Table */}
       <div className="w-full">
         <h3 className="text-lg font-semibold mb-3 text-gray-800">Expenses</h3>
+        <div className="mb-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              fetchExpenses();
+            }}
+            className="flex items-center border border-gray-300 rounded-lg px-2 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+          >
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-transparent border-none !outline-none ring-0 focus:!outline-none focus:!ring-0"
+            />
+            <div className="" onClick={fetchExpenses}>
+              <Magnify className="h-7 w-7 text-gray-500 ml-2" />
+            </div>
+          </form>
+        </div>
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-50">

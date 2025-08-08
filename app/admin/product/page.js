@@ -204,43 +204,6 @@ export default function Page() {
             setCurrentPage={setCurrentPage}
             totalPages={totalPages}
           />
-          {/* <div className="mt-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1 text-sm border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-              >
-                <Chevron className="h-10 rotate-90 w-10" />
-                Previous
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1">
-              <div
-                key={currentPage}
-                onClick={() => setCurrentPage(currentPage)}
-                className={`px-3 py-1 text-sm border rounded ${
-                  currentPage === currentPage
-                    ? "bg-blue-500 text-white border-blue-500"
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                {currentPage}
-              </div>
-            </div>
-            {console.log("page", totalPages)}
-            <div className="flex items-center gap-2">
-              <div
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage >= totalPages}
-                className="px-3 py-1 text-sm border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-              >
-                Next
-                <Chevron className="h-4 w-4 -rotate-90" />
-              </div>
-            </div>
-          </div> */}
         </div>
 
         <div className="w-full flex-1">
