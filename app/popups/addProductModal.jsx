@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 import jwt from "jsonwebtoken";
 
 export function AddProductModal({
+  setNameDefault,
+  nameDefault,
   isOpen,
   onClose,
   newProduct,
@@ -31,6 +33,11 @@ export function AddProductModal({
   }, [isOpen]);
 
   useEffect(() => {
+    if (nameDefault != null) {
+      handleInputChange("name", nameDefault);
+    }
+  }, [nameDefault]);
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -47,6 +54,7 @@ export function AddProductModal({
   }, []);
 
   const handleClose = () => {
+    setNameDefault(null);
     setShowModal(false);
     setTimeout(() => onClose(), 300);
   };
@@ -108,8 +116,13 @@ export function AddProductModal({
           <InputField
             label="Product Name"
             type="text"
-            value={newProduct.name}
-            onChange={(val) => handleInputChange("name", val)}
+            value={nameDefault ?? newProduct.name}
+            onChange={(val) => {
+              if (nameDefault == null) {
+                handleInputChange("name", val);
+              }
+            }}
+            disabled={!!nameDefault}
           />
 
           <InputField
@@ -186,7 +199,7 @@ export function AddProductModal({
   );
 }
 
-function InputField({ label, type, value, onChange }) {
+function InputField({ label, type, value, onChange, disabled }) {
   return (
     <div>
       <label className="block text-sm font-medium mb-1">{label}</label>
@@ -202,6 +215,7 @@ function InputField({ label, type, value, onChange }) {
         placeholder={
           type !== "file" ? `Enter ${label.toLowerCase()}` : undefined
         }
+        disabled={disabled}
       />
     </div>
   );
