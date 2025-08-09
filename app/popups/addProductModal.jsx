@@ -55,21 +55,18 @@ export function AddProductModal({
     try {
       setLoading(true);
       const submitAction = isEditing ? EditProduct : AddProduct;
-
-      const success = await submitAction(newProduct);
-
-      if (success) {
+      console.log(newProduct);
+      let result = await submitAction(newProduct);
+      if (result.success) {
         toast.success(
-          isEditing
+          EditProduct
             ? "Product updated successfully!"
             : "Product added successfully!"
         );
         handleClose();
         if (typeof refreshProducts === "function") refreshProducts();
       } else {
-        toast.error(
-          isEditing ? "Failed to update product." : "Failed to add product."
-        );
+        toast.error(result.message);
       }
     } catch (error) {
       console.error(error);
@@ -91,7 +88,7 @@ export function AddProductModal({
 
       {/* Slide-in Modal */}
       <div
-        className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl ${
+        className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl overflow-y-auto max-h-[800px] ${
           showModal ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -118,7 +115,7 @@ export function AddProductModal({
           <InputField
             label="Image"
             type="file"
-            value={newProduct.image }
+            value={newProduct.image}
             onChange={(val) => handleInputChange("image", val)}
           />
           <div>
@@ -136,23 +133,29 @@ export function AddProductModal({
               ))}
             </select>
           </div>
+          <InputField
+            label={isEditing ? "" : "Acquisition Cost"}
+            type={isEditing ? "hidden" : "number"}
+            value={newProduct.acquisition_cost}
+            onChange={(val) => handleInputChange("acquisition_cost", val)}
+          />
 
           <InputField
-            label="Price"
-            type="text"
+            label={isEditing ? "" : "Price"}
+            type={isEditing ? "hidden" : "number"}
             value={newProduct.price}
             onChange={(val) => handleInputChange("price", val)}
           />
 
           <InputField
-            label="Unit"
-            type="text"
+            label={isEditing ? "" : "Unit"}
+            type={isEditing ? "hidden" : "text"}
             value={newProduct.units}
             onChange={(val) => handleInputChange("units", val)}
           />
           <InputField
-            label="Stock"
-            type="number"
+            label={isEditing ? "" : "Stock"}
+            type={isEditing ? "hidden" : "number"}
             value={newProduct.stock ?? ""}
             onChange={(val) => handleInputChange("stock", val)}
           />

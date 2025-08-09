@@ -173,7 +173,7 @@ export default function ExpensePage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {expense.category_name}
+                        {expense.category}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex items-center  gap-6">

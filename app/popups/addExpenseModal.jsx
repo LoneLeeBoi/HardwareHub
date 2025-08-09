@@ -17,20 +17,7 @@ export function AddExpenseModal({
   isEditing = false,
 }) {
   const [showModal, setShowModal] = useState(false);
-  const [categories, setCategories] = useState([]);
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => setShowModal(true), 10);
-      fetch("/api/product/categories")
-        .then((res) => res.json())
-        .then((data) => setCategories(data))
-        .catch((err) => console.error("Failed to load categories", err));
-    } else {
-      setShowModal(false);
-    }
-  }, [isOpen]);
 
-  const [userId, setUserId] = useState();
   useEffect(() => {
     if (isOpen) {
       // Start animation after render
@@ -57,13 +44,15 @@ export function AddExpenseModal({
     try {
       const submitAction = isEditing ? EditExpense : AddExpense;
 
-      const success = await submitAction(payload);
-      if (success) {
-        toast.success("Expense added successfully!");
+      let result = await submitAction(payload);
+      if (result.success) {
+        toast.success(   EditExpense
+            ? "Expense updated successfully!"
+            : "Expense added successfully!");
         handleClose();
         if (typeof refreshExpense === "function") refreshExpense();
       } else {
-        toast.error("Failed to add expense. Please try again.");
+        toast.error(result.message);
       }
     } catch (error) {
       console.error(error);
@@ -132,19 +121,15 @@ export function AddExpenseModal({
           </div>
 
           <div>
+            {/* Hidden or read-only field for User ID */}
+
             <label className="block text-sm font-medium">Category</label>
-            <select
-              value={newExpense.category_id}
-              onChange={(e) => handleInputChange("category_id", e.target.value)}
+            <input
+              type="text"
+              value={newExpense.category}
+              onChange={(e) => handleInputChange("category", e.target.value)}
               className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Category</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
           <div className="flex justify-end pt-4">

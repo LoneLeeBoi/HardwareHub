@@ -11,6 +11,7 @@ import useProductHandlers from "./productHandllers";
 import { Magnify } from "@/public/icons/magnify";
 import { ProductFunctions } from "@/app/components/functions/ProductFunctions";
 import Pagination from "@/app/utils/Pagination";
+import Image from "next/image";
 
 export default function Page() {
   const {
@@ -61,7 +62,6 @@ export default function Page() {
         : {};
       const result = await ProductFunctions(params);
 
-      console.log("prod", result?.data);
 
       if (result.success) {
         setProducts(result.data.data || []);
@@ -77,7 +77,7 @@ export default function Page() {
     <div className="p-4 container">
       <h2 className="text-2xl font-bold mb-4 text-gray-900">PRODUCTS</h2>
 
-      <div className="flex gap-4 w-fit mb-6">
+      <div className="flex gap-4 w-fit overflow-hidden mb-6">
         <div
           onClick={() => {
             setIsModalOpen(true);
@@ -106,8 +106,8 @@ export default function Page() {
         )}
       </div>
 
-      <div className="flex gap-6">
-        <div className="w-3/4">
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-8">
           <h3 className="text-lg font-semibold mb-3 text-gray-800">Products</h3>
 
           {/* Search Bar */}
@@ -132,10 +132,13 @@ export default function Page() {
             </form>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-hidden ">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-auto ">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Image
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Product Name
                   </th>
@@ -143,7 +146,10 @@ export default function Page() {
                     Category
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Price
+                    Acquisition Cost
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Retail Price
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Unit
@@ -157,9 +163,17 @@ export default function Page() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {products.map((product) => (
+                {products.map((product, index) => (
                   <tr key={product.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap font-medium capitalize">
+                      <Image
+                        src={product?.image}
+                        width={50}
+                        height={50}
+                        alt={`iamge product-${index}`}
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {product.name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -167,8 +181,16 @@ export default function Page() {
                         ?.name || "Unknown"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap font-semibold">
-                      {product.price}
+                      {product.acquisition_cost !== null
+                        ? parseFloat(product.acquisition_cost).toFixed(2)
+                        : "0.00"}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap font-semibold">
+                      {product.price !== null
+                        ? parseFloat(product.price).toFixed(2)
+                        : "0.00"}
+                    </td>
+
                     <td className="px-6 py-4 whitespace-nowrap">
                       {product.units}
                     </td>
@@ -206,7 +228,7 @@ export default function Page() {
           />
         </div>
 
-        <div className="w-full flex-1">
+        <div className="w-full col-span-4">
           <h3 className="text-lg font-semibold mb-3 text-gray-800">
             Categories
           </h3>
