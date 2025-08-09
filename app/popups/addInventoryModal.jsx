@@ -104,7 +104,7 @@ export function AddInventoryModal({
               <option value="">Select a product</option>
               {productOptions?.map((product) => (
                 <option key={product.id} value={product.id}>
-                  {product.name}
+                   {product.name} - {product.units}  - : $240.00
                 </option>
               ))}
             </select>

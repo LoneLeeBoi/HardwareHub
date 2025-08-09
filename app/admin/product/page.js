@@ -56,6 +56,7 @@ export default function Page() {
   const [isCatConfirm, setIsCatConfirm] = useState("");
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [nameDefault, setNameDefault] = useState(null);
+  const [categoryDefault, setCategoryDefault] = useState(null);
 
   const handleSearch = async () => {
     try {
@@ -122,7 +123,7 @@ export default function Page() {
                 e.preventDefault();
                 handleSearch();
               }}
-              className="flex items-center border border-gray-300 rounded-lg px-2 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+              className="flex items-center border border-gray-300 rounded-lg pr-2 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
             >
               <input
                 type="text"
@@ -154,7 +155,7 @@ export default function Page() {
                     View
                   </th>
                   <th className=" py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Action
+                    Unit
                   </th>
                 </tr>
               </thead>
@@ -169,6 +170,7 @@ export default function Page() {
                           width={50}
                           height={50}
                           alt={`image product-${index}`}
+                          className="h-[50px] w-[50px] object-cover"
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">{name}</td>
@@ -179,10 +181,10 @@ export default function Page() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className="text-blue-600 underline cursor-pointer"
+                          className="text-white rounded-lg  bg-green-500 hover:bg-green-600 px-3 text-xs  py-1.5 cursor-pointer"
                           onClick={() => setSelectedGroup(group)}
                         >
-                          View
+                          View 
                         </span>
                       </td>
                       <td>
@@ -190,10 +192,11 @@ export default function Page() {
                           onClick={() => {
                             setIsModalOpen(true);
                             setNameDefault(name);
+                            setCategoryDefault(firstProduct?.category_id)
                           }}
-                          className="flex items-center  justify-center text-white w-[30px] h-[30px]  p-2 bg-blue-500  rounded-lg"
+                          className="flex items-center  justify-center text-white w-[30px] h-[30px]  p-2 bg-blue-500 hover:bg-blue-600  rounded-lg"
                         >
-                          <Plus className="size-4 stroke-3" />
+                          <Plus className="size-4 stroke-3 " />
                         </div>
                       </td>
                     </tr>
@@ -287,7 +290,7 @@ export default function Page() {
               </thead>
               <tbody>
                 {selectedGroup.map((p) => (
-                  <tr key={p.id} className="border-t">
+                  <tr key={p.id} className="border-t ">
                     <td className="px-3 py-2">
                       <Image
                         src={p?.image}
@@ -306,14 +309,14 @@ export default function Page() {
                     </td>
                     <td className="px-3 py-2">{p.units}</td>
                     <td className="px-3 py-2">{p.stock}</td>
-                    <td className="px-3 py-2 flex gap-2">
+                    <td className="px-3 py-2 h-full mt-3 flex gap-2">
                       <div
                         onClick={() => {
                           handleEditProduct(p);
                           setIsEditing(true);
                           setSelectedGroup(null);
                         }}
-                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                        className="text-blue-600 hover:text-blue-800 cursor-pointer "
                       >
                         <Edit className="size-5" />
                       </div>
@@ -345,6 +348,8 @@ export default function Page() {
 
       {/* Existing Modals */}
       <AddProductModal
+        setCategoryDefault={setCategoryDefault}
+        categoryDefault={categoryDefault}
         setNameDefault={setNameDefault}
         nameDefault={nameDefault}
         isOpen={isModalOpen}

@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus } from "@/public/icons/plus";
-import { Edit } from "@/public/icons/edit";
-import { Trash } from "@/public/icons/trash";
+
 import { AddInventoryModal } from "@/app/popups/addInventoryModal";
 import { ConfirmationModal } from "@/app/popups/confirmationModal";
 import useInventoryHandlers from "./inventoryHandler";
@@ -109,45 +108,43 @@ const Page = () => {
               <th className="p-2">Name</th>
               <th className="p-2">Unit</th>
               <th className="p-2">Stock</th>
-              <th className="p-2">Acquisition</th>
-              <th className="p-2">Retail</th>
               <th className="p-2">Action</th>
             </tr>
           </thead>
           <tbody>
             {inventory.length > 0 ? (
-              inventory
-                .slice()
-                .sort((a, b) => {
-                  if (a.stock !== b.stock) return a.stock - b.stock;
-                  return new Date(b.created_at) - new Date(a.created_at);
-                })
-                .map((item) => (
-                  <tr key={item.id}>
-                    <td className="p-2">{item.product_name}</td>
+              inventory.map((item) => {
+                let bgClass = "";
+
+                if (item.stock <= 1) {
+                  bgClass = "bg-red-600 text-white animate-pulse"; 
+                } else if (item.stock < 3) {
+                  bgClass = "bg-red-200"; 
+                } else if (item.stock <= 5) {
+                  bgClass = "bg-yellow-100"; 
+                }
+
+                return (
+                  <tr key={item.id} className={bgClass}>
+                    <td className="p-2">{item.name}</td>
                     <td className="p-2">{item.units}</td>
                     <td className="p-2">{item.stock}</td>
-                    <td className="p-2">{item.acquisition}</td>
-                    <td className="p-2">{item.retail}</td>
+
                     <td className="px-6 py-4 whitespace-nowrap flex gap-2">
                       <div
                         onClick={() => {
                           handleEdit(item);
                           setIsEditing(true);
                         }}
-                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                        className="text-black shadow-lg bg-gray-50 p-2 rounded-md cursor-pointer"
                       >
-                        <Edit className="size-6" />
+                        <Plus className="size-4" />
                       </div>
-                      <div
-                        onClick={() => setConfirm(item.id)}
-                        className="text-red-600 hover:text-red-800 cursor-pointer"
-                      >
-                        <Trash className="size-6" />
-                      </div>
+                    
                     </td>
                   </tr>
-                ))
+                );
+              })
             ) : (
               <tr>
                 <td colSpan="5" className="text-center p-2">

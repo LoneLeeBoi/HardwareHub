@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 import jwt from "jsonwebtoken";
 
 export function AddProductModal({
+  setCategoryDefault,
+  categoryDefault,
   setNameDefault,
   nameDefault,
   isOpen,
@@ -38,6 +40,11 @@ export function AddProductModal({
     }
   }, [nameDefault]);
   useEffect(() => {
+    if (categoryDefault != null) {
+      handleInputChange("category_id", categoryDefault);
+    }
+  }, [categoryDefault]);
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -55,6 +62,7 @@ export function AddProductModal({
 
   const handleClose = () => {
     setNameDefault(null);
+    setCategoryDefault(null);
     setShowModal(false);
     setTimeout(() => onClose(), 300);
   };
@@ -134,11 +142,16 @@ export function AddProductModal({
           <div>
             <label className="block text-sm font-medium mb-1">Category</label>
             <select
-              value={newProduct.category_id || ""}
+              value={
+                categories.some((c) => c.id === categoryDefault)
+                  ? categoryDefault
+                  : ""
+              }
               onChange={(e) => handleInputChange("category_id", e.target.value)}
+              disabled={!!categoryDefault}
               className="w-full border rounded px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select a category</option>
+              <option value="">Select Category</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}

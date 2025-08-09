@@ -11,21 +11,17 @@ export async function GET(req) {
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const offset = (page - 1) * limit;
 
-  let baseSql = `
-    FROM inventory 
-    JOIN products ON inventory.product_id = products.id 
-    WHERE inventory.deleted_at IS NULL
-  `;
+  let baseSql = `FROM products WHERE deleted_at IS NULL`;
   const conditions = [];
   const values = [];
 
   if (id) {
-    conditions.push("inventory.id = ?");
+    conditions.push("id = ?");
     values.push(id);
   }
 
   if (search) {
-    conditions.push("products.name LIKE ?");
+    conditions.push("name LIKE ?");
     values.push(`%${search}%`);
   }
 
@@ -34,9 +30,9 @@ export async function GET(req) {
   }
 
   const dataSql = `
-    SELECT inventory.*, products.name AS product_name, products.units 
+    SELECT * 
     ${baseSql} 
-    ORDER BY inventory.row DESC 
+ORDER BY CAST(stock AS UNSIGNED) ASC, id ASC
     LIMIT ? OFFSET ?
   `;
   const countSql = `SELECT COUNT(*) AS total ${baseSql}`;
@@ -45,13 +41,18 @@ export async function GET(req) {
   return new Promise((resolve) => {
     db.query(dataSql, dataValues, (err, results) => {
       if (err) {
-           console.error("DATA QUERY ERROR:", err);  
-        return resolve(NextResponse.json({ error: "DB error" }, { status: 500 }));
+        console.error("DATA QUERY ERROR:", err);
+        return resolve(
+          NextResponse.json({ error: "DB error" }, { status: 500 })
+        );
       }
 
       db.query(countSql, values, (countErr, countRes) => {
         if (countErr) {
-          return resolve(NextResponse.json({ error: "Count error" }, { status: 500 }));
+          console.error("COUNT QUERY ERROR:", countErr);
+          return resolve(
+            NextResponse.json({ error: "Count error" }, { status: 500 })
+          );
         }
 
         resolve(
@@ -100,7 +101,10 @@ export async function POST(req) {
           (err, results) => {
             if (err || results.length === 0) {
               return resolve(
-                NextResponse.json({ error: "Product not found" }, { status: 404 })
+                NextResponse.json(
+                  { error: "Product not found" },
+                  { status: 404 }
+                )
               );
             }
 
@@ -113,13 +117,19 @@ export async function POST(req) {
               (err) => {
                 if (err) {
                   return resolve(
-                    NextResponse.json({ error: "Stock update failed" }, { status: 500 })
+                    NextResponse.json(
+                      { error: "Stock update failed" },
+                      { status: 500 }
+                    )
                   );
                 }
 
                 resolve(
                   NextResponse.json(
-                    { message: "Inventory added and product stock updated", id },
+                    {
+                      message: "Inventory added and product stock updated",
+                      id,
+                    },
                     { status: 200 }
                   )
                 );
