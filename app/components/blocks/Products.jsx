@@ -11,8 +11,8 @@ const FALLBACK_IMAGE = "/images/fallback.png";
 export function Products() {
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const [selectedProducts, setSelectedProducts] = useState([]); 
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const setProducts = searchState((state) => state.setProducts);
   const products = searchState((state) => state.products);
@@ -38,7 +38,10 @@ export function Products() {
   // Remove duplicate names for display
   const uniqueProducts = visibleProducts.filter(
     (item, index, self) =>
-      index === self.findIndex((prod) => prod.name === item.name)
+      index ===
+      self.findIndex(
+        (prod) => prod.name.toLowerCase() === item.name.toLowerCase()
+      )
   );
 
   // Group same name products when clicked

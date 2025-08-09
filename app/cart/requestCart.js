@@ -14,7 +14,6 @@ export default function RequestCart() {
 
   const [paymentMethod, setPaymentMethod] = useState("cash");
 
-
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
@@ -65,7 +64,6 @@ export default function RequestCart() {
       ],
       total_amount: calculateTotal(),
     };
-
   };
 
   const SkeletonItem = () => (
@@ -188,8 +186,10 @@ export default function RequestCart() {
                   </div>
 
                   <div className="flex-shrink-0 ml-4">
+                    {console.log("item",item)}
+
                     <button
-                      onClick={() => handleRemoveItem(item.cartID)}
+                      onClick={() => handleRemoveItem(item.id)}
                       className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                       aria-label={`Remove ${item.name} from cart`}
                     >
