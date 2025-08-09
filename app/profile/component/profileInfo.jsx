@@ -1,94 +1,84 @@
 "use client";
 
-import { EditUser } from "@/app/components/functions/UsersFunctions";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  EditUser,
+  GetDetails,
+} from "@/app/components/functions/UsersFunctions";
+import { toast } from "react-toastify";
 
-export default function ProfileInfo({ user }) {
+export default function ProfileInfo() {
   const [formData, setFormData] = useState({
-    firstname: user?.firstname || "",
-    lastname: user?.lastname || "",
-    address: user?.address || "",
-    contact: user?.contact || "",
-    user_id: user?.user_id || "",
+    firstname: "",
+    lastname: "",
+    address: "",
+    contact: "",
+    user_id: "",
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
 
     const success = await EditUser(formData);
+    toast[success ? "success" : "error"](
+      success ? "Profile updated successfully" : "Failed to update profile"
+    );
+
     if (success) {
-      setMessage("Profile updated successfully ✅");
-    } else {
-      setMessage("Failed to update profile ❌");
+      localStorage.setItem("user_details", JSON.stringify(formData));
     }
+
     setLoading(false);
-  }
+  };
+
+  const fetchDetails = async (id) => {
+    try {
+      const res = await GetDetails(id);
+      localStorage.setItem("user_details", JSON.stringify(res));
+      setFormData(res);
+    } catch (error) {
+      console.error("Error fetching details:", error);
+    }
+  };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user_details");
+    const id = localStorage.getItem("id");
+
+    if (storedUser) {
+      setFormData(JSON.parse(storedUser));
+    } else if (id) {
+      fetchDetails(id);
+    }
+  }, []);
 
   return (
     <div className="flex-1 mx-auto p-6 bg-white shadow rounded">
       <h2 className="text-lg font-semibold mb-4">Edit Profile</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">First Name</label>
-          <input
-            type="text"
-            name="firstname"
-            value={formData.firstname}
-            onChange={handleChange}
-            className="mt-1 block w-full border rounded p-2"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Last Name</label>
-          <input
-            type="text"
-            name="lastname"
-            value={formData.lastname}
-            onChange={handleChange}
-            className="mt-1 block w-full border rounded p-2"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Address</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            className="mt-1 block w-full border rounded p-2"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Contact</label>
-          <input
-            type="text"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            className="mt-1 block w-full border rounded p-2"
-            required
-          />
-        </div>
+        {["firstname", "lastname", "address", "contact"].map((field) => (
+          <div key={field}>
+            <label className="block text-sm font-medium capitalize">
+              {field.replace("name", " Name")}
+            </label>
+            <input
+              type="text"
+              name={field}
+              value={formData[field] || ""}
+              onChange={handleChange}
+              className="mt-1 block w-full border rounded p-2"
+              required
+            />
+          </div>
+        ))}
 
         <button
           type="submit"
@@ -98,10 +88,6 @@ export default function ProfileInfo({ user }) {
           {loading ? "Updating..." : "Update Profile"}
         </button>
       </form>
-
-      {message && (
-        <p className="mt-4 text-center text-sm text-gray-700">{message}</p>
-      )}
     </div>
   );
 }

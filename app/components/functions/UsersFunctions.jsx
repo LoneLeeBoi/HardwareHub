@@ -1,4 +1,3 @@
-import { isAuthorized } from "@/app/lib/auth";
 import axios from "axios";
 
 export async function UserFunctions(params = {}) {
@@ -64,10 +63,10 @@ export async function EditUser(UserData) {
   const url = `${baseUrl}/api/user/${UserData.user_id}`;
 
   const form = new FormData();
-    form.append("firstname", UserData.firstname);
-    form.append("lastname", UserData.lastname);
-    form.append("address", UserData.address);
-    form.append("contact", UserData.contact);
+  form.append("firstname", UserData.firstname);
+  form.append("lastname", UserData.lastname);
+  form.append("address", UserData.address);
+  form.append("contact", UserData.contact);
 
   try {
     const res = await axios.put(url, form, {
@@ -83,6 +82,63 @@ export async function EditUser(UserData) {
       "Failed to edit user:",
       error.response?.data || error.message
     );
+    return false;
+  }
+}
+
+export async function GetDetails(id) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+  const url = `${baseUrl}/api/user/${id}`;
+
+  try {
+    const res = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return res.data.data;
+  } catch (error) {
+    console.error(
+      "Failed to get user details:",
+      error.response?.data || error.message
+    );
+    return false;
+  }
+}
+
+export async function PasswordValidation(password) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+  const id = localStorage.getItem("id");
+
+  try {
+    const res = await axios.post(
+      `${baseUrl}/api/user/password/${id}`,
+      { password },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return res.data;
+  } catch (error) {
+    return false;
+  }
+}
+
+export async function ChangeUserPassword(password) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+  const id = localStorage.getItem("id");
+
+  try {
+    const res = await axios.patch(
+      `${baseUrl}/api/user/password/${id}`,
+      { password },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return res.data;
+  } catch (error) {
     return false;
   }
 }

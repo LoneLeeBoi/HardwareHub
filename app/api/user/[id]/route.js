@@ -2,6 +2,43 @@ import { NextResponse } from "next/server";
 import { isAuthorized } from "@/app/lib/auth";
 import { db } from "@/app/lib/db";
 
+export async function GET(req, { params }) {
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = params;
+
+  return new Promise((resolve) => {
+    const sql = `SELECT * FROM user_details WHERE user_id = ? AND deleted_at IS NULL`;
+
+    db.query(sql, [id], (err, result) => {
+      if (err) {
+        console.error("SQL Error:", err);
+        return resolve(
+          NextResponse.json({ error: "Query failed" }, { status: 500 })
+        );
+      }
+
+      if (result.length === 0) {
+        return resolve(
+          NextResponse.json(
+            { error: "No matching user found" },
+            { status: 404 }
+          )
+        );
+      }
+
+      resolve(
+        NextResponse.json(
+          { message: "User retrieved successfully", data: result[0] },
+          { status: 200 }
+        )
+      );
+    });
+  });
+}
+
 export async function DELETE(req, { params }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
