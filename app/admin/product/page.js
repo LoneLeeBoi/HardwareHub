@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { AddProductModal } from "@/app/popups/addProductModal";
 import { AddCategoryModal } from "@/app/popups/addCategoryModal";
 import { ConfirmationModal } from "@/app/popups/confirmationModal";
@@ -11,6 +11,7 @@ import useProductHandlers from "./productHandllers";
 import { Magnify } from "@/public/icons/magnify";
 import { ProductFunctions } from "@/app/components/functions/ProductFunctions";
 import Pagination from "@/app/utils/Pagination";
+import Image from "next/image";
 
 export default function Page() {
   const {
@@ -53,6 +54,8 @@ export default function Page() {
   } = useProductHandlers();
 
   const [isCatConfirm, setIsCatConfirm] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [nameDefault, setNameDefault] = useState(null);
 
   const handleSearch = async () => {
     try {
@@ -60,8 +63,6 @@ export default function Page() {
         ? { search: searchTerm, category_name: searchTerm }
         : {};
       const result = await ProductFunctions(params);
-
-      console.log("prod", result?.data);
 
       if (result.success) {
         setProducts(result.data.data || []);
@@ -73,15 +74,27 @@ export default function Page() {
       console.log("error", error);
     }
   };
+
+  // Group products by name
+  const groupedProducts = useMemo(() => {
+    const groups = {};
+    products.forEach((product) => {
+      if (!groups[product.name]) {
+        groups[product.name] = [];
+      }
+      groups[product.name].push(product);
+    });
+    return groups;
+  }, [products]);
+
   return (
     <div className="p-4 container">
       <h2 className="text-2xl font-bold mb-4 text-gray-900">PRODUCTS</h2>
 
-      <div className="flex gap-4 w-fit mb-6">
+      {/* Add Product / Category Buttons */}
+      <div className="flex gap-4 w-fit overflow-hidden mb-6">
         <div
-          onClick={() => {
-            setIsModalOpen(true);
-          }}
+          onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-3 px-6 py-3 bg-gray-100 hover:bg-blue-700 text-gray-700 hover:text-white rounded-lg font-xs font-black transition-colors duration-200 shadow-sm hover:shadow-md cursor-pointer"
         >
           <Plus className="size-5 stroke-3" />
@@ -95,19 +108,11 @@ export default function Page() {
           <Plus className="size-5 stroke-3" />
           CATEGORY
         </div>
-        {isCategoryFormOpen && (
-          <div className="h-full w-screen fixed top-0 left-0 flex items-center justify-center">
-            <span
-              className="fixed top-0 left-0 bg-black/40 w-screen h-full"
-              onClick={closeCategoryForm}
-            />
-            <CategoryForm />
-          </div>
-        )}
       </div>
 
-      <div className="flex gap-6">
-        <div className="w-3/4">
+      <div className="grid grid-cols-12 gap-6">
+        {/* Products Table */}
+        <div className="col-span-8">
           <h3 className="text-lg font-semibold mb-3 text-gray-800">Products</h3>
 
           {/* Search Bar */}
@@ -124,81 +129,80 @@ export default function Page() {
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-transparent border-none !outline-none ring-0 focus:!outline-none focus:!ring-0"
+                className="w-full bg-transparent border-none !outline-none ring-0"
               />
-              <div className="" onClick={handleSearch}>
-                <Magnify className="h-7 w-7 text-gray-500 ml-2" />
+              <div onClick={handleSearch}>
+                <Magnify className="h-7 w-7 text-gray-500 ml-2 cursor-pointer" />
               </div>
             </form>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-hidden ">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Image
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Product Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Category
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Price
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    View
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Unit
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stock
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className=" py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Action
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {products.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap font-medium capitalize">
-                      {product.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {categories.find((c) => c.id === product.category_id)
-                        ?.name || "Unknown"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap font-semibold">
-                      {product.price}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {product.units}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {product.stock}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap flex gap-2">
-                      <div
-                        onClick={() => {
-                          handleEditProduct(product);
-                          setIsEditing(true);
-                        }}
-                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                      >
-                        <Edit className="size-6" />
-                      </div>
-                      <div
-                        onClick={() => setConfirm(product.id)}
-                        className="text-red-600 hover:text-red-800 cursor-pointer"
-                      >
-                        <Trash className="size-6" />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {Object.entries(groupedProducts).map(([name, group], index) => {
+                  const firstProduct = group[0];
+                  return (
+                    <tr key={name} className="hover:bg-gray-50 cursor-pointer">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Image
+                          src={firstProduct?.image}
+                          width={50}
+                          height={50}
+                          alt={`image product-${index}`}
+                        />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">{name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {categories.find(
+                          (c) => c.id === firstProduct.category_id
+                        )?.name || "Unknown"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className="text-blue-600 underline cursor-pointer"
+                          onClick={() => setSelectedGroup(group)}
+                        >
+                          View
+                        </span>
+                      </td>
+                      <td>
+                        <div
+                          onClick={() => {
+                            setIsModalOpen(true);
+                            setNameDefault(name);
+                          }}
+                          className="flex items-center  justify-center text-white w-[30px] h-[30px]  p-2 bg-blue-500  rounded-lg"
+                        >
+                          <Plus className="size-4 stroke-3" />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
-          {/* Pagination */}
           <Pagination
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
@@ -206,7 +210,8 @@ export default function Page() {
           />
         </div>
 
-        <div className="w-full flex-1">
+        {/* Categories Table */}
+        <div className="w-full col-span-4">
           <h3 className="text-lg font-semibold mb-3 text-gray-800">
             Categories
           </h3>
@@ -214,10 +219,10 @@ export default function Page() {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Category
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Action
                   </th>
                 </tr>
@@ -250,7 +255,98 @@ export default function Page() {
         </div>
       </div>
 
+      {/* Product Group View Modal */}
+      {selectedGroup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-1/2">
+            <h3 className="text-lg font-semibold mb-4">
+              {selectedGroup[0].name}
+            </h3>
+            <table className="w-full border border-gray-200 rounded">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    Image
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    Acquisition Cost
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    Retail Price
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    Unit
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    Stock
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedGroup.map((p) => (
+                  <tr key={p.id} className="border-t">
+                    <td className="px-3 py-2">
+                      <Image
+                        src={p?.image}
+                        width={50}
+                        height={50}
+                        alt={`image product-${p.id}`}
+                        className="w-[50px] h-[50px] object-cover"
+                      />
+                    </td>
+
+                    <td className="px-3 py-2">
+                      {parseFloat(p.acquisition_cost).toFixed(2)}
+                    </td>
+                    <td className="px-3 py-2">
+                      {parseFloat(p.price).toFixed(2)}
+                    </td>
+                    <td className="px-3 py-2">{p.units}</td>
+                    <td className="px-3 py-2">{p.stock}</td>
+                    <td className="px-3 py-2 flex gap-2">
+                      <div
+                        onClick={() => {
+                          handleEditProduct(p);
+                          setIsEditing(true);
+                          setSelectedGroup(null);
+                        }}
+                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                      >
+                        <Edit className="size-5" />
+                      </div>
+                      <div
+                        onClick={() => {
+                          setConfirm(p.id);
+                          setSelectedGroup(null);
+                        }}
+                        className="text-red-600 hover:text-red-800 cursor-pointer"
+                      >
+                        <Trash className="size-5" />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setSelectedGroup(null)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Existing Modals */}
       <AddProductModal
+        setNameDefault={setNameDefault}
+        nameDefault={nameDefault}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         newProduct={newProduct}
@@ -265,11 +361,8 @@ export default function Page() {
       <ConfirmationModal
         isOpen={isConfirm || isCatConfirm}
         onClose={() => {
-          if (isConfirm) {
-            setConfirm("");
-          } else if (isCatConfirm) {
-            setIsCatConfirm("");
-          }
+          if (isConfirm) setConfirm("");
+          else if (isCatConfirm) setIsCatConfirm("");
         }}
         onConfirm={() => {
           if (isConfirm) {
@@ -296,7 +389,6 @@ export default function Page() {
         handleInputChange={handleCategoryInputChange}
         refreshCategories={fetchCategories}
         isEditing={isEditingCategory}
-        isEditingCategory={isEditingCategory}
         editCategoryId={editCategoryId}
       />
     </div>

@@ -91,16 +91,35 @@ export async function POST(req) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const form = await req.formData();
-  const user_id = form.get("user_id");
-  const name = form.get("name");
-  const price = form.get("price");
-  const category_id = form.get("category_id");
-  const units = form.get("units");
-  const stock = form.get("stock");
+  const user_id = form.get("user_id")?.trim();
+  const name = form.get("name")?.trim();
+  const acquisition_cost = form.get("acquisition_cost")?.trim();
+  const price = form.get("price")?.trim();
+  const category_id = form.get("category_id")?.trim();
+  const units = form.get("units")?.trim();
+  const stock = form.get("stock")?.trim();
   const file = form.get("image");
 
-  const id = randomUUID();
+  // Helper: check empty/null/whitespace
+  const isEmpty = (val) => !val || val.length === 0;
 
+  // Validation
+  if (
+    isEmpty(user_id) ||
+    isEmpty(name) ||
+    isEmpty(acquisition_cost) ||
+    isNaN(acquisition_cost) ||
+    isEmpty(price) ||
+    isNaN(price) ||
+    isEmpty(category_id)
+  ) {
+    return NextResponse.json(
+      { error: "All fields are required. No empty or whitespace values allowed." },
+      { status: 400 }
+    );
+  }
+
+  // Image validation
   if (!file || typeof file === "string") {
     return NextResponse.json(
       { error: "Invalid image upload" },
@@ -108,6 +127,7 @@ export async function POST(req) {
     );
   }
 
+  const id = randomUUID();
   const ext = file.name.split(".").pop();
   const uniqueName = `${Date.now()}-${randomUUID()}.${ext}`;
   const uploadPath = path.join(process.cwd(), "public", "uploads");
@@ -124,9 +144,9 @@ export async function POST(req) {
   try {
     const result = await new Promise((resolve, reject) => {
       db.query(
-        `INSERT INTO products (id, user_id, name, price, stock, category_id, units, image)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id, user_id, name, price, stock, category_id, units, imagePath],
+        `INSERT INTO products (id, user_id, name, acquisition_cost, price, stock, category_id, units, image)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [id, user_id, name, acquisition_cost, price, stock, category_id, units, imagePath],
         (err, result) => {
           if (err) return reject(err);
           resolve(result);
@@ -153,3 +173,4 @@ export async function POST(req) {
     );
   }
 }
+

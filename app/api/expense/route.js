@@ -8,7 +8,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const search = searchParams.get("search");
-  const category_id = searchParams.get("category_id");
+  const category = searchParams.get("category"); // changed from category_id
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const offset = (page - 1) * limit;
@@ -26,9 +26,9 @@ export async function GET(req) {
     values.push(`%${search}%`);
   }
 
-  if (category_id) {
-    conditions.push("expenses.category_id = ?");
-    values.push(category_id);
+  if (category) {
+    conditions.push("expenses.category = ?");
+    values.push(category);
   }
 
   const whereClause = `
@@ -36,10 +36,10 @@ export async function GET(req) {
     ${conditions.length > 0 ? " AND " + conditions.join(" AND ") : ""}
   `;
 
+  // No join since category is stored directly in expenses
   const dataSql = `
-    SELECT expenses.*, categories.name AS category_name
+    SELECT expenses.*
     FROM expenses
-    LEFT JOIN categories ON expenses.category_id = categories.id
     ${whereClause}
     ORDER BY expenses.row DESC
     LIMIT ? OFFSET ?
@@ -88,14 +88,33 @@ export async function GET(req) {
 export async function POST(req) {
   if (!isAuthorized(req))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { user_id, name, amount, date, category_id } = await req.json();
+
+  const { user_id, name, amount, date, category } = await req.json();
   const id = randomUUID();
+
+  // Helper: check empty/null/whitespace
+  const isEmpty = (val) => !val || val.toString().trim().length === 0;
+
+  // Validate fields
+  if (
+    isEmpty(user_id) ||
+    isEmpty(name) ||
+    isEmpty(amount) ||
+    isNaN(amount) ||
+    isEmpty(date) ||
+    isEmpty(category)
+  ) {
+    return NextResponse.json(
+      { error: "All fields are required. No empty or whitespace values allowed." },
+      { status: 400 }
+    );
+  }
 
   return new Promise((resolve) => {
     db.query(
-      `INSERT INTO expenses (id, user_id, name, amount, date, category_id)
+      `INSERT INTO expenses (id, user_id, name, amount, date, category)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, user_id, name, amount, date, category_id],
+      [id, user_id.trim(), name.trim(), parseFloat(amount), date.trim(), category.trim()],
       (err) => {
         if (err) {
           return resolve(

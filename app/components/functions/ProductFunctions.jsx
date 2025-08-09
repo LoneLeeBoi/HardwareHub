@@ -1,4 +1,5 @@
 import axios from "axios";
+import jwt from "jsonwebtoken";
 
 export async function ProductFunctions(params = {}) {
   const baseUrl = "http://localhost:3000";
@@ -75,12 +76,13 @@ export async function ProductPopular(params = {}) {
 export async function AddProduct(productData) {
   const baseUrl = "http://localhost:3000";
   const token = localStorage.getItem("token");
-
+  const decoded = jwt.decode(localStorage.getItem("token"));
   const url = `${baseUrl}/api/product`;
 
   const form = new FormData();
-  form.append("user_id", productData.user_id);
+  form.append("user_id", productData.user_id || decoded?.id);
   form.append("name", productData.name);
+  form.append("acquisition_cost", productData.acquisition_cost);
   form.append("price", productData.price);
   form.append("category_id", productData.category_id);
   form.append("image", productData.image);
@@ -95,10 +97,13 @@ export async function AddProduct(productData) {
       },
     });
 
-    return true;
+    return { success: true };
   } catch (error) {
-    console.error("Failed to add product:", error);
-    return false;
+    if (error.response && error.response.status === 400) {
+      return { success: false, message: error.response.data.error };
+    }
+    console.error("Failed to add expense:", error);
+    return { success: false, message: "An unexpected error occurred." };
   }
 }
 
@@ -110,6 +115,7 @@ export async function EditProduct(productData) {
   const form = new FormData();
   form.append("user_id", productData.user_id);
   form.append("name", productData.name);
+  form.append("acquisition_cost", productData.acquisition_cost);
   form.append("price", productData.price);
   form.append("category_id", productData.category_id);
   form.append("units", productData.units);
@@ -127,13 +133,13 @@ export async function EditProduct(productData) {
       },
     });
 
-    return true;
+    return { success: true };
   } catch (error) {
-    console.error(
-      "Failed to edit product:",
-      error.response?.data || error.message
-    );
-    return false;
+    if (error.response && error.response.status === 400) {
+      return { success: false, message: error.response.data.error };
+    }
+    console.error("Failed to add expense:", error);
+    return { success: false, message: "An unexpected error occurred." };
   }
 }
 

@@ -26,10 +26,11 @@ export default function useProductHandlers() {
     name: "",
     image: "",
     category_id: "",
+    acquisition_cost: "",
     price: "",
     units: "",
     status: "Active",
-    user_id: "",
+    user_id: userId,
   });
 
   const [categories, setCategories] = useState([]);
@@ -53,7 +54,7 @@ export default function useProductHandlers() {
   // ==============================
   useEffect(() => {
     const decoded = jwt.decode(localStorage.getItem("token"));
-    setUserId(decoded?.id || "");
+    setUserId(decoded?.id);
     fetchCategories();
     fetchProducts();
   }, []);
@@ -122,6 +123,7 @@ export default function useProductHandlers() {
       name: product.name || "",
       image: product.image || "",
       category_id: product.category_id || "",
+      acquisition_cost: product.acquisition_cost || "",
       price: product.price || "",
       units: product.units || "",
       stock: product.stock || "",
@@ -206,6 +208,7 @@ export default function useProductHandlers() {
       name: "",
       image: "",
       category_id: "",
+      acquisition_cost: "",
       price: "",
       units: 0,
       stock: 0,
