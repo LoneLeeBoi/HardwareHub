@@ -4,6 +4,7 @@ import {
   DeleteUser,
   UserFunctions,
 } from "@/app/components/functions/UsersFunctions";
+import AddUserModal from "@/app/popups/addUserModal";
 import { ConfirmationModal } from "@/app/popups/confirmationModal";
 import Pagination from "@/app/utils/Pagination";
 import { Edit } from "@/public/icons/edit";
@@ -20,9 +21,16 @@ export default function Page() {
   const [users, setUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Delete confirmation
+  // Modals & Editing
+  const [isOpen, setOpen] = useState(false);
   const [isConfirm, setIsConfirm] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [userData, setUserData] = useState({
+    firstname: "",
+    lastname: "",
+    address: "",
+    contact: "",
+  });
 
   const getStatus = (user) => (user.isActive ? "Active" : "Inactive");
 
@@ -37,16 +45,15 @@ export default function Page() {
 
   const paginatedUsers = filteredUsers.slice((page - 1) * limit, page * limit);
 
-  const handleEdit = (id) => alert(`Edit user with ID: ${id}`);
-
   const handleDelete = async (id) => {
     try {
       const success = await DeleteUser(id);
-      if (success) toast.success("User data deleted.");
+      if (success) {
+        toast.success("User data deleted.");
+        fetchUsers();
+      }
     } catch {
-      toast.error("Failed to delete product");
-    } finally {
-      fetchUsers();
+      toast.error("Failed to delete user");
     }
   };
 
@@ -71,6 +78,9 @@ export default function Page() {
 
   return (
     <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4 text-gray-900 uppercase">
+        User Management
+      </h1>
       <div className="border border-gray-200 rounded p-4">
         {/* Search */}
         <form
@@ -121,7 +131,10 @@ export default function Page() {
                   <td className="p-2">{user.address || "-"}</td>
                   <td className="p-2 flex space-x-1">
                     <div
-                      onClick={() => handleEdit(user.user_id)}
+                      onClick={() => {
+                        setUserData(user);
+                        setOpen(true);
+                      }}
                       className="cursor-pointer"
                     >
                       <Edit className="size-6 text-blue-600" />
@@ -168,6 +181,16 @@ export default function Page() {
           }}
           title="Are you sure?"
           message="This action cannot be undone."
+        />
+
+        {/* Edit/Add User Modal */}
+        <AddUserModal
+          isOpen={isOpen}
+          onClose={() => setOpen(false)}
+          newUser={userData}
+          setNewUser={setUserData}
+          refreshUsers={fetchUsers}
+          isEditing={true}
         />
       </div>
     </div>

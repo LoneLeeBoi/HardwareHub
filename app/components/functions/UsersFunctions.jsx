@@ -57,3 +57,32 @@ export async function DeleteUser(productId) {
     return false;
   }
 }
+
+export async function EditUser(UserData) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+  const url = `${baseUrl}/api/user/${UserData.user_id}`;
+
+  const form = new FormData();
+    form.append("firstname", UserData.firstname);
+    form.append("lastname", UserData.lastname);
+    form.append("address", UserData.address);
+    form.append("contact", UserData.contact);
+
+  try {
+    const res = await axios.put(url, form, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error(
+      "Failed to edit user:",
+      error.response?.data || error.message
+    );
+    return false;
+  }
+}
