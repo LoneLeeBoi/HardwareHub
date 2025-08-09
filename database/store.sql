@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 06, 2025 at 01:22 PM
+-- Generation Time: Aug 09, 2025 at 05:45 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.4.8
 
@@ -87,7 +87,7 @@ CREATE TABLE `expenses` (
   `name` varchar(255) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   `date` varchar(50) NOT NULL,
-  `category_id` varchar(100) DEFAULT NULL,
+  `category` varchar(100) NOT NULL,
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `deleted_at` datetime DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp()
@@ -97,8 +97,15 @@ CREATE TABLE `expenses` (
 -- Dumping data for table `expenses`
 --
 
-INSERT INTO `expenses` (`row`, `id`, `user_id`, `name`, `amount`, `date`, `category_id`, `updated_at`, `deleted_at`, `created_at`) VALUES
-(23, '404fb819-424b-4f13-b90d-fe932bca20e8', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'Cement Bag 40kg', 200.00, '2025-08-15', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '2025-08-02 15:53:59', NULL, '2025-08-02 15:53:59');
+INSERT INTO `expenses` (`row`, `id`, `user_id`, `name`, `amount`, `date`, `category`, `updated_at`, `deleted_at`, `created_at`) VALUES
+(30, '20574666-9d64-479b-a5db-78fd62d7609c', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'FDGFDGFD', 435.00, '2025-07-30', '543', '2025-08-09 13:18:42', NULL, '2025-08-09 13:18:42'),
+(29, '21bfb882-5130-4a69-95ca-63af2f22fd0d', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'sdasd', 1123123.00, '2025-07-31', 'lala', '2025-08-09 12:58:02', NULL, '2025-08-09 12:51:52'),
+(23, '404fb819-424b-4f13-b90d-fe932bca20e8', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'Cement Bag 40kg', 200.00, '2025-08-15', 'teszt3', '2025-08-09 12:22:03', NULL, '2025-08-02 15:53:59'),
+(25, '4a9e218d-a764-4477-b717-5864e12a95de', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'test3', 213.00, '2025-07-30', 'sadasd', '2025-08-09 12:44:47', NULL, '2025-08-09 12:44:47'),
+(26, '4d99aa6c-ef31-4b16-80a8-fca7857e51be', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'test3', 213.00, '2025-07-30', 'sadasd', '2025-08-09 12:45:02', NULL, '2025-08-09 12:45:02'),
+(27, '8af60e97-f338-4ee1-9082-ab9891de7eb7', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'wdawd', 214342.00, '2025-07-29', 'ewqwewqe', '2025-08-09 12:46:03', NULL, '2025-08-09 12:46:03'),
+(28, '9d59416c-1697-4a98-a673-95b653d8e1c6', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'sadadas', 123123.00, '2025-08-06', 'hGgGFg', '2025-08-09 12:54:25', NULL, '2025-08-09 12:48:49'),
+(24, 'b809f7ff-7a88-4896-a815-835a780ac5be', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'test1', 1000.00, '2025-08-14', 'test me', '2025-08-09 12:25:36', NULL, '2025-08-09 12:21:46');
 
 -- --------------------------------------------------------
 
@@ -141,6 +148,7 @@ CREATE TABLE `products` (
   `id` varchar(36) NOT NULL,
   `user_id` varchar(36) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `acquisition_cost` decimal(10,2) NOT NULL DEFAULT 0.00,
   `price` decimal(10,2) NOT NULL,
   `stock` varchar(50) DEFAULT NULL,
   `category_id` varchar(36) NOT NULL,
@@ -155,12 +163,15 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`row`, `id`, `user_id`, `name`, `price`, `stock`, `category_id`, `image`, `units`, `updated_at`, `deleted_at`, `created_at`) VALUES
-(22, '07be17c4-41c6-4771-aae1-1a7f6eafc309', '', 'Electric Drill', 3000.00, '12', 'a217ed37-ef24-4adb-b13f-87f2dae2d6e5', '/uploads/1754120907576-cc07a77f-e157-4582-b850-d49bf14e876f.webp', 'pc', '2025-08-03 12:32:32', NULL, '2025-08-02 15:48:27'),
-(21, '12303e9e-808c-4ff5-9f8b-d39811889c88', '', 'Screwdriver Set', 1200.50, '20', '0a9432bf-932d-4e9d-abfb-c1cd57e6d678', '/uploads/1754120769366-c4d1a6bf-c2e6-467a-bc4a-8e48670b0414.webp', 'Set', '2025-08-02 16:36:35', NULL, '2025-08-02 15:46:09'),
-(23, 'a48db5fc-02af-48e8-972f-696bfcb7c6ff', '', 'Extension Cord 5m', 200.00, '20', 'fa2b8ebe-6748-48f2-8bcb-fb7a6db7d025', '/uploads/1754120995641-b3de54f2-1454-4294-a9cb-23370b4a2d41.webp', 'pc', '2025-08-02 15:51:06', NULL, '2025-08-02 15:49:55'),
-(24, 'c64e1aa4-14ed-4611-a117-cb52a1616746', '', 'Cement Bag 40kg', 200.00, '45', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754121150738-034f5a29-c9cd-4dcb-8040-3db24a953fbd.webp', 'bag', '2025-08-06 00:53:40', NULL, '2025-08-02 15:52:30'),
-(25, 'f384a883-cf17-49f8-84b6-1603d41d1741', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'tetst', 100.00, '36', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754195578956-21f6d522-c337-4d49-9f39-ea4f7118bd84.png', 'pc', '2025-08-06 01:07:16', NULL, '2025-08-03 12:32:58');
+INSERT INTO `products` (`row`, `id`, `user_id`, `name`, `acquisition_cost`, `price`, `stock`, `category_id`, `image`, `units`, `updated_at`, `deleted_at`, `created_at`) VALUES
+(27, '4ee6cebd-c1ed-4e9e-9481-e882668d9444', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'fdgfdgfd', 123.00, 213.00, '123', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754716238532-c3e9c8b1-4a8c-4084-abf0-b4f8f0164708.jpg', '123', '2025-08-09 13:10:38', NULL, '2025-08-09 13:10:38'),
+(32, '57e1a628-1f5e-4f3a-955d-a325acfa908b', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'asdasd', 123.00, 213.00, '123', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754717219258-90bd5bd5-816a-4ee3-99b2-da15de614e83.png', '123', '2025-08-09 13:26:59', NULL, '2025-08-09 13:26:59'),
+(31, '73604424-6045-49f6-b447-08149a994f85', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'SADSAD', 12.00, 12.00, '12', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754717015059-dd650028-32bd-4791-8387-0d166e48e19b.png', '12', '2025-08-09 13:23:35', NULL, '2025-08-09 13:23:35'),
+(28, '884b38a8-6dc8-45d8-aabe-4d10c07fdacb', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'aSAsaS', 22.00, 12.00, '12', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754716541486-dbe736f5-df95-40a6-a36f-93d838dbf107.png', '`12', '2025-08-09 13:15:41', NULL, '2025-08-09 13:15:41'),
+(29, '8f04ed64-fc56-4966-849a-7b452fe48c81', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'GFHFGHFGH', 34.00, 343.00, '4', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754716743600-d95f1b08-1009-4e30-9e9c-143baf98662c.png', '43', '2025-08-09 13:19:03', NULL, '2025-08-09 13:19:03'),
+(26, 'a6c3b4d5-26f2-4627-aeaf-1cc8db3d4d11', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'test 1', 250.00, 300.00, '12', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754711334497-cf6cc49b-4bfa-48f5-864f-4d268361301d.png', 'pcs', '2025-08-09 11:48:54', NULL, '2025-08-09 11:48:54'),
+(30, 'ae5e6636-9a6b-4996-ab9b-5b6e40394eca', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', 'SADASD', 12.00, 12.00, '12', 'fa2b8ebe-6748-48f2-8bcb-fb7a6db7d025', '/uploads/1754716921135-7cacee68-201a-47ab-a22c-e4d03fe0e398.png', '12', '2025-08-09 13:22:01', NULL, '2025-08-09 13:22:01'),
+(33, 'ca2d82ca-84a7-4454-93e9-af6c5c84c598', '91a277ac-2218-4bdc-9934-8cf9a5f8aadf', '23qwe', 213.00, 213.00, '123', 'dbaadc5a-0ab4-4fd7-a0f7-23b2b00a413e', '/uploads/1754717237971-ba4012b2-3270-40f4-a84f-94bfa91bcdb3.png', '213', '2025-08-09 13:27:17', NULL, '2025-08-09 13:27:17');
 
 -- --------------------------------------------------------
 
@@ -259,7 +270,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `expenses`
 --
 ALTER TABLE `expenses`
-  MODIFY `row` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `row` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `inventory`
@@ -271,7 +282,7 @@ ALTER TABLE `inventory`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `row` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `row` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `users`
