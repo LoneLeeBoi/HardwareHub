@@ -1,23 +1,70 @@
 "use client";
-
 import { Close } from "@/public/icons/close";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import globalState from "../store/globalState";
 import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
 
 export function AddToCartModal({ isOpen, onClose, product }) {
-  const { addToCart } = globalState(); // ✅ use addToCart method instead of manually handling cart
+  const { addToCart } = globalState();
   const [quantity, setQuantity] = useState(1);
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const modalRef = useRef(null);
 
-  if (!product) return null;
+  // Initialize selected variant
+  useEffect(() => {
+    if (Array.isArray(product) && product.length > 0) {
+      setSelectedVariant(product[0]); // default to first variant
+    } else if (product && !Array.isArray(product)) {
+      setSelectedVariant(product); // single product
+    } else {
+      setSelectedVariant(null);
+    }
+  }, [product]);
+
+  // Handle click outside to close modal
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target) &&
+        isOpen
+      ) {
+        onClose();
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen, onClose]);
+
+  // Reset quantity when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setQuantity(1);
+    }
+  }, [isOpen]);
+
+  // Don't render if no product or variant selected
+  if (!isOpen || !selectedVariant) return null;
 
   const handleAddToCart = () => {
-    addToCart({ ...product, quantity }); // ✅ smart method chooses tempCart or cart
-    onClose();
-    setQuantity(1); // reset quantity
+    if (selectedVariant && quantity > 0) {
+      addToCart({ ...selectedVariant, quantity });
+      onClose();
+    }
   };
+
+  const variants = Array.isArray(product) ? product : [product];
 
   return (
     <>
@@ -27,79 +74,135 @@ export function AddToCartModal({ isOpen, onClose, product }) {
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
-        aria-hidden={!isOpen}
       />
 
       {/* Modal */}
       <div
-        className={`fixed top-0 right-0 z-[102] bg-white h-screen w-full sm:w-1/3 p-6 shadow-xl overflow-hidden transition-transform duration-300 ease-in-out ${
+        ref={modalRef}
+        className={`fixed top-0 right-0 z-[102] bg-white h-screen w-full sm:w-1/3 p-6 shadow-xl overflow-y-auto transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
-        role="dialog"
-        aria-modal="true"
-        onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col h-full">
-          {/* Close Icon */}
-          <div className="flex justify-end" onClick={onClose}>
-            <Close className="size-6 stroke-3 cursor-pointer" />
+        <div className="flex flex-col h-full min-h-0">
+          {/* Close Button */}
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={onClose}
+              className="p-1 hover:bg-gray-100 rounded transition-colors"
+              aria-label="Close modal"
+            >
+              <Close className="size-6 stroke-3" />
+            </button>
           </div>
 
           {/* Header */}
-          <div className="text-xl font-black mb-4">ADD TO CART</div>
+          <h2 className="text-xl font-black mb-4">ADD TO CART</h2>
 
-          {/* Product */}
-          <div>
-            <Image
-              src={product.image || "/images/fallback.png"}
-              alt={product.name}
-              width={300}
-              height={200}
-              className="w-full h-[250px] object-cover mb-4"
-            />
-            <div className="flex justify-between font-serif font-semibold text-lg uppercase mb-2">
-              <p className="tracking-widest">{product.name}</p>
-              <p className="text-primary">${product.price}</p>
+          {/* Scrollable Content */}
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            {/* Product Image */}
+            <div className="mb-4">
+              <Image
+                src={selectedVariant.image || "/images/fallback.png"}
+                alt={selectedVariant.name || "Product image"}
+                width={300}
+                height={250}
+                className="w-full h-[250px] object-cover rounded"
+                priority
+              />
             </div>
 
-            {/* Quantity */}
-            <div className="mb-4 w-fit flex items-center gap-3">
-              <button
-                className="w-fit p-1 rounded hover:bg-gray-200 transition"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                aria-label="Decrease quantity"
-              >
-                <Minus className="size-4 stroke-3" />
-              </button>
-              <span className="text-xl font-semibold">{quantity}</span>
-              <button
-                className="w-fit p-1 rounded hover:bg-gray-200 transition"
-                onClick={() => setQuantity(quantity + 1)}
-                aria-label="Increase quantity"
-              >
-                <Plus className="size-4 stroke-3" />
-              </button>
+            {/* Product Name */}
+            <h3 className="font-serif font-semibold text-lg uppercase mb-4">
+              {selectedVariant.name}
+            </h3>
+
+            {/* Price Display */}
+            <div className="text-xl font-bold mb-4">
+              ${selectedVariant.price}
+            </div>
+
+            {/* Variants Selector */}
+            {variants.length > 1 && (
+              <div className="mb-6">
+                <label className="block font-semibold mb-2">Select Unit:</label>
+                <select
+                  className="border border-gray-300 p-3 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={selectedVariant?.id?.toString() || ""}
+                  onChange={(e) => {
+                    const targetValue = e.target.value;
+                    const chosen = variants.find(
+                      (v) => v.id?.toString() === targetValue
+                    );
+                    if (chosen) {
+                      setSelectedVariant(chosen);
+                    }
+                  }}
+                >
+                  {variants.map((v) => (
+                    <option key={v.id} value={v.id?.toString()}>
+                      {v.unit || "Unit"} - ${v.price}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Quantity Controls */}
+            <div className="mb-6">
+              <label className="block font-semibold mb-2">Quantity:</label>
+              <div className="flex items-center gap-3 w-fit">
+                <button
+                  className="p-2 rounded border hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  disabled={quantity <= 1}
+                  aria-label="Decrease quantity"
+                >
+                  <Minus className="size-4 stroke-3" />
+                </button>
+                <span className="text-xl font-semibold min-w-[2rem] text-center">
+                  {quantity}
+                </span>
+                <button
+                  className="p-2 rounded border hover:bg-gray-100 transition-colors"
+                  onClick={() => setQuantity(quantity + 1)}
+                  aria-label="Increase quantity"
+                >
+                  <Plus className="size-4 stroke-3" />
+                </button>
+              </div>
+            </div>
+
+            {/* Total Price */}
+            <div className="text-lg font-semibold mb-6">
+              Total: ${(selectedVariant.price * quantity).toFixed(2)}
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="mt-auto">
+          {/* Actions - Fixed at bottom */}
+          <div className="mt-auto pt-4 border-t">
             <div className="grid grid-cols-3 gap-2 text-white uppercase text-sm font-semibold">
-              <div
-                className="py-3 bg-red-600 text-center hover:bg-red-700 transition cursor-pointer"
+              <button
+                className="py-3 bg-red-600 text-center hover:bg-red-700 transition-colors rounded"
                 onClick={onClose}
               >
                 Close
-              </div>
-              <div className="py-3 bg-blue-600 text-center hover:bg-blue-700 transition cursor-pointer">
-                Buy
-              </div>
-              <div
-                className="py-3 bg-green-600 text-center hover:bg-green-700 transition cursor-pointer"
+              </button>
+              <button
+                className="py-3 bg-blue-600 text-center hover:bg-blue-700 transition-colors rounded"
+                onClick={() => {
+                  // Add your buy now logic here
+                  console.log("Buy now clicked");
+                }}
+              >
+                Buy Now
+              </button>
+              <button
+                className="py-3 bg-green-600 text-center hover:bg-green-700 transition-colors rounded"
                 onClick={handleAddToCart}
               >
-                Add
-              </div>
+                Add to Cart
+              </button>
             </div>
           </div>
         </div>

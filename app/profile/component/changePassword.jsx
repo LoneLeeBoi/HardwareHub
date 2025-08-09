@@ -26,7 +26,7 @@ export default function ChangePassword(props) {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md border border-gray-200">
+    <div className="flex-1 mx-auto bg-white p-6 rounded-xl shadow-md border border-gray-200">
       <h2 className="text-xl font-bold text-gray-800 mb-6">Change Password</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
