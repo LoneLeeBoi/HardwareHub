@@ -21,30 +21,31 @@ export function AdminHeader() {
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 bg-white shadow-md">
-      {/* Logo */}
-      <div className="flex items-center space-x-2">
-        <Image
-          src="/images/Logo.png" // Update with your actual logo path
-          alt="Logo"
-          width={40}
-          height={40}
-        />
-        <span className="text-lg font-bold">Admin Panel</span>
-      </div>
+    <></>
+    // <header className="flex items-center justify-between px-6 py-4 bg-white shadow-md">
+    //   {/* Logo */}
+    //   <div className="flex items-center space-x-2">
+    //     <Image
+    //       src="/images/Logo.png" // Update with your actual logo path
+    //       alt="Logo"
+    //       width={40}
+    //       height={40}
+    //     />
+    //     <span className="text-lg font-bold">Admin Panel</span>
+    //   </div>
 
-      {/* Cog with Tooltip + Dropdown */}
-      <DropdownWithTooltip
-        trigger={<Cogs className="w-6 h-6 text-gray-700" />}
-        tooltip="Logout"
-      >
-        <div
-          onClick={handleLogout}
-          className="w-full text-left px-4 py-2 hover:bg-gray-100"
-        >
-          Log out
-        </div>
-      </DropdownWithTooltip>
-    </header>
+    //   {/* Cog with Tooltip + Dropdown */}
+    //   <DropdownWithTooltip
+    //     trigger={<Cogs className="w-6 h-6 text-gray-700" />}
+    //     tooltip="Logout"
+    //   >
+    //     <div
+    //       onClick={handleLogout}
+    //       className="w-full text-left px-4 py-2 hover:bg-gray-100"
+    //     >
+    //       Log out
+    //     </div>
+    //   </DropdownWithTooltip>
+    // </header>
   );
 }

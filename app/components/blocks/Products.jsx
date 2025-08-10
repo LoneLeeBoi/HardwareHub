@@ -11,14 +11,14 @@ const FALLBACK_IMAGE = "/images/fallback.png";
 export function Products() {
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null); // ⭐ Modal product state
-  const [isModalOpen, setIsModalOpen] = useState(false); // ⭐ Modal visibility state
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const setProducts = searchState((state) => state.setProducts);
   const products = searchState((state) => state.products);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchProducts = async () => {
       const result = await ProductFunctions();
 
       if (result.success) {
@@ -29,18 +29,34 @@ export function Products() {
       }
     };
 
-    fetchCategories();
+    fetchProducts();
   }, [setProducts]);
 
+  // Show all or first 20
+  const visibleProducts = showAll ? products : products.slice(0, 20);
+
+  // Remove duplicate names for display
+  const uniqueProducts = visibleProducts.filter(
+    (item, index, self) =>
+      index ===
+      self.findIndex(
+        (prod) => prod.name.toLowerCase() === item.name.toLowerCase()
+      )
+  );
+
+  // Group same name products when clicked
   const handleAddToCartClick = (product) => {
-    setSelectedProduct(product);
+    const sameNameProducts = products.filter(
+      (item) => item.name === product.name
+    );
+
+    setSelectedProducts(sameNameProducts);
     setIsModalOpen(true);
   };
 
-  const visibleProducts = showAll ? products : products.slice(0, 20);
-
   return (
     <div className="container">
+      {/* Header */}
       <div className="uppercase text-center border-t-8 bg-gray-300 py-4 text-[20px] text-primary font-bold border-primary w-full">
         discover more
       </div>
@@ -50,13 +66,15 @@ export function Products() {
           <div className="text-red-500 text-center">{error}</div>
         ) : (
           <>
+            {/* Product Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {visibleProducts.map((product) => (
+              {uniqueProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white shadow-md rounded-xl px-4 pb-4 text-center border border-gray-200 hover:bg-gray-200"
+                  className="bg-white shadow-md rounded-xl px-4 pb-4 text-center border border-gray-200 hover:bg-gray-200 cursor-pointer"
                   onClick={() => handleAddToCartClick(product)}
                 >
+                  {/* Product Image */}
                   <div className="relative w-full h-48 mb-2">
                     <Image
                       src={product.image || FALLBACK_IMAGE}
@@ -65,13 +83,20 @@ export function Products() {
                       className="object-contain rounded-lg"
                     />
                   </div>
+
+                  {/* Product Name */}
                   <div className="font-semibold uppercase text-sm">
                     {product.name}
                   </div>
+
+                  {/* Add to Cart Button */}
                   <div className="w-full flex justify-center">
                     <button
-                      onClick={() => handleAddToCartClick(product)} // 👈 handle click
-                      className="mt-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit"
+                      onClick={(e) => {
+                        e.stopPropagation(); // stop card click
+                        handleAddToCartClick(product);
+                      }}
+                      className="mt-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit rounded"
                     >
                       ADD TO CART
                     </button>
@@ -80,6 +105,7 @@ export function Products() {
               ))}
             </div>
 
+            {/* Show More Button */}
             {products.length > 20 && !showAll && (
               <div className="text-center mt-6">
                 <button
@@ -93,11 +119,11 @@ export function Products() {
           </>
         )}
 
-        {/* ⭐ Modal */}
+        {/* Add to Cart Modal */}
         <AddToCartModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          product={selectedProduct}
+          product={selectedProducts}
         />
       </div>
     </div>

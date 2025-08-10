@@ -18,16 +18,19 @@ export default function useProductHandlers() {
   // States
   // ==============================
   const [userId, setUserId] = useState("");
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({
     name: "",
     image: "",
     category_id: "",
+    acquisition_cost: "",
     price: "",
     units: "",
     status: "Active",
-    user_id: "",
+    user_id: userId,
   });
 
   const [categories, setCategories] = useState([]);
@@ -51,7 +54,7 @@ export default function useProductHandlers() {
   // ==============================
   useEffect(() => {
     const decoded = jwt.decode(localStorage.getItem("token"));
-    setUserId(decoded?.id || "");
+    setUserId(decoded?.id);
     fetchCategories();
     fetchProducts();
   }, []);
@@ -68,9 +71,12 @@ export default function useProductHandlers() {
 
   const fetchProducts = async () => {
     const res = await ProductFunctions();
-    res.success
-      ? setProducts(res.data?.data || [])
-      : toast.error(res.err || "Failed to fetch products");
+    if (res.success) {
+      setProducts(res.data?.data || []);
+      setTotalPages(res?.data?.totalPages);
+    } else {
+      toast.error(res.err || "Failed to fetch products");
+    }
   };
 
   // ==============================
@@ -112,12 +118,12 @@ export default function useProductHandlers() {
     setIsEditing(true);
     setEditingProductId(product.id);
 
-
     setNewProduct({
       id: product.id || "",
       name: product.name || "",
       image: product.image || "",
       category_id: product.category_id || "",
+      acquisition_cost: product.acquisition_cost || "",
       price: product.price || "",
       units: product.units || "",
       stock: product.stock || "",
@@ -202,6 +208,7 @@ export default function useProductHandlers() {
       name: "",
       image: "",
       category_id: "",
+      acquisition_cost: "",
       price: "",
       units: 0,
       stock: 0,
@@ -224,7 +231,15 @@ export default function useProductHandlers() {
     isEditingCategory,
     isConfirm,
     editCategoryId,
+    totalPages,
+    currentPage,
+    searchTerm,
 
+    setTotalPages,
+    setSearchTerm,
+    setCurrentPage,
+    setProducts,
+    setProducts,
     setConfirm,
     setIsModalOpen,
     setIsEditing,

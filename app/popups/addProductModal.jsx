@@ -10,6 +10,10 @@ import { toast } from "react-toastify";
 import jwt from "jsonwebtoken";
 
 export function AddProductModal({
+  setCategoryDefault,
+  categoryDefault,
+  setNameDefault,
+  nameDefault,
   isOpen,
   onClose,
   newProduct,
@@ -31,6 +35,16 @@ export function AddProductModal({
   }, [isOpen]);
 
   useEffect(() => {
+    if (nameDefault != null) {
+      handleInputChange("name", nameDefault);
+    }
+  }, [nameDefault]);
+  useEffect(() => {
+    if (categoryDefault != null) {
+      handleInputChange("category_id", categoryDefault);
+    }
+  }, [categoryDefault]);
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -47,6 +61,8 @@ export function AddProductModal({
   }, []);
 
   const handleClose = () => {
+    setNameDefault(null);
+    setCategoryDefault(null);
     setShowModal(false);
     setTimeout(() => onClose(), 300);
   };
@@ -55,21 +71,18 @@ export function AddProductModal({
     try {
       setLoading(true);
       const submitAction = isEditing ? EditProduct : AddProduct;
-
-      const success = await submitAction(newProduct);
-
-      if (success) {
+      console.log(newProduct);
+      let result = await submitAction(newProduct);
+      if (result.success) {
         toast.success(
-          isEditing
+          EditProduct
             ? "Product updated successfully!"
             : "Product added successfully!"
         );
         handleClose();
         if (typeof refreshProducts === "function") refreshProducts();
       } else {
-        toast.error(
-          isEditing ? "Failed to update product." : "Failed to add product."
-        );
+        toast.error(result.message);
       }
     } catch (error) {
       console.error(error);
@@ -91,13 +104,13 @@ export function AddProductModal({
 
       {/* Slide-in Modal */}
       <div
-        className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl ${
+        className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl overflow-y-auto max-h-[800px] ${
           showModal ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <h2 className="text-lg font-semibold">
-            {isEditing ? "Edit Product" : "Add New Product"}
+            {isEditing ? "Edit Product" :nameDefault? "Add New Unit": "Add New Product"}
           </h2>
           <div
             onClick={handleClose}
@@ -111,24 +124,34 @@ export function AddProductModal({
           <InputField
             label="Product Name"
             type="text"
-            value={newProduct.name}
-            onChange={(val) => handleInputChange("name", val)}
+            value={nameDefault ?? newProduct.name}
+            onChange={(val) => {
+              if (nameDefault == null) {
+                handleInputChange("name", val);
+              }
+            }}
+            disabled={!!nameDefault}
           />
 
           <InputField
             label="Image"
             type="file"
-            value={newProduct.image }
+            value={newProduct.image}
             onChange={(val) => handleInputChange("image", val)}
           />
           <div>
             <label className="block text-sm font-medium mb-1">Category</label>
             <select
-              value={newProduct.category_id || ""}
+              value={
+                categories.some((c) => c.id === categoryDefault)
+                  ? categoryDefault
+                  : ""
+              }
               onChange={(e) => handleInputChange("category_id", e.target.value)}
+              disabled={!!categoryDefault}
               className="w-full border rounded px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select a category</option>
+              <option value="">Select Category</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -136,24 +159,30 @@ export function AddProductModal({
               ))}
             </select>
           </div>
+          <InputField
+            label={isEditing ? "" : "Acquisition Cost"}
+            type={isEditing ? "hidden" : "number"}
+            value={newProduct.acquisition_cost}
+            onChange={(val) => handleInputChange("acquisition_cost", val)}
+          />
 
           <InputField
-            label="Price"
-            type="text"
-            value={newProduct.price}
+            label={isEditing ? "" : "Price"}
+            type={isEditing ? "hidden" : "number"}
+            value={newProduct.price || ""}
             onChange={(val) => handleInputChange("price", val)}
           />
 
           <InputField
-            label="Unit"
-            type="text"
-            value={newProduct.units}
+            label={isEditing ? "" : "Unit"}
+            type={isEditing ? "hidden" : "text"}
+            value={newProduct.units || ""}
             onChange={(val) => handleInputChange("units", val)}
           />
           <InputField
-            label="Stock"
-            type="number"
-            value={newProduct.stock ?? ""}
+            label={isEditing ? "" : "Stock"}
+            type={isEditing ? "hidden" : "number"}
+            value={newProduct.stock || ""}
             onChange={(val) => handleInputChange("stock", val)}
           />
 
@@ -183,7 +212,7 @@ export function AddProductModal({
   );
 }
 
-function InputField({ label, type, value, onChange }) {
+function InputField({ label, type, value, onChange, disabled }) {
   return (
     <div>
       <label className="block text-sm font-medium mb-1">{label}</label>
@@ -199,6 +228,7 @@ function InputField({ label, type, value, onChange }) {
         placeholder={
           type !== "file" ? `Enter ${label.toLowerCase()}` : undefined
         }
+        disabled={disabled}
       />
     </div>
   );

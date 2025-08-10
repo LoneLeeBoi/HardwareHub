@@ -1,182 +1,159 @@
 "use client";
 
+import {
+  DeleteUser,
+  UserFunctions,
+} from "@/app/components/functions/UsersFunctions";
+import AddUserModal from "@/app/popups/addUserModal";
+import { ConfirmationModal } from "@/app/popups/confirmationModal";
+import Pagination from "@/app/utils/Pagination";
 import { Edit } from "@/public/icons/edit";
+import { Magnify } from "@/public/icons/magnify";
 import { Trash } from "@/public/icons/trash";
-import React, { useState } from "react";
-
-// Sample user data
-const sampleUsers = [
-  {
-    id: 1,
-    name: "Juan Dela Cruz",
-    email: "juan@example.com",
-    contact: "09171234567",
-    address: "Cebu City, Philippines",
-    role: "Admin",
-    registeredAt: "2025-07-15",
-    isActive: true,
-  },
-  {
-    id: 2,
-    name: "Maria Santos",
-    email: "maria.santos@example.com",
-    contact: "09182345678",
-    address: "Makati City, Philippines",
-    role: "User",
-    registeredAt: "2025-06-20",
-    isActive: false,
-  },
-  {
-    id: 3,
-    name: "Pedro Reyes",
-    email: "pedro.reyes@example.com",
-    contact: "09201234567",
-    address: "Davao City, Philippines",
-    role: "Moderator",
-    registeredAt: "2025-07-30",
-    isActive: true,
-  },
-];
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function Page() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
+  const [users, setUsers] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Modals & Editing
+  const [isOpen, setOpen] = useState(false);
+  const [isConfirm, setIsConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [userData, setUserData] = useState({
+    firstname: "",
+    lastname: "",
+    address: "",
+    contact: "",
+  });
 
   const getStatus = (user) => (user.isActive ? "Active" : "Inactive");
 
-  const filteredUsers = sampleUsers.filter((user) => {
+  const filteredUsers = users.filter((user) => {
     const status = getStatus(user);
-    const matchesSearch =
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = ["username", "email", "firstname", "lastname"].some(
+      (key) => (user[key]?.toLowerCase() || "").includes(search.toLowerCase())
+    );
     const matchesStatus = statusFilter === "All" || status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  const totalPages = Math.ceil(filteredUsers.length / limit);
   const paginatedUsers = filteredUsers.slice((page - 1) * limit, page * limit);
 
-  const handlePrev = () => page > 1 && setPage((p) => p - 1);
-  const handleNext = () => page < totalPages && setPage((p) => p + 1);
-
-  const getDesktopPages = () => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) pages.push(i);
-    return pages;
-  };
-
-  const handleEdit = (id) => {
-    alert(`Edit user with ID: ${id}`);
-  };
-
-  const handleDelete = (id) => {
-    const confirmDelete = confirm("Are you sure you want to delete this user?");
-    if (confirmDelete) {
-      alert(`Deleted user with ID: ${id}`);
+  const handleDelete = async (id) => {
+    try {
+      const success = await DeleteUser(id);
+      if (success) {
+        toast.success("User data deleted.");
+        fetchUsers();
+      }
+    } catch {
+      toast.error("Failed to delete user");
     }
   };
 
+  const fetchUsers = async () => {
+    try {
+      const result = await UserFunctions({ page, limit });
+      if (result.success) {
+        setUsers(result.data.data || []);
+        setTotalPages(result.data.totalPages || 1);
+      } else {
+        console.error("Fetch failed:", result.err);
+        setUsers([]);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [page, limit]);
+
   return (
     <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4 text-gray-900 uppercase">
+        User Management
+      </h1>
       <div className="border border-gray-200 rounded p-4">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
+        {/* Search */}
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="mb-3 flex items-center border border-gray-300 rounded-lg px-2 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+        >
           <input
             type="text"
-            placeholder="Search..."
-            className="p-1 text-sm border rounded w-full sm:w-[200px]"
+            placeholder="Search users..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(1);
             }}
+            className="w-full bg-transparent border-none outline-none ring-0 focus:!outline-none focus:!ring-0"
           />
-          <select
-            className="p-1 text-sm border rounded w-full sm:w-[120px] h-[45px]"
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setPage(1);
-            }}
-          >
-            {["All", "Active", "Inactive"].map((status) => (
-              <option key={status}>{status}</option>
-            ))}
-          </select>
-          <select
-            className="p-1 text-sm border rounded w-full sm:w-[100px]"
-            value={limit}
-            onChange={(e) => {
-              setLimit(Number(e.target.value));
-              setPage(1);
-            }}
-          >
-            {[5, 10, 20].map((n) => (
-              <option key={n} value={n}>
-                {n} / page
-              </option>
-            ))}
-          </select>
-        </div>
+          <Magnify className="h-7 w-7 text-gray-500 ml-2" />
+        </form>
 
         {/* Table */}
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-gray-100 text-left">
-              <th className="p-2">Name</th>
-              <th className="p-2">Email</th>
-              <th className="p-2">Contact</th>
-              <th className="p-2">Address</th>
-              <th className="p-2">Role</th>
-              <th className="p-2">Registered At</th>
-              <th className="p-2">Status</th>
-              <th className="p-2">Actions</th>
+              {[
+                "Username",
+                "Email",
+                "First Name",
+                "Last Name",
+                "Contact",
+                "Address",
+                "Actions",
+              ].map((head) => (
+                <th key={head} className="p-2">
+                  {head}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {paginatedUsers.length > 0 ? (
-              paginatedUsers.map((user) => {
-                const status = getStatus(user);
-                return (
-                  <tr key={user.id}>
-                    <td className="p-2  gap-2">{user.name}</td>
-                    <td className="p-2">{user.email}</td>
-                    <td className="p-2">{user.contact}</td>
-                    <td className="p-2">{user.address}</td>
-                    <td className="p-2">{user.role}</td>
-                    <td className="p-2">{user.registeredAt}</td>
-                    <td className="p-2">
-                      <span
-                        className={`px-2 py-1 rounded text-xs ${
-                          status === "Active"
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-600"
-                        }`}
-                      >
-                        {status}
-                      </span>
-                    </td>
-                    <td className="p-2 space-x-1 flex">
-                      <div
-                        onClick={() => handleEdit(user.id)}
-                        className="text-blue-600 hover:underline text-xs"
-                      >
-                        <Edit className={`size-6`}/>
-                      </div>
-                      <div
-                        onClick={() => handleDelete(user.id)}
-                        className="text-red-600 hover:underline text-xs"
-                      >
-                        <Trash className={`size-6`}/>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : ( 
+              paginatedUsers.map((user) => (
+                <tr key={user.user_id}>
+                  <td className="p-2">{user.username || "-"}</td>
+                  <td className="p-2">{user.email || "-"}</td>
+                  <td className="p-2">{user.firstname || "-"}</td>
+                  <td className="p-2">{user.lastname || "-"}</td>
+                  <td className="p-2">{user.contact || "-"}</td>
+                  <td className="p-2">{user.address || "-"}</td>
+                  <td className="p-2 flex space-x-1">
+                    <div
+                      onClick={() => {
+                        setUserData(user);
+                        setOpen(true);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Edit className="size-6 text-blue-600" />
+                    </div>
+                    <div
+                      onClick={() => {
+                        setDeleteId(user.user_id);
+                        setIsConfirm(true);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Trash className="size-6 text-red-600" />
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
               <tr>
-                <td colSpan="8" className="text-center p-2">
+                <td colSpan="7" className="text-center p-2">
                   No results found.
                 </td>
               </tr>
@@ -185,37 +162,36 @@ export default function Page() {
         </table>
 
         {/* Pagination */}
-        <div className="flex flex-col items-center gap-2 mt-4 text-sm sm:flex-row justify-center">
-          <div
-            onClick={handlePrev}
-            className={`px-3 py-1 border rounded cursor-pointer ${
-              page === 1 ? "opacity-50 pointer-events-none" : ""
-            }`}
-          >
-            Prev
-          </div>
-          <div className="flex gap-1 flex-wrap justify-center">
-            {getDesktopPages().map((p) => (
-              <div
-                key={p}
-                onClick={() => setPage(p)}
-                className={`px-2 py-1 border rounded cursor-pointer ${
-                  p === page ? "bg-black text-white" : ""
-                }`}
-              >
-                {p}
-              </div>
-            ))}
-          </div>
-          <div
-            onClick={handleNext}
-            className={`px-3 py-1 border rounded cursor-pointer ${
-              page === totalPages ? "opacity-50 pointer-events-none" : ""
-            }`}
-          >
-            Next
-          </div>
-        </div>
+        <Pagination
+          currentPage={page}
+          setCurrentPage={setPage}
+          totalPages={totalPages}
+        />
+
+        {/* Delete Confirmation */}
+        <ConfirmationModal
+          isOpen={isConfirm}
+          onClose={() => setIsConfirm(false)}
+          onConfirm={() => {
+            if (deleteId) {
+              handleDelete(deleteId);
+              setDeleteId(null);
+            }
+            setIsConfirm(false);
+          }}
+          title="Are you sure?"
+          message="This action cannot be undone."
+        />
+
+        {/* Edit/Add User Modal */}
+        <AddUserModal
+          isOpen={isOpen}
+          onClose={() => setOpen(false)}
+          newUser={userData}
+          setNewUser={setUserData}
+          refreshUsers={fetchUsers}
+          isEditing={true}
+        />
       </div>
     </div>
   );

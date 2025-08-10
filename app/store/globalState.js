@@ -15,7 +15,6 @@ const globalState = create(
       setLogout: async (status) => {
         if (get().cart.length > 0) {
           try {
-
             await addUserCart(get().cart);
           } catch (err) {
             console.error("Cart sync failed:", err);
@@ -53,7 +52,7 @@ const globalState = create(
       removeFromCart: (itemId) => {
         removeProduct(itemId);
         set((state) => ({
-          cart: state.cart.filter((item) => item.cartID !== itemId),
+          cart: state.cart.filter((item) => item.id !== itemId),
         }));
       },
 

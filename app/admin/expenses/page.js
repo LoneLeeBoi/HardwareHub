@@ -8,25 +8,35 @@ import { Edit } from "@/public/icons/edit";
 import { Trash } from "@/public/icons/trash";
 import { ConfirmationModal } from "@/app/popups/confirmationModal";
 import useExpenseHandlers from "../expenses/expenseHandler";
+import Pagination from "@/app/utils/Pagination";
+import { Magnify } from "@/public/icons/magnify";
 export default function ExpensePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
-const {
-  expenses,
-  isConfirm,
-  setExpenses,
-  setConfirm,
-  handleDeleteExpense,
-  triggerfetchExpenses,
-} = useExpenseHandlers();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const {
+    expenses,
+    isConfirm,
+    setExpenses,
+    setConfirm,
+    handleDeleteExpense,
+    triggerfetchExpenses,
+  } = useExpenseHandlers();
 
   const fetchExpenses = async () => {
-    const result = await ExpenseFunctions();
+    const params = searchTerm
+      ? { search: searchTerm, category_name: searchTerm }
+      : {};
+    const result = await ExpenseFunctions(params);
     if (result.success) {
       const data = result?.data?.data || [];
       setExpenses(data);
-      triggerfetchExpenses();
+      setTotalPages(result?.data?.totalPages);
+      // triggerfetchExpenses();
     } else {
       setError(result.err || "Failed to fetch Expense.");
     }
@@ -70,7 +80,6 @@ const {
     setModalOpen(true);
   };
 
-
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <div className=" mb-6">
@@ -92,6 +101,27 @@ const {
       {/* Table */}
       <div className="w-full">
         <h3 className="text-lg font-semibold mb-3 text-gray-800">Expenses</h3>
+        <div className="mb-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              fetchExpenses();
+            }}
+            className="flex items-center border border-gray-300 rounded-lg px-2 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+          >
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-transparent border-none !outline-none ring-0 focus:!outline-none focus:!ring-0"
+            />
+            <div className="" onClick={fetchExpenses}>
+              <Magnify className="h-7 w-7 text-gray-500 ml-2" />
+            </div>
+          </form>
+        </div>
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -143,7 +173,7 @@ const {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {expense.category_name}
+                        {expense.category}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex items-center  gap-6">
@@ -165,6 +195,11 @@ const {
               )}
             </tbody>
           </table>
+          <Pagination
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
 
@@ -180,11 +215,11 @@ const {
       />
 
       <ConfirmationModal
-        isOpen={isConfirm }
+        isOpen={isConfirm}
         onClose={() => {
           if (isConfirm) {
             setConfirm("");
-          } 
+          }
         }}
         onConfirm={() => {
           if (isConfirm) {

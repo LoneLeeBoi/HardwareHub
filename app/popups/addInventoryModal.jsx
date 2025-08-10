@@ -10,6 +10,10 @@ import {
 } from "../components/functions/InventoryFunctions";
 
 export function AddInventoryModal({
+  setDefaultName,
+  defaultName,
+  setDefaultUnit,
+  defaultUnit,
   isOpen,
   onClose,
   newInventory,
@@ -19,7 +23,16 @@ export function AddInventoryModal({
 }) {
   const [showModal, setShowModal] = useState(false);
   const [productOptions, setProductOptions] = useState([]);
-
+  useEffect(() => {
+    if (defaultUnit != null) {
+      handleInputChange("unit", defaultUnit);
+    }
+  }, [defaultUnit]);
+useEffect(() => {
+  if (defaultName != null) {
+    handleInputChange("product_id", defaultName);
+  }
+}, [defaultName]);
   useEffect(() => {
     if (isOpen) {
       fetch("/api/product")
@@ -97,8 +110,9 @@ export function AddInventoryModal({
           <div>
             <label className="block text-sm font-medium">Product Name</label>
             <select
-              value={newInventory.product_id}
+              value={defaultName ?? newInventory.product_id ?? ""}
               onChange={(e) => handleInputChange("product_id", e.target.value)}
+              disabled={!!defaultName} // disable if defaultName (product ID) is set
               className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a product</option>
@@ -111,33 +125,25 @@ export function AddInventoryModal({
           </div>
 
           <div>
+            <label className="block text-sm font-medium">Unit</label>
+            <input
+              type="text"
+              value={defaultUnit ?? newInventory.unit ?? ""}
+              onChange={(e) => {
+                if (!defaultUnit) {
+                  handleInputChange("unit", e.target.value);
+                }
+              }}
+              className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={!!defaultUnit}
+            />
+          </div>
+          <div>
             <label className="block text-sm font-medium">Stock</label>
             <input
               type="number"
               value={newInventory.stock}
               onChange={(e) => handleInputChange("stock", e.target.value)}
-              className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">
-              Acquisition Price
-            </label>
-            <input
-              type="number"
-              value={newInventory.acquisition}
-              onChange={(e) => handleInputChange("acquisition", e.target.value)}
-              className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Retail Price</label>
-            <input
-              type="number"
-              value={newInventory.retail}
-              onChange={(e) => handleInputChange("retail", e.target.value)}
               className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>

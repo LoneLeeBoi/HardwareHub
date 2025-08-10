@@ -1,13 +1,33 @@
-export default function SettingsSection() {
+export default function SettingsSection({ page, setPage }) {
   return (
     <div className="">
-      <div className="w-full md:w-64 border rounded shadow-sm p-4">
-        <h2 className="font-semibold text-lg mb-4">Settings</h2>
-        <div className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded mb-2">
-          Change Password
-        </div>
-        <div className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
-          Change Profile Info
+      <div className="w-full  bg-white border border-gray-200 rounded-xl shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-6">Settings</h2>
+        <div className="space-y-3">
+          <div
+            onClick={() => {
+              setPage("cart");
+            }}
+            className="w-full bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200"
+          >
+            Cart
+          </div>
+          <div
+            onClick={() => {
+              setPage("password");
+            }}
+            className="w-full bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200"
+          >
+            Change Password
+          </div>
+          <div
+            onClick={() => {
+              setPage("info");
+            }}
+            className="w-full bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200"
+          >
+            Change Profile Info
+          </div>
         </div>
       </div>
     </div>

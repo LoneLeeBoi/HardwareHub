@@ -66,7 +66,7 @@ export default function StorageCart() {
       ],
       total_amount: calculateTotal(),
     };
-
+  console.log("order",orderData);
   };
 
   const SkeletonItem = () => (

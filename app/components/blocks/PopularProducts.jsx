@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ProductPopular } from "../functions/ProductFunctions";
 import Image from "next/image";
+import searchState from "@/app/store/searchState";
 import { AddToCartModal } from "@/app/popups/addToCartModal";
 
 const FALLBACK_IMAGE = "/images/fallback.png";
@@ -10,9 +11,11 @@ const FALLBACK_IMAGE = "/images/fallback.png";
 export function PopularProducts() {
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const setProducts = searchState((state) => state.setProducts);
+  const products = searchState((state) => state.products);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -27,17 +30,33 @@ export function PopularProducts() {
     };
 
     fetchProducts();
-  }, []);
+  }, [setProducts]);
 
+  // Show all or first 20
+  const visibleProducts = showAll ? products : products.slice(0, 20);
+
+  // Remove duplicate names for display
+  const uniqueProducts = visibleProducts.filter(
+    (item, index, self) =>
+      index ===
+      self.findIndex(
+        (prod) => prod.name.toLowerCase() === item.name.toLowerCase()
+      )
+  );
+
+  // Group same name products when clicked
   const handleAddToCartClick = (product) => {
-    setSelectedProduct(product);
+    const sameNameProducts = products.filter(
+      (item) => item.name === product.name
+    );
+
+    setSelectedProducts(sameNameProducts);
     setIsModalOpen(true);
   };
 
-  const visibleProducts = showAll ? products : products.slice(0, 20);
-
   return (
     <div className="container my-[24px]">
+      {/* Header */}
       <h2 className="text-[30px] font-bold text-center">
         Our Popular Products
       </h2>
@@ -47,31 +66,41 @@ export function PopularProducts() {
           <div className="text-red-500 text-center">{error}</div>
         ) : (
           <>
+            {/* Product Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {visibleProducts.map((product) => (
+              {uniqueProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white shadow-md rounded-xl p-4 text-center border border-gray-200 relative hover:bg-gray-100"
+                  className="bg-white shadow-md rounded-xl px-4 pb-4 text-center border border-gray-200 hover:bg-gray-200 cursor-pointer"
                   onClick={() => handleAddToCartClick(product)}
                 >
+                  {/* Product Image */}
                   <div className="relative w-full h-48 mb-2">
                     <Image
                       src={product.image || FALLBACK_IMAGE}
                       alt={product.name || "Product"}
                       fill
-                      className="object-contain rounded-lg relative z-[1]"
+                      className="object-contain rounded-lg"
                     />
+                    {/* TOP Flag */}
                     <div className="absolute z-[2] top-8 left-0 bg-red-600 text-white text-sm -translate-x-[10px] font-bold px-2 py-1 shadow">
                       TOP
                     </div>
                   </div>
+
+                  {/* Product Name */}
                   <div className="font-semibold uppercase text-sm">
                     {product.name}
                   </div>
+
+                  {/* Add to Cart Button */}
                   <div className="w-full flex justify-center">
                     <button
-                      onClick={() => handleAddToCartClick(product)}
-                      className="mt-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit"
+                      onClick={(e) => {
+                        e.stopPropagation(); // stop card click
+                        handleAddToCartClick(product);
+                      }}
+                      className="mt-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit rounded"
                     >
                       ADD TO CART
                     </button>
@@ -80,6 +109,7 @@ export function PopularProducts() {
               ))}
             </div>
 
+            {/* Show More Button */}
             {products.length > 20 && !showAll && (
               <div className="text-center mt-6">
                 <button
@@ -92,14 +122,14 @@ export function PopularProducts() {
             )}
           </>
         )}
-      </div>
 
-      {/* Add to Cart Modal */}
-      <AddToCartModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        product={selectedProduct}
-      />
+        {/* Add to Cart Modal */}
+        <AddToCartModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          product={selectedProducts}
+        />
+      </div>
     </div>
   );
 }

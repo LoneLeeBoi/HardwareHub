@@ -40,25 +40,25 @@ export async function ExpenseFunctions(params = {}) {
 export async function AddExpense(expenseData) {
   const baseUrl = "http://localhost:3000";
   const token = localStorage.getItem("token");
-
   const url = `${baseUrl}/api/expense`;
-
-
 
   try {
     const res = await axios.post(url, expenseData, {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
-         "Content-Type": "application/json",
+        "Content-Type": "application/json",
       },
     });
-
-    return true;
+    return { success: true };
   } catch (error) {
-    console.error("Failed to add product:", error);
-    return false;
+    if (error.response && error.response.status === 400) {
+      return { success: false, message: error.response.data.error };
+    }
+    console.error("Failed to add expense:", error);
+    return { success: false, message: "An unexpected error occurred." };
   }
 }
+
 
 
 export async function EditExpense(expenseData) {
@@ -75,10 +75,13 @@ export async function EditExpense(expenseData) {
       },
     });
 
-    return true;
+    return { success: true };
   } catch (error) {
-    console.error("Failed to edit product:", error.response?.data || error.message);
-    return false;
+    if (error.response && error.response.status === 400) {
+      return { success: false, message: error.response.data.error };
+    }
+    console.error("Failed to add expense:", error);
+    return { success: false, message: "An unexpected error occurred." };
   }
 }
 
