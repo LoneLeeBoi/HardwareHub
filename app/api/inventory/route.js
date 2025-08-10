@@ -77,16 +77,16 @@ export async function POST(req) {
   if (!isAuthorized(req))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { user_id, product_id, stock, acquisition, retail } = await req.json();
+  const { user_id, product_id, stock } = await req.json();
   const id = randomUUID();
 
   return new Promise((resolve) => {
     // Step 1: Insert into inventory
     db.query(
       `INSERT INTO inventory 
-        (id, user_id, product_id, stock, acquisition, retail) 
-        VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, user_id, product_id, stock, acquisition, retail],
+        (id, user_id, product_id, stock) 
+        VALUES (?, ?, ?, ?)`,
+      [id, user_id, product_id, stock],
       (err) => {
         if (err) {
           return resolve(

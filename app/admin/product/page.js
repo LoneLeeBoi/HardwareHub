@@ -57,12 +57,28 @@ export default function Page() {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [nameDefault, setNameDefault] = useState(null);
   const [categoryDefault, setCategoryDefault] = useState(null);
+  useState(async() => {
+        try {
+      const params = { page: currentPage };
 
+      const result = await ProductFunctions(params);
+      console.log("page", currentPage)
+      if (result.success) {
+        setProducts(result.data.data || []);
+      } else {
+        console.error("Search failed:", result.err);
+        setProducts([]);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  }, [currentPage]);
   const handleSearch = async () => {
     try {
       const params = searchTerm
         ? { search: searchTerm, category_name: searchTerm }
         : {};
+
       const result = await ProductFunctions(params);
 
       if (result.success) {
@@ -92,7 +108,6 @@ export default function Page() {
     <div className="p-4 container">
       <h2 className="text-2xl font-bold mb-4 text-gray-900">PRODUCTS</h2>
 
-      {/* Add Product / Category Buttons */}
       <div className="flex gap-4 w-fit overflow-hidden mb-6">
         <div
           onClick={() => setIsModalOpen(true)}
@@ -112,11 +127,9 @@ export default function Page() {
       </div>
 
       <div className="grid grid-cols-12 gap-6">
-        {/* Products Table */}
         <div className="col-span-8">
           <h3 className="text-lg font-semibold mb-3 text-gray-800">Products</h3>
 
-          {/* Search Bar */}
           <div className="mb-4">
             <form
               onSubmit={(e) => {
@@ -184,7 +197,7 @@ export default function Page() {
                           className="text-white rounded-lg  bg-green-500 hover:bg-green-600 px-3 text-xs  py-1.5 cursor-pointer"
                           onClick={() => setSelectedGroup(group)}
                         >
-                          View 
+                          View
                         </span>
                       </td>
                       <td>
@@ -192,7 +205,7 @@ export default function Page() {
                           onClick={() => {
                             setIsModalOpen(true);
                             setNameDefault(name);
-                            setCategoryDefault(firstProduct?.category_id)
+                            setCategoryDefault(firstProduct?.category_id);
                           }}
                           className="flex items-center  justify-center text-white w-[30px] h-[30px]  p-2 bg-blue-500 hover:bg-blue-600  rounded-lg"
                         >

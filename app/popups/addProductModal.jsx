@@ -110,7 +110,7 @@ export function AddProductModal({
       >
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <h2 className="text-lg font-semibold">
-            {isEditing ? "Edit Product" : "Add New Product"}
+            {isEditing ? "Edit Product" :nameDefault? "Add New Unit": "Add New Product"}
           </h2>
           <div
             onClick={handleClose}
@@ -169,20 +169,20 @@ export function AddProductModal({
           <InputField
             label={isEditing ? "" : "Price"}
             type={isEditing ? "hidden" : "number"}
-            value={newProduct.price}
+            value={newProduct.price || ""}
             onChange={(val) => handleInputChange("price", val)}
           />
 
           <InputField
             label={isEditing ? "" : "Unit"}
             type={isEditing ? "hidden" : "text"}
-            value={newProduct.units}
+            value={newProduct.units || ""}
             onChange={(val) => handleInputChange("units", val)}
           />
           <InputField
             label={isEditing ? "" : "Stock"}
             type={isEditing ? "hidden" : "number"}
-            value={newProduct.stock ?? ""}
+            value={newProduct.stock || ""}
             onChange={(val) => handleInputChange("stock", val)}
           />
 

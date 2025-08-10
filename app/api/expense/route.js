@@ -8,9 +8,9 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const search = searchParams.get("search");
-  const category = searchParams.get("category"); // changed from category_id
+  const category = searchParams.get("category"); 
   const page = parseInt(searchParams.get("page") || "1", 10);
-  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const limit = parseInt(searchParams.get("limit") || "5", 10);
   const offset = (page - 1) * limit;
 
   const conditions = [];
