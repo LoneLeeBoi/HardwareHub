@@ -38,7 +38,15 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    if (!email?.trim() || !password?.trim()) {
+      toast.error("Email and password are required");
+      return;
+    }
 
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
     try {
       const res = await LoginFunction({ email, password });
 

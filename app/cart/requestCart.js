@@ -5,6 +5,7 @@ import globalState from "@/app/store/globalState";
 import { CheckoutModal } from "../popups/checkoutModal";
 import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
+import { toast } from "react-toastify";
 
 export default function RequestCart() {
   const { cart, removeFromCart, updateQuantity } = globalState();
@@ -51,20 +52,105 @@ export default function RequestCart() {
     selectedItems.includes(item.id)
   );
 
-  const handleCheckOut = () => {
+  const handleCheckOut = async () => {
+    console.log("Selected Items:", selectedCartItems);
+    const cartStorage = JSON.parse(localStorage.getItem("app-cart-storage"));
+    console.log(
+      "Current Cart in localStorage:",
+      cartStorage?.state?.cart || []
+    );
+
     const orderData = {
       user_id: localStorage.getItem("id"),
       payment_method: paymentMethod,
       items: selectedCartItems,
-      stock: [
-        ...selectedCartItems.map((item) => ({
-          id: item.id,
-          quantity: item.quantity || 1,
-        })),
-      ],
+      stock: selectedCartItems.map((item) => ({
+        id: item.id,
+        quantity: item.quantity || 1,
+      })),
       total_amount: calculateTotal(),
     };
 
+    if (paymentMethod === "Gcash") {
+      try {
+        const res = await fetch("/api/order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+        });
+
+        const data = await res.json();
+
+        if (data.paymentUrl) {
+          if (cartStorage?.state?.cart) {
+            const updatedCart = cartStorage.state.cart.filter(
+              (item) =>
+                !selectedCartItems.some((selected) => selected.row === item.row)
+            );
+
+            localStorage.setItem(
+              "app-cart-storage",
+              JSON.stringify({
+                ...cartStorage,
+                state: {
+                  ...cartStorage.state,
+                  cart: updatedCart,
+                },
+              })
+            );
+            console.log("Updated Cart after removal:", updatedCart);
+          }
+
+          window.location.href = data.paymentUrl;
+        } else {
+          console.error("Payment URL not received", data);
+        }
+      } catch (err) {
+        console.error("Checkout Error:", err);
+      }
+    } else {
+      try {
+        const res = await fetch("/api/order/cash", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          if (cartStorage?.state?.cart) {
+            const updatedCart = cartStorage.state.cart.filter(
+              (item) =>
+                !selectedCartItems.some((selected) => selected.row === item.row)
+            );
+
+            localStorage.setItem(
+              "app-cart-storage",
+              JSON.stringify({
+                ...cartStorage,
+                state: {
+                  ...cartStorage.state,
+                  cart: updatedCart,
+                },
+              })
+            );
+            console.log("Updated Cart after removal:", updatedCart);
+          }
+
+          console.log("Cash order placed successfully", data);
+          toast.success("Order placed successfully!");
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1000);
+        } else {
+          console.error("Cash order failed", data);
+          toast.error(data.error || "Order failed. Please try again.");
+        }
+      } catch (err) {
+        console.error("Checkout Error:", err);
+      }
+    }
   };
 
   const SkeletonItem = () => (

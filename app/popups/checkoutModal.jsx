@@ -13,7 +13,7 @@ export function CheckoutModal({
 }) {
   const methods = [
     { id: "cash", name: "Cash on Delivery" },
-    { id: "card", name: "Credit/Debit Card" },
+    { id: "Gcash", name: "Gcash" },
   ];
 
   const calculateTotal = () =>
