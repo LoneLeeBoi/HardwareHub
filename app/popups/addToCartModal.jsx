@@ -86,13 +86,13 @@ export function AddToCartModal({ isOpen, onClose, product }) {
         <div className="flex flex-col h-full min-h-0">
           {/* Close Button */}
           <div className="flex justify-end mb-4">
-            <button
+            <div
               onClick={onClose}
               className="p-1 hover:bg-gray-100 rounded transition-colors"
               aria-label="Close modal"
             >
               <Close className="size-6 stroke-3" />
-            </button>
+            </div>
           </div>
 
           {/* Header */}

@@ -64,6 +64,8 @@ export default function RequestCart() {
       ],
       total_amount: calculateTotal(),
     };
+
+    console.log("eeee", orderData);
   };
 
   const SkeletonItem = () => (
@@ -186,8 +188,6 @@ export default function RequestCart() {
                   </div>
 
                   <div className="flex-shrink-0 ml-4">
-                    {console.log("item",item)}
-
                     <button
                       onClick={() => handleRemoveItem(item.id)}
                       className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"

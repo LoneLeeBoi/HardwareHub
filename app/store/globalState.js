@@ -50,8 +50,6 @@ const globalState = create(
         }),
 
       removeFromCart: (itemId) => {
-        console.log("itemId", itemId);
-
         removeProduct(itemId);
         set((state) => ({
           cart: state.cart.filter((item) => item.id !== itemId),
