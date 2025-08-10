@@ -225,14 +225,14 @@ export default function RequestCart() {
                     />
                     <div className="flex-shrink-0">
                       <img
-                        src={item.image || "/placeholder-product.jpg"}
+                        src={item.image}
                         alt={item.name}
                         className="w-20 h-20 object-cover rounded-lg border border-gray-200"
                       />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        {item.name}
+                        {item.name} 
                       </h3>
                       {item.description && (
                         <p className="text-sm text-gray-500 mb-2 line-clamp-2">

@@ -20,7 +20,6 @@ export async function POST(req) {
     const body = await req.json();
     const { user_id, payment_method, items, stock, total_amount } = body;
 
-    // Validation
     if (!user_id || !payment_method || !items || !stock || !total_amount) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
@@ -35,10 +34,8 @@ export async function POST(req) {
       );
     }
 
-    // Generate UUID
     const orderId = randomUUID();
 
-    // Option 1: If you can rename the column to 'id' (recommended)
     const insertQuery = `
       INSERT INTO orders (id, user_id, payment_method, items, stock, total_amount, status) 
       VALUES (?, ?, ?, ?, ?, ?, 'pending')
@@ -57,7 +54,6 @@ export async function POST(req) {
         total_amount,
       ]);
 
-      // Clear cart items
       const productIds = items.map(item => item.product_id);
       if (productIds.length > 0) {
         const placeholders = productIds.map(() => "?").join(",");
@@ -67,7 +63,6 @@ export async function POST(req) {
         );
       }
 
-      // Commit transaction
       await queryPromise('COMMIT');
 
       return NextResponse.json({

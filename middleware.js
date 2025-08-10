@@ -5,7 +5,7 @@ export function middleware(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("token")?.value;
 
-  const publicPaths = ["/", "/login", "/register", "/cart", "/_next", "/favicon.ico", "/images"];
+  const publicPaths = ["/", "/login", "/register", "/cart", "/_next", "/favicon.ico", "/images", "/uploads"];
   const isPublicPath = publicPaths.some((path) => pathname === path || pathname.startsWith(path + "/"));
 
   if (pathname.startsWith("/api")) {
