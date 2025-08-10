@@ -65,7 +65,6 @@ export default function RequestCart() {
       total_amount: calculateTotal(),
     };
 
-    console.log("eeee", orderData);
   };
 
   const SkeletonItem = () => (

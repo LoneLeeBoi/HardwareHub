@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus } from "@/public/icons/plus";
-import { Edit } from "@/public/icons/edit";
-import { Trash } from "@/public/icons/trash";
+
 import { AddInventoryModal } from "@/app/popups/addInventoryModal";
 import { ConfirmationModal } from "@/app/popups/confirmationModal";
 import useInventoryHandlers from "./inventoryHandler";
 import Pagination from "@/app/utils/Pagination";
+import Warning from "@/public/icons/warning";
 
 const Page = () => {
   const [search, setSearch] = useState("");
@@ -18,17 +18,17 @@ const Page = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isEditingId, setEditingId] = useState(false);
   const { isConfirm, setConfirm, handleDeleteInventory } =
     useInventoryHandlers();
 
   const [newInventory, setNewInventory] = useState({
     product_id: "",
+    unit: "",
     stock: "",
-    acquisition: "",
-    retail: "",
     user_id: "",
   });
+  const [defaultName, setDefaultName] = useState(null);
+  const [defaultUnit, setDefaultUnit] = useState(null);
 
   const fetchInventory = async () => {
     try {
@@ -63,32 +63,8 @@ const Page = () => {
     setModalOpen(false);
   };
 
-  const handleEdit = (item) => {
-    setNewInventory(item);
-    setEditingId(item.id);
-    setIsEditing(true);
-    setModalOpen(true);
-  };
-
   return (
     <div className="p-4">
-      <div
-        onClick={() => {
-          setIsEditing(false);
-          setNewInventory({
-            product_id: "",
-            stock: "",
-            acquisition: "",
-            retail: "",
-          });
-          setModalOpen(true);
-        }}
-        className="my-4 flex w-fit items-center uppercase gap-3 px-6 py-3 bg-gray-100 hover:bg-blue-700 text-gray-700 hover:text-white rounded-lg font-xs font-black transition-colors duration-200 shadow-sm hover:shadow-md cursor-pointer"
-      >
-        <Plus className="size-5 stroke-3" />
-        inventory
-      </div>
-
       <div className="border border-gray-200 rounded p-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
           <input
@@ -109,45 +85,55 @@ const Page = () => {
               <th className="p-2">Name</th>
               <th className="p-2">Unit</th>
               <th className="p-2">Stock</th>
-              <th className="p-2">Acquisition</th>
-              <th className="p-2">Retail</th>
+              <th className="p-2">Status</th>
               <th className="p-2">Action</th>
             </tr>
           </thead>
           <tbody>
             {inventory.length > 0 ? (
-              inventory
-                .slice()
-                .sort((a, b) => {
-                  if (a.stock !== b.stock) return a.stock - b.stock;
-                  return new Date(b.created_at) - new Date(a.created_at);
-                })
-                .map((item) => (
+              inventory.map((item) => {
+                let status = "";
+
+                if (item.stock <= 0) {
+                  status = <span>Empty Stock</span>;
+                } else if (item.stock == 1) {
+                  status = (
+                    <span className=" flex items-center gap-1 justify-center w-[62px] h-[30px] bg-red-300  text-xs py-1 animate-pulse rounded-md border border-red-500 text-red-500">
+                      <Warning />
+                      Low
+                    </span>
+                  );
+                } else if (item.stock <= 5 && item.stock != 1) {
+                  status = (
+                    <span className="bg-red-100 flex items-center px-5 h-[30px] w-[62px] text-xs py-1 rounded-md border border-red-300 text-red-400">
+                      Low
+                    </span>
+                  );
+                }
+
+                return (
                   <tr key={item.id}>
-                    <td className="p-2">{item.product_name}</td>
+                    <td className="p-2">{item.name}</td>
                     <td className="p-2">{item.units}</td>
                     <td className="p-2">{item.stock}</td>
-                    <td className="p-2">{item.acquisition}</td>
-                    <td className="p-2">{item.retail}</td>
+                    <td className="p-2">{status}</td>
+
                     <td className="px-6 py-4 whitespace-nowrap flex gap-2">
                       <div
                         onClick={() => {
-                          handleEdit(item);
-                          setIsEditing(true);
+                          setModalOpen(true);
+                          setIsEditing(false);
+                          setDefaultUnit(item.units);
+                          setDefaultName(item.id)
                         }}
-                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                        className="text-white shadow-lg bg-blue-500 p-2 rounded-md cursor-pointer"
                       >
-                        <Edit className="size-6" />
-                      </div>
-                      <div
-                        onClick={() => setConfirm(item.id)}
-                        className="text-red-600 hover:text-red-800 cursor-pointer"
-                      >
-                        <Trash className="size-6" />
+                        <Plus className="size-5" />
                       </div>
                     </td>
                   </tr>
-                ))
+                );
+              })
             ) : (
               <tr>
                 <td colSpan="5" className="text-center p-2">
@@ -166,6 +152,10 @@ const Page = () => {
       </div>
 
       <AddInventoryModal
+        setDefaultName={setDefaultName}
+        defaultName={defaultName}
+        setDefaultUnit={setDefaultUnit}
+        defaultUnit={defaultUnit}
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         newInventory={newInventory}

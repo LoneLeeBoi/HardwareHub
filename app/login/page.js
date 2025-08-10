@@ -10,8 +10,8 @@ import { toast } from "react-toastify";
 
 import globalState from "@/app/store/globalState";
 import LoginFunction from "../components/functions/LoginFunctions";
-import {getUserCart}  from "../components/functions/CartFunctions";
-
+import { getUserCart } from "../components/functions/CartFunctions";
+import { syncCartFromStorage } from "../cart/AppCartSync";
 // Spinner Component
 const Spinner = () => (
   <div className="fixed inset-0 flex items-center justify-center bg-black/50">
@@ -46,7 +46,7 @@ export default function LoginPage() {
         const token = res?.data?.token;
         const decoded = jwt.decode(token);
         const { role, id } = decoded || {};
-
+        await syncCartFromStorage();
         globalState.setState({ isLogged: true });
         localStorage.setItem("token", token);
         localStorage.setItem("id", id);

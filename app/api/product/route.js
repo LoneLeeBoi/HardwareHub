@@ -11,80 +11,111 @@ export async function GET(req) {
   const categoryName = searchParams.get("category_name");
   const searchQuery = searchParams.get("search");
   const page = parseInt(searchParams.get("page") || "1", 10);
-  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const limit =parseInt(searchParams.get("limit") || "5", 10);;
   const offset = (page - 1) * limit;
-
-  let baseSql = `
-    FROM products
-    JOIN categories ON products.category_id = categories.id
-    WHERE products.deleted_at IS NULL
-  `;
 
   const conditions = [];
   const values = [];
 
+  let baseCondition = `products.deleted_at IS NULL`;
+
   if (categoryName && searchQuery) {
-    conditions.push("(categories.name LIKE ? OR products.name LIKE ?)");
+    conditions.push(`(categories.name LIKE ? OR products.name LIKE ?)`);
     values.push(`%${categoryName}%`, `%${searchQuery}%`);
   } else if (categoryName) {
-    conditions.push("categories.name LIKE ?");
+    conditions.push(`categories.name LIKE ?`);
     values.push(`%${categoryName}%`);
   } else if (searchQuery) {
-    conditions.push("products.name LIKE ?");
+    conditions.push(`products.name LIKE ?`);
     values.push(`%${searchQuery}%`);
   }
 
-  if (conditions.length > 0) {
-    baseSql += " AND " + conditions.join(" AND ");
-  }
+  const whereClause = conditions.length > 0
+    ? `${baseCondition} AND ${conditions.join(" AND ")}`
+    : baseCondition;
 
-  const dataSql = `
-    SELECT products.*, categories.name AS category_name
-    ${baseSql}
+  // 1. Get distinct product names with pagination
+  const distinctNamesSql = `
+    SELECT DISTINCT products.name
+    FROM products
+    JOIN categories ON products.category_id = categories.id
+    WHERE ${whereClause}
     ORDER BY products.row DESC
     LIMIT ? OFFSET ?
   `;
 
-  const countSql = `
-    SELECT COUNT(*) as total
-    ${baseSql}
-  `;
-
-  const dataValues = [...values, limit, offset];
+  const distinctNamesValues = [...values, limit, offset];
 
   return new Promise((resolve) => {
-    db.query(dataSql, dataValues, (err, results) => {
+    db.query(distinctNamesSql, distinctNamesValues, (err, nameResults) => {
       if (err) {
         return resolve(
-          NextResponse.json({ error: "Database error" }, { status: 500 })
+          NextResponse.json({ error: "Distinct names query error" }, { status: 500 })
         );
       }
 
-      db.query(countSql, values, (countErr, countResults) => {
-        if (countErr) {
+      const distinctNames = nameResults.map(row => row.name);
+      if (distinctNames.length === 0) {
+        return resolve(
+          NextResponse.json({ data: [], page, limit, total: 0, totalPages: 0 }, { status: 200 })
+        );
+      }
+
+
+      const placeholders = distinctNames.map(() => "?").join(",");
+      const dataSql = `
+        SELECT products.*, categories.name AS category_name
+        FROM products
+        JOIN categories ON products.category_id = categories.id
+        WHERE products.name IN (${placeholders})
+        ORDER BY  products.row DESC
+      `;
+      const dataValues = distinctNames;
+
+      db.query(dataSql, dataValues, (dataErr, results) => {
+        if (dataErr) {
           return resolve(
-            NextResponse.json({ error: "Count query error" }, { status: 500 })
+            NextResponse.json({ error: "Data query error" }, { status: 500 })
           );
         }
 
-        const total = countResults[0]?.total || 0;
+        // 3. Count distinct product names for total
+        const countSql = `
+          SELECT COUNT(DISTINCT products.name) as total
+          FROM products
+          JOIN categories ON products.category_id = categories.id
+          WHERE ${whereClause}
+        `;
 
-        resolve(
-          NextResponse.json(
-            {
-              data: results,
-              page,
-              limit,
-              total,
-              totalPages: Math.ceil(total / limit),
-            },
-            { status: 200 }
-          )
-        );
+        db.query(countSql, values, (countErr, countResults) => {
+          if (countErr) {
+            return resolve(
+              NextResponse.json({ error: "Count query error" }, { status: 500 })
+            );
+          }
+
+          const total = countResults[0]?.total || 0;
+
+          resolve(
+            NextResponse.json(
+              {
+                data: results,
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+              },
+              { status: 200 }
+            )
+          );
+        });
       });
     });
   });
 }
+
+
+
 
 export async function POST(req) {
   if (!isAuthorized(req))

@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 import jwt from "jsonwebtoken";
 
 export function AddProductModal({
+  setCategoryDefault,
+  categoryDefault,
   setNameDefault,
   nameDefault,
   isOpen,
@@ -38,6 +40,11 @@ export function AddProductModal({
     }
   }, [nameDefault]);
   useEffect(() => {
+    if (categoryDefault != null) {
+      handleInputChange("category_id", categoryDefault);
+    }
+  }, [categoryDefault]);
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -55,6 +62,7 @@ export function AddProductModal({
 
   const handleClose = () => {
     setNameDefault(null);
+    setCategoryDefault(null);
     setShowModal(false);
     setTimeout(() => onClose(), 300);
   };
@@ -102,7 +110,7 @@ export function AddProductModal({
       >
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <h2 className="text-lg font-semibold">
-            {isEditing ? "Edit Product" : "Add New Product"}
+            {isEditing ? "Edit Product" :nameDefault? "Add New Unit": "Add New Product"}
           </h2>
           <div
             onClick={handleClose}
@@ -134,11 +142,16 @@ export function AddProductModal({
           <div>
             <label className="block text-sm font-medium mb-1">Category</label>
             <select
-              value={newProduct.category_id || ""}
+              value={
+                categories.some((c) => c.id === categoryDefault)
+                  ? categoryDefault
+                  : ""
+              }
               onChange={(e) => handleInputChange("category_id", e.target.value)}
+              disabled={!!categoryDefault}
               className="w-full border rounded px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select a category</option>
+              <option value="">Select Category</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -156,20 +169,20 @@ export function AddProductModal({
           <InputField
             label={isEditing ? "" : "Price"}
             type={isEditing ? "hidden" : "number"}
-            value={newProduct.price}
+            value={newProduct.price || ""}
             onChange={(val) => handleInputChange("price", val)}
           />
 
           <InputField
             label={isEditing ? "" : "Unit"}
             type={isEditing ? "hidden" : "text"}
-            value={newProduct.units}
+            value={newProduct.units || ""}
             onChange={(val) => handleInputChange("units", val)}
           />
           <InputField
             label={isEditing ? "" : "Stock"}
             type={isEditing ? "hidden" : "number"}
-            value={newProduct.stock ?? ""}
+            value={newProduct.stock || ""}
             onChange={(val) => handleInputChange("stock", val)}
           />
 
