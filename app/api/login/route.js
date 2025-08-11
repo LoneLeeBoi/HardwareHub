@@ -12,7 +12,7 @@ export async function POST(request) {
   }
 
   return new Promise((resolve) => {
-    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+    db.query('SELECT * FROM users WHERE BINARY email = ?', [email], async (err, results) => {
       if (err) {
         resolve(NextResponse.json({ message: 'DB error' }, { status: 500 }));
         return;

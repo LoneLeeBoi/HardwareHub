@@ -15,7 +15,7 @@ export function AddCategoryModal({
   newCategory,
   handleInputChange,
   refreshCategories,
-  isEditingCategory = false,
+  isEditingCategory,
   editCategoryId = null,
 }) {
   const [showModal, setShowModal] = useState(false);

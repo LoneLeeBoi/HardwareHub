@@ -57,12 +57,12 @@ export default function Page() {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [nameDefault, setNameDefault] = useState(null);
   const [categoryDefault, setCategoryDefault] = useState(null);
-  useState(async() => {
-        try {
+  useState(async () => {
+    try {
       const params = { page: currentPage };
 
       const result = await ProductFunctions(params);
-      console.log("page", currentPage)
+      console.log("page", currentPage);
       if (result.success) {
         setProducts(result.data.data || []);
       } else {
@@ -251,7 +251,10 @@ export default function Page() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap flex gap-2">
                       <div
-                        onClick={() => handleEditCategory(category)}
+                        onClick={() => {
+                          handleEditCategory(category);
+                          setIsEditingCategory(true);
+                        }}
                         className="text-blue-600 hover:text-blue-800 cursor-pointer"
                       >
                         <Edit className="size-6" />
@@ -406,7 +409,7 @@ export default function Page() {
         newCategory={newCategory}
         handleInputChange={handleCategoryInputChange}
         refreshCategories={fetchCategories}
-        isEditing={isEditingCategory}
+        isEditingCategory={isEditingCategory}
         editCategoryId={editCategoryId}
       />
     </div>
