@@ -55,9 +55,12 @@ export default function useProductHandlers() {
   useEffect(() => {
     const decoded = jwt.decode(localStorage.getItem("token"));
     setUserId(decoded?.id);
+  }, []);
+
+  useEffect(() => {
     fetchCategories();
     fetchProducts();
-  }, []);
+  }, [currentPage]);
 
   // ==============================
   // Fetchers
@@ -70,7 +73,7 @@ export default function useProductHandlers() {
   };
 
   const fetchProducts = async () => {
-    const res = await ProductFunctions();
+    const res = await ProductFunctions({ page: currentPage });
     if (res.success) {
       setProducts(res.data?.data || []);
       setTotalPages(res?.data?.totalPages);
