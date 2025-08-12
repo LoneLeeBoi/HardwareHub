@@ -65,6 +65,7 @@ const Page = () => {
 
   return (
     <div className="p-4">
+      <h2 className="text-2xl font-bold text-gray-900">INVENTORY TRACKER</h2>
       <div className="border border-gray-200 rounded p-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
           <input
@@ -92,22 +93,29 @@ const Page = () => {
           <tbody>
             {inventory.length > 0 ? (
               inventory.map((item) => {
-                let status = "";
+                let status;
 
                 if (item.stock <= 0) {
                   status = <span>Empty Stock</span>;
-                } else if (item.stock == 1) {
+                } else if (item.stock > 10) {
                   status = (
-                    <span className=" flex items-center gap-1 justify-center w-[62px] h-[30px] bg-red-300  text-xs py-1 animate-pulse rounded-md border border-red-500 text-red-500">
+                    <span className="flex items-center gap-1 justify-center w-[62px] h-[30px] bg-green-500 text-xs py-1 rounded-md border border-black text-white font-semibold">
+                      Good
+                    </span>
+                  );
+                } else if (item.stock <= 5) {
+                  status = (
+                    <span className="flex items-center gap-1 justify-center w-[62px] h-[30px] bg-red-300 text-xs py-1 animate-pulse rounded-md border border-red-500 text-red-500">
                       <Warning />
                       Low
                     </span>
                   );
-                } else if (item.stock <= 5 && item.stock != 1) {
+                } else if (item.stock >= 5) {
                   status = (
-                    <span className="bg-red-100 flex items-center px-5 h-[30px] w-[62px] text-xs py-1 rounded-md border border-red-300 text-red-400">
-                      Low
-                    </span>
+                    <span className="bg-yellow-100 flex items-center gap-1 justify-center w-[62px] h-[30px] text-xs py-1 rounded-md border border-yellow-300 text-yellow-600">
+                    Warning
+                  </span>
+                  
                   );
                 }
 
