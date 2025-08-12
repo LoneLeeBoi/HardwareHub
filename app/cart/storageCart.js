@@ -143,7 +143,7 @@ export default function StorageCart() {
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                        className="w-20 h-20 object-contain rounded-lg border border-gray-200"
                       />
                     </div>
                     <div className="flex-1">

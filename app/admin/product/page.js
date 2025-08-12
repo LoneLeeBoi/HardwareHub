@@ -57,6 +57,7 @@ export default function Page() {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [nameDefault, setNameDefault] = useState(null);
   const [categoryDefault, setCategoryDefault] = useState(null);
+
   useState(async () => {
     try {
       const params = { page: currentPage };
@@ -73,6 +74,7 @@ export default function Page() {
       console.log("error", error);
     }
   }, [currentPage]);
+
   const handleSearch = async () => {
     try {
       const params = searchTerm
@@ -127,6 +129,7 @@ export default function Page() {
       </div>
 
       <div className="grid grid-cols-12 gap-6">
+        {/* Products Table */}
         <div className="col-span-8">
           <h3 className="text-lg font-semibold mb-3 text-gray-800">Products</h3>
 
@@ -167,54 +170,68 @@ export default function Page() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     View
                   </th>
-                  <th className=" py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Unit
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {Object.entries(groupedProducts).map(([name, group], index) => {
-                  const firstProduct = group[0];
-                  return (
-                    <tr key={name} className="hover:bg-gray-50 cursor-pointer">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Image
-                          src={firstProduct?.image}
-                          width={50}
-                          height={50}
-                          alt={`image product-${index}`}
-                          className="h-[50px] w-[50px] object-cover"
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">{name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {categories.find(
-                          (c) => c.id === firstProduct.category_id
-                        )?.name || "Unknown"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className="text-white rounded-lg  bg-green-500 hover:bg-green-600 px-3 text-xs  py-1.5 cursor-pointer"
-                          onClick={() => setSelectedGroup(group)}
-                        >
-                          View
-                        </span>
-                      </td>
-                      <td>
-                        <div
-                          onClick={() => {
-                            setIsModalOpen(true);
-                            setNameDefault(name);
-                            setCategoryDefault(firstProduct?.category_id);
-                          }}
-                          className="flex items-center  justify-center text-white w-[30px] h-[30px]  p-2 bg-blue-500 hover:bg-blue-600  rounded-lg"
-                        >
-                          <Plus className="size-4 stroke-3 " />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {Object.keys(groupedProducts).length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="px-6 py-4 text-center text-gray-500"
+                    >
+                      No products found
+                    </td>
+                  </tr>
+                ) : (
+                  Object.entries(groupedProducts).map(([name, group], index) => {
+                    const firstProduct = group[0];
+                    return (
+                      <tr
+                        key={name}
+                        className="hover:bg-gray-50 cursor-pointer"
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <Image
+                            src={firstProduct?.image}
+                            width={50}
+                            height={50}
+                            alt={`image product-${index}`}
+                            className="h-[50px] w-[50px] object-cover"
+                          />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">{name}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {categories.find(
+                            (c) => c.id === firstProduct.category_id
+                          )?.name || "Unknown"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className="text-white rounded-lg bg-green-500 hover:bg-green-600 px-3 text-xs py-1.5 cursor-pointer"
+                            onClick={() => setSelectedGroup(group)}
+                          >
+                            View
+                          </span>
+                        </td>
+                        <td>
+                          <div
+                            onClick={() => {
+                              setIsModalOpen(true);
+                              setNameDefault(name);
+                              setCategoryDefault(firstProduct?.category_id);
+                            }}
+                            className="flex items-center justify-center text-white w-[30px] h-[30px] p-2 bg-blue-500 hover:bg-blue-600 rounded-lg"
+                          >
+                            <Plus className="size-4 stroke-3" />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
@@ -244,30 +261,41 @@ export default function Page() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {categories?.map((category) => (
-                  <tr key={category.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap uppercase font-bold">
-                      {category.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap flex gap-2">
-                      <div
-                        onClick={() => {
-                          handleEditCategory(category);
-                          setIsEditingCategory(true);
-                        }}
-                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                      >
-                        <Edit className="size-6" />
-                      </div>
-                      <div
-                        onClick={() => setIsCatConfirm(category.id)}
-                        className="text-red-600 hover:text-red-800 cursor-pointer"
-                      >
-                        <Trash className="size-6" />
-                      </div>
+                {categories.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={2}
+                      className="px-6 py-4 text-center text-gray-500"
+                    >
+                      No categories found
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  categories.map((category) => (
+                    <tr key={category.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap uppercase font-bold">
+                        {category.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap flex gap-2">
+                        <div
+                          onClick={() => {
+                            handleEditCategory(category);
+                            setIsEditingCategory(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                        >
+                          <Edit className="size-6" />
+                        </div>
+                        <div
+                          onClick={() => setIsCatConfirm(category.id)}
+                          className="text-red-600 hover:text-red-800 cursor-pointer"
+                        >
+                          <Trash className="size-6" />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

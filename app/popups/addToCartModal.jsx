@@ -59,7 +59,7 @@ export function AddToCartModal({ isOpen, onClose, product }) {
   const handleAddToCart = () => {
     if (selectedVariant && quantity > 0) {
       addToCart({ ...selectedVariant, quantity });
-      toast.success("Success");
+      toast.success(`${selectedVariant.name} added successfully`);
       onClose();
     }
   };
@@ -108,7 +108,7 @@ export function AddToCartModal({ isOpen, onClose, product }) {
                 alt={selectedVariant.name || "Product image"}
                 width={300}
                 height={250}
-                className="w-full h-[250px] object-cover rounded"
+                className="w-full h-[250px] object-contain rounded"
                 priority
               />
             </div>
