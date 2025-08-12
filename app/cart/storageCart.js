@@ -8,7 +8,7 @@ import { Minus } from "@/public/icons/minus";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 export default function StorageCart() {
-  const { cart, removeFromCart, updateQuantity,isLogged } = globalState();
+  const { cart, removeFromCart, updateQuantity, isLogged } = globalState();
   const [selectedItems, setSelectedItems] = useState([]);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,8 +21,8 @@ export default function StorageCart() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleRemoveItem = (itemId) => {
-    removeFromCart(itemId);
+  const handleRemoveItem = (item) => {
+    removeFromCart(item.id, item.cardID);
     setSelectedItems((prev) => prev.filter((id) => id !== itemId));
   };
 
@@ -66,7 +66,7 @@ export default function StorageCart() {
       ],
       total_amount: calculateTotal(),
     };
-  console.log("order",orderData);
+    console.log("order", orderData);
   };
 
   const SkeletonItem = () => (
@@ -144,11 +144,11 @@ export default function StorageCart() {
                         src={item.image}
                         alt={item.name}
                         className="w-20 h-20 object-cover rounded-lg border border-gray-200"
-                      />  
+                      />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        {item.name} 
+                        {item.name}
                       </h3>
                       {item.description && (
                         <p className="text-sm text-gray-500 mb-2 line-clamp-2">
@@ -190,7 +190,7 @@ export default function StorageCart() {
 
                   <div className="flex-shrink-0 ml-4">
                     <button
-                      onClick={() => handleRemoveItem(item.cartID)}
+                      onClick={() => handleRemoveItem(item)}
                       className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                       aria-label={`Remove ${item.name} from cart`}
                     >

@@ -21,7 +21,6 @@ export default function RequestCart() {
   }, []);
 
   const handleRemoveItem = (item) => {
-    console.log("item", item);
     removeFromCart(item.id, item.cartID);
     setSelectedItems((prev) => prev.filter((id) => id !== item.id));
   };
