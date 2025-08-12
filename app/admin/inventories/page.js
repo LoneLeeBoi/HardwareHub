@@ -107,7 +107,7 @@ const Page = () => {
                   status = (
                     <span className="flex items-center gap-1 justify-center w-[62px] h-[30px] bg-red-300 text-xs py-1 animate-pulse rounded-md border border-red-500 text-red-500">
                       <Warning />
-                      Low
+                       Low
                     </span>
                   );
                 } else if (item.stock >= 5) {
