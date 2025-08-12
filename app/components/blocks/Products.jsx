@@ -19,7 +19,7 @@ export function Products() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const result = await ProductFunctions();
+      const result = await ProductFunctions({ limit: 20 });
 
       if (result.success) {
         const data = result?.data?.data || [];

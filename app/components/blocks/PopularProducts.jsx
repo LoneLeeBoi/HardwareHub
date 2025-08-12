@@ -19,7 +19,7 @@ export function PopularProducts() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const result = await ProductPopular();
+      const result = await ProductPopular({ limit: 10 });
 
       if (result.success) {
         const data = result?.data?.data || [];
@@ -32,10 +32,7 @@ export function PopularProducts() {
     fetchProducts();
   }, [setProducts]);
 
-  // Show all or first 20
-  const visibleProducts = showAll ? products : products.slice(0, 20);
-
-  // Remove duplicate names for display
+  const visibleProducts = showAll ? products : products.slice(0, 8);
   const uniqueProducts = visibleProducts.filter(
     (item, index, self) =>
       index ===
@@ -109,7 +106,6 @@ export function PopularProducts() {
               ))}
             </div>
 
-            {/* Show More Button */}
             {products.length > 20 && !showAll && (
               <div className="text-center mt-6">
                 <button
