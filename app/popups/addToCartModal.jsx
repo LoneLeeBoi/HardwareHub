@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import globalState from "../store/globalState";
 import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
+import { toast } from "react-toastify";
 
 export function AddToCartModal({ isOpen, onClose, product }) {
   const { addToCart } = globalState();
@@ -47,19 +48,18 @@ export function AddToCartModal({ isOpen, onClose, product }) {
     };
   }, [isOpen, onClose]);
 
-  // Reset quantity when modal closes
   useEffect(() => {
     if (!isOpen) {
       setQuantity(1);
     }
   }, [isOpen]);
 
-  // Don't render if no product or variant selected
   if (!isOpen || !selectedVariant) return null;
 
   const handleAddToCart = () => {
     if (selectedVariant && quantity > 0) {
       addToCart({ ...selectedVariant, quantity });
+      toast.success("Success")
       onClose();
     }
   };
