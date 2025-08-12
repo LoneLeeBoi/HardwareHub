@@ -53,7 +53,7 @@ export default function LoginPage() {
       if (res.status === 200) {
         const token = res?.data?.token;
         const decoded = jwt.decode(token);
-        const { role, id } = decoded || {};
+        const { role, id, username } = decoded || {};
         await syncCartFromStorage();
         globalState.setState({ isLogged: true });
         localStorage.setItem("token", token);
@@ -65,7 +65,8 @@ export default function LoginPage() {
         });
 
         toast.success(
-          role === "admin" ? "Welcome admin." : "Welcome dear user."
+          role === "admin" ? "Welcome, admin." :  `Welcome, ${username}`
+
         );
 
         const serverCartResponse = await getUserCart();
