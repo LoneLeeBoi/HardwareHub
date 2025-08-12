@@ -59,7 +59,7 @@ export function AddToCartModal({ isOpen, onClose, product }) {
   const handleAddToCart = () => {
     if (selectedVariant && quantity > 0) {
       addToCart({ ...selectedVariant, quantity });
-      toast.success("Success")
+      toast.success("Success");
       onClose();
     }
   };
@@ -102,6 +102,7 @@ export function AddToCartModal({ isOpen, onClose, product }) {
           <div className="flex-1 min-h-0 overflow-y-auto">
             {/* Product Image */}
             <div className="mb-4">
+              {console.log("selectedVariant", selectedVariant)}
               <Image
                 src={selectedVariant.image || "/images/fallback.png"}
                 alt={selectedVariant.name || "Product image"}

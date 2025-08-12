@@ -20,9 +20,10 @@ export default function RequestCart() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleRemoveItem = (itemId) => {
-    removeFromCart(itemId);
-    setSelectedItems((prev) => prev.filter((id) => id !== itemId));
+  const handleRemoveItem = (item) => {
+    console.log("item", item);
+    removeFromCart(item.id, item.cartID);
+    setSelectedItems((prev) => prev.filter((id) => id !== item.id));
   };
 
   const handleCheckboxChange = (itemId) => {
@@ -232,7 +233,7 @@ export default function RequestCart() {
                     </div>
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        {item.name} 
+                        {item.name}
                       </h3>
                       {item.description && (
                         <p className="text-sm text-gray-500 mb-2 line-clamp-2">
@@ -274,7 +275,7 @@ export default function RequestCart() {
 
                   <div className="flex-shrink-0 ml-4">
                     <button
-                      onClick={() => handleRemoveItem(item.id)}
+                      onClick={() => handleRemoveItem(item)}
                       className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                       aria-label={`Remove ${item.name} from cart`}
                     >

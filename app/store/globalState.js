@@ -49,8 +49,8 @@ const globalState = create(
           }
         }),
 
-      removeFromCart: (itemId) => {
-        removeProduct(itemId);
+      removeFromCart: (itemId, cartID) => {
+        removeProduct(cartID);
         set((state) => ({
           cart: state.cart.filter((item) => item.id !== itemId),
         }));
