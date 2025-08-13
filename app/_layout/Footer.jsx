@@ -2,11 +2,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import jwt from "jsonwebtoken";
 
 export function Footer() {
   const [user, setUser] = useState("user");
+
   useEffect(() => {
-    setUser(localStorage.getItem("role"));
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwt.decode(token);
+        setUser(decoded?.role || "user");
+      } catch {
+        setUser("user");
+      }
+    } else {
+      setUser("user");
+    }
   }, []);
 
   if (user === "admin") {
