@@ -6,13 +6,14 @@ import { CheckoutModal } from "../popups/checkoutModal";
 import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function RequestCart() {
   const { cart, removeFromCart, updateQuantity } = globalState();
   const [selectedItems, setSelectedItems] = useState([]);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
+  const router = useRouter();
   const [paymentMethod, setPaymentMethod] = useState("cash");
 
   useEffect(() => {
@@ -53,7 +54,9 @@ export default function RequestCart() {
   );
 
   const handleCheckOut = async () => {
-    console.log("Selected Items:", selectedCartItems);
+    if (paymentMethod === "credit") {
+      return router.push("/");
+    }
     const cartStorage = JSON.parse(localStorage.getItem("app-cart-storage"));
     console.log(
       "Current Cart in localStorage:",

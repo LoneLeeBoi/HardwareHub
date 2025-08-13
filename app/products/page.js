@@ -1,15 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ProductFunctions } from "../functions/ProductFunctions";
 import Image from "next/image";
 import searchState from "@/app/store/searchState";
 import { AddToCartModal } from "@/app/popups/addToCartModal";
-import Link from "next/link";
+import { ProductFunctions } from "../components/functions/ProductFunctions";
 
 const FALLBACK_IMAGE = "/images/fallback.png";
 
-export function Products() {
+export default function Page() {
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -56,7 +55,7 @@ export function Products() {
   };
 
   return (
-    <div className="container">
+    <div className="container my-4">
       {/* Header */}
       <div className="uppercase text-center border-t-8 bg-gray-300 py-4 text-[20px] text-primary font-bold border-primary w-full">
         discover more
@@ -106,14 +105,15 @@ export function Products() {
               ))}
             </div>
 
-            {products.length > 20 && (
+            {/* Show More Button */}
+            {products.length > 20 && !showAll && (
               <div className="text-center mt-6">
-                <Link
-                  href={`/products`}
-                  className="px-4 py-2 text-white text-[18px] font-bold transition bg-blue-500"
+                <button
+                  onClick={() => setShowAll(true)}
+                  className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition"
                 >
                   Show More
-                </Link>
+                </button>
               </div>
             )}
           </>
