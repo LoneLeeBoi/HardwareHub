@@ -36,7 +36,7 @@ export default function ExpensePage() {
       const data = result?.data?.data || [];
       setExpenses(data);
       setTotalPages(result?.data?.totalPages);
-      // triggerfetchExpenses();
+      triggerfetchExpenses();
     } else {
       setError(result.err || "Failed to fetch Expense.");
     }

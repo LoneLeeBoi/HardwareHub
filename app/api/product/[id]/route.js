@@ -6,32 +6,38 @@ import { writeFile, mkdir } from "fs/promises";
 import { randomUUID } from "crypto";
 
 export async function GET(req, { params }) {
-  const { id } = await params;
+  const { id } = params;
 
   if (!id) {
     return NextResponse.json({ error: "Product ID required" }, { status: 400 });
   }
 
   return new Promise((resolve) => {
-    db.query(
-      "SELECT * FROM products WHERE id = ? AND deleted_at IS NULL",
-      [id],
-      (err, results) => {
-        if (err) {
-          resolve(
-            NextResponse.json({ error: "Database error" }, { status: 500 })
-          );
-        } else if (results.length === 0) {
-          resolve(
-            NextResponse.json({ error: "Product not found" }, { status: 404 })
-          );
-        } else {
-          resolve(NextResponse.json(results[0], { status: 200 }));
-        }
+    const sql = `
+      SELECT products.*, categories.name AS category_name
+      FROM products
+      LEFT JOIN categories ON products.category_id = categories.id
+      WHERE products.id = ? AND products.deleted_at IS NULL
+    `;
+
+    db.query(sql, [id], (err, results) => {
+      if (err) {
+        return resolve(
+          NextResponse.json({ error: "Database error" }, { status: 500 })
+        );
       }
-    );
+
+      if (results.length === 0) {
+        return resolve(
+          NextResponse.json({ error: "Product not found" }, { status: 404 })
+        );
+      }
+
+      resolve(NextResponse.json(results[0], { status: 200 }));
+    });
   });
 }
+
 
 export async function PUT(req, { params }) {
   if (!isAuthorized(req)) {

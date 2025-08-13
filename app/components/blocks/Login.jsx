@@ -10,9 +10,7 @@ import { toast } from "react-toastify";
 import globalState from "@/app/store/globalState";
 import LoginFunction from "../functions/LoginFunctions";
 import { syncCartFromStorage } from "@/app/cart/AppCartSync";
-import getUserCart from "../functions/CartFunctions";
 
-// Spinner Loader
 function Spinner() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -21,11 +19,10 @@ function Spinner() {
   );
 }
 
-export function Login({ toggleForm }) {
+export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
   const router = useRouter();
 
 
@@ -75,7 +72,7 @@ export function Login({ toggleForm }) {
         {/* Logo Section */}
         <div className="mb-6 flex items-center gap-4">
           <div className="relative flex h-[150px] w-[150px] items-center justify-center">
-            <Image src="/images/LogoTwo.png" alt="logo" fill className="object-cover" />
+            <Image src="/images/LogoTwo.png" alt="logo" fill className="object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="text-3xl font-semibold">Hardware Hub</span>
@@ -112,18 +109,14 @@ export function Login({ toggleForm }) {
           </button>
         </form>
 
-        {/* Spinner */}
-        {loading && <Spinner />}
-
-        {/* Switch to Register */}
-        <div className="pt-4 text-center text-sm">
-          Don’t have an account?{" "}
-          <span
-            className="cursor-pointer font-semibold text-blue-500 hover:underline"
-            onClick={toggleForm}
+        <div className="pt-4 text-center">
+          <span className="text-sm">Don’t have an account? </span>
+          <Link
+            href="/auth/register"
+            className="text-blue-500 font-semibold hover:underline"
           >
             Create Account
-          </span>
+          </Link>
         </div>
       </div>
     </div>

@@ -20,7 +20,6 @@ export function AddExpenseModal({
 
   useEffect(() => {
     if (isOpen) {
-      // Start animation after render
       setTimeout(() => setShowModal(true), 10);
     } else {
       setShowModal(false);
@@ -29,7 +28,40 @@ export function AddExpenseModal({
 
   const handleClose = () => {
     setShowModal(false);
-    setTimeout(() => onClose(), 300); // match transition duration
+    setTimeout(() => onClose(), 300);
+  };
+
+  const handleSubmit = async () => {
+    const token = localStorage.getItem("token");
+    const decoded = jwt.decode(token);
+    const userId = decoded?.id || decoded?.sub;
+
+    const payload = {
+      ...newExpense,
+      user_id: userId,
+    };
+
+    try {
+      let success;
+      if (isEditing) {
+        success = await EditExpense(payload);
+      } else {
+        success = await AddExpense(payload);
+      }
+
+      if (success) {
+        toast.success(
+          isEditing ? "Expense updated successfully!" : "Expense added successfully!"
+        );
+        handleClose();
+        if (typeof refreshExpense === "function") refreshExpense();
+      } else {
+        toast.error(`Failed to ${isEditing ? "update" : "add"} expense. Please try again.`);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An unexpected error occurred.");
+    }
   };
 
   const handleAddExpense = async () => {
@@ -64,14 +96,11 @@ export function AddExpenseModal({
   return (
     <>
       {/* Backdrop */}
-      <div
-        onClick={handleClose}
-        className="fixed inset-0 z-[101] bg-black/50"
-      ></div>
+      <div onClick={handleClose} className="fixed inset-0 z-[101] bg-black/50" />
 
-      {/* Animated Modal */}
+      {/* Modal */}
       <div
-        className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl  ${
+        className={`fixed right-0 top-0 h-full w-full max-w-md bg-white z-[102] transform transition-transform duration-300 ease-in-out shadow-xl ${
           showModal ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -79,11 +108,8 @@ export function AddExpenseModal({
           <h2 className="text-lg font-semibold">
             {isEditing ? "Edit Expense" : "Add New Expense"}
           </h2>
-          <div
-            onClick={handleClose}
-            className="text-gray-600 hover:text-gray-900"
-          >
-            <Close className={`size-6 stroke-3`} />
+          <div onClick={handleClose} className="text-gray-600 hover:text-gray-900">
+            <Close className="size-6 stroke-3" />
           </div>
         </div>
 
@@ -134,7 +160,7 @@ export function AddExpenseModal({
 
           <div className="flex justify-end pt-4">
             <button
-              onClick={handleAddExpense}
+              onClick={handleSubmit}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               {isEditing ? "Update" : "Add"}

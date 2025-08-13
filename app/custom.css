@@ -61,6 +61,9 @@ svg {
 .animate-scale-in {
   animation: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.container{
+  @apply mx-auto
+}
 
 select {
   @apply h-[45px];

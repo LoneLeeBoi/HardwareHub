@@ -68,6 +68,18 @@ export function AddProductModal({
   };
 
   const handleSubmit = async () => {
+    // Validate required fields
+    if (
+      !newProduct.name?.trim() ||
+      !newProduct.price ||
+      !newProduct.units ||
+      !newProduct.category_id ||
+      (!isEditing && !newProduct.image)
+    ) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
     try {
       setLoading(true);
       const submitAction = isEditing ? EditProduct : AddProduct;
@@ -120,7 +132,7 @@ export function AddProductModal({
           </div>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(100vh-60px)]">
           <InputField
             label="Product Name"
             type="text"

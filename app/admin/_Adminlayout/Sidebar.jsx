@@ -51,12 +51,7 @@ export function Sidebar() {
             href="/admin"
             className="flex items-center space-x-3 group transition-all duration-200 hover:opacity-80"
           >
-            <Image
-              src="/images/Logo.png" 
-              alt="Logo"
-              width={40}
-              height={40}
-            />
+            <Image src="/images/Logo.png" alt="Logo" width={40} height={40} />
             <div>
               <h1 className="text-xl font-bold text-gray-900 tracking-tight">
                 Dashboard

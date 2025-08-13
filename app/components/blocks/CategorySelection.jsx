@@ -39,10 +39,12 @@ export function CategorySelection() {
   };
 
   return (
-    <div className="py-4">
-      <h2 className="text-[30px] font-bold mb-4">Select a Category</h2>
+    <div className="py-6 px-4">
+      <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-center">
+        Select a Category
+      </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6">
         {categories.map((category) => (
           <div
             key={category.id}

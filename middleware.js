@@ -5,17 +5,27 @@ export function middleware(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("token")?.value;
 
-  const publicPaths = ["/", "/login","/products", "/register", "/cart", "/_next", "/favicon.ico", "/images", "/uploads"];
-  const isPublicPath = publicPaths.some((path) => pathname === path || pathname.startsWith(path + "/"));
+  // Public paths that don't need protection
+  const publicPaths = [
+    "/",
+    "/login",
+    "/products",
+    "/register",
+    "/cart",
+    "/_next",
+    "/favicon.ico",
+    "/images",
+    "/uploads",
+  ];
+  const isPublicPath = publicPaths.some(
+    (path) => pathname === path || pathname.startsWith(path + "/")
+  );
 
   if (pathname.startsWith("/api")) {
     return NextResponse.next();
   }
 
-  if (!token) {
-    if (!isPublicPath) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
+  if (isPublicPath) {
     return NextResponse.next();
   }
 
@@ -33,14 +43,23 @@ export function middleware(request) {
   }
 
   if (role === "user") {
-    if (pathname.includes("/admin") || pathname === "/login" || pathname === "/register") {
+    if (
+      pathname.includes("/admin") ||
+      pathname === "/login" ||
+      pathname === "/register"
+    ) {
       return NextResponse.redirect(new URL("/", request.url));
     }
     return NextResponse.next();
   }
 
   if (role === "admin") {
-    if (pathname === "/" || pathname === "/login" || pathname === "/register" || pathname === "/cart") {
+    if (
+      pathname === "/" ||
+      pathname === "/login" ||
+      pathname === "/register" ||
+      pathname === "/cart"
+    ) {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
     return NextResponse.next();
