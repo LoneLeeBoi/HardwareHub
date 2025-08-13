@@ -8,6 +8,7 @@ import {
   EditExpense,
 } from "../components/functions/ExpenseFunctions";
 import { toast } from "react-toastify";
+import CategoryFunctions from "../components/functions/CategoryFunctions";
 export function AddExpenseModal({
   isOpen,
   onClose,
@@ -17,8 +18,19 @@ export function AddExpenseModal({
   isEditing = false,
 }) {
   const [showModal, setShowModal] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await CategoryFunctions();
+      setCategories(response.data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   useEffect(() => {
+    fetchCategories();
     if (isOpen) {
       setTimeout(() => setShowModal(true), 10);
     } else {
@@ -51,12 +63,16 @@ export function AddExpenseModal({
 
       if (success) {
         toast.success(
-          isEditing ? "Expense updated successfully!" : "Expense added successfully!"
+          isEditing
+            ? "Expense updated successfully!"
+            : "Expense added successfully!"
         );
         handleClose();
         if (typeof refreshExpense === "function") refreshExpense();
       } else {
-        toast.error(`Failed to ${isEditing ? "update" : "add"} expense. Please try again.`);
+        toast.error(
+          `Failed to ${isEditing ? "update" : "add"} expense. Please try again.`
+        );
       }
     } catch (error) {
       console.error(error);
@@ -78,9 +94,11 @@ export function AddExpenseModal({
 
       let result = await submitAction(payload);
       if (result.success) {
-        toast.success(   EditExpense
+        toast.success(
+          EditExpense
             ? "Expense updated successfully!"
-            : "Expense added successfully!");
+            : "Expense added successfully!"
+        );
         handleClose();
         if (typeof refreshExpense === "function") refreshExpense();
       } else {
@@ -96,7 +114,10 @@ export function AddExpenseModal({
   return (
     <>
       {/* Backdrop */}
-      <div onClick={handleClose} className="fixed inset-0 z-[101] bg-black/50" />
+      <div
+        onClick={handleClose}
+        className="fixed inset-0 z-[101] bg-black/50"
+      />
 
       {/* Modal */}
       <div
@@ -108,7 +129,10 @@ export function AddExpenseModal({
           <h2 className="text-lg font-semibold">
             {isEditing ? "Edit Expense" : "Add New Expense"}
           </h2>
-          <div onClick={handleClose} className="text-gray-600 hover:text-gray-900">
+          <div
+            onClick={handleClose}
+            className="text-gray-600 hover:text-gray-900"
+          >
             <Close className="size-6 stroke-3" />
           </div>
         </div>
@@ -147,15 +171,19 @@ export function AddExpenseModal({
           </div>
 
           <div>
-            {/* Hidden or read-only field for User ID */}
-
             <label className="block text-sm font-medium">Category</label>
-            <input
-              type="text"
-              value={newExpense.category}
-              onChange={(e) => handleInputChange("category", e.target.value)}
+            <select
+              value={newExpense.category_id || ""}
+              onChange={(e) => handleInputChange("category_id", e.target.value)}
               className="mt-1 w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            >
+              <option value="">Select a category</option>
+              {categories?.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="flex justify-end pt-4">

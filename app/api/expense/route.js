@@ -3,12 +3,11 @@ import { db } from "@/app/lib/db";
 import { randomUUID } from "crypto";
 import { isAuthorized } from "@/app/lib/auth";
 
-
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const search = searchParams.get("search");
-  const category = searchParams.get("category"); 
+  const category = searchParams.get("category");
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "5", 10);
   const offset = (page - 1) * limit;
@@ -86,45 +85,56 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
-  if (!isAuthorized(req))
+  if (!isAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  const { user_id, name, amount, date, category } = await req.json();
+  const { user_id, name, amount, date, category_id } = await req.json();
   const id = randomUUID();
 
-  // Helper: check empty/null/whitespace
-  const isEmpty = (val) => !val || val.toString().trim().length === 0;
+  const isEmpty = (val) =>
+    val === null || val === undefined || val.toString().trim().length === 0;
 
-  // Validate fields
   if (
     isEmpty(user_id) ||
     isEmpty(name) ||
     isEmpty(amount) ||
-    isNaN(amount) ||
+    isNaN(Number(amount)) ||
     isEmpty(date) ||
-    isEmpty(category)
+    isEmpty(category_id)
   ) {
     return NextResponse.json(
-      { error: "All fields are required. No empty or whitespace values allowed." },
+      {
+        error:
+          "All fields are required. No empty or whitespace values allowed.",
+      },
       { status: 400 }
     );
   }
 
-  return new Promise((resolve) => {
-    db.query(
-      `INSERT INTO expenses (id, user_id, name, amount, date, category)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, user_id.trim(), name.trim(), parseFloat(amount), date.trim(), category.trim()],
-      (err) => {
-        if (err) {
-          return resolve(
-            NextResponse.json({ error: "Insert failed" }, { status: 500 })
-          );
+  try {
+    await new Promise((resolve, reject) => {
+      db.query(
+        `INSERT INTO expenses (id, user_id, name, amount, date, category_id)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          id,
+          user_id.trim(),
+          name.trim(),
+          parseFloat(amount),
+          date.trim(),
+          category_id.trim(),
+        ],
+        (err) => {
+          if (err) return reject(err);
+          resolve();
         }
-        resolve(
-          NextResponse.json({ message: "Expense added", id }, { status: 200 })
-        );
-      }
-    );
-  });
+      );
+    });
+
+    return NextResponse.json({ message: "Expense added", id }, { status: 200 });
+  } catch (error) {
+    console.error("Database insert failed:", error);
+    return NextResponse.json({ error: "Insert failed" }, { status: 500 });
+  }
 }

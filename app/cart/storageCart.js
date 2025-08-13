@@ -23,7 +23,7 @@ export default function StorageCart() {
 
   const handleRemoveItem = (item) => {
     removeFromCart(item.id, item.cardID);
-    setSelectedItems((prev) => prev.filter((id) => id !== itemId));
+    setSelectedItems((prev) => prev.filter((id) => id !== item.id));
   };
 
   const handleCheckboxChange = (itemId) => {

@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 export async function ExpenseFunctions(params = {}) {
   const baseUrl = "http://localhost:3000";
   const token = localStorage.getItem("token");
@@ -59,15 +58,11 @@ export async function AddExpense(expenseData) {
   }
 }
 
-
-
 export async function EditExpense(expenseData) {
   const baseUrl = "http://localhost:3000";
   const token = localStorage.getItem("token");
   const url = `${baseUrl}/api/expense/${expenseData.id}`;
 
-  
- 
   try {
     const res = await axios.put(url, expenseData, {
       headers: {
@@ -84,8 +79,6 @@ export async function EditExpense(expenseData) {
     return { success: false, message: "An unexpected error occurred." };
   }
 }
-
-
 
 export async function DeleteExpense(expenseId) {
   const baseUrl = "http://localhost:3000";
@@ -106,4 +99,3 @@ export async function DeleteExpense(expenseId) {
     return false;
   }
 }
-  
