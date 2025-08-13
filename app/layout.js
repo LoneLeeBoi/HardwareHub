@@ -19,6 +19,7 @@ export default function RootLayout({ children }) {
             position="top-right"
             autoClose={500}
             hideProgressBar={false}
+            closeButton={false}
             theme="colored"
             className="z-[9999]"
             toastClassName="rounded-lg shadow-md text-sm"
