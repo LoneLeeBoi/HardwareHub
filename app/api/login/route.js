@@ -37,7 +37,13 @@ export async function POST(request) {
         { expiresIn: '1d' }
       );
 
-      resolve(NextResponse.json({ message: 'Login successful', token }, { status: 200 }));
+      resolve(NextResponse.json({
+        message: 'Login successful',
+        token,
+        name: user.username,
+        role: user.role
+      }, { status: 200 }));
+      
     });
   });
 }

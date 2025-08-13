@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Search } from "./component/Search";
 import jwt from "jsonwebtoken";
 
+
 export function Header() {
   const [isVisible, setIsVisible] = useState(false);
 

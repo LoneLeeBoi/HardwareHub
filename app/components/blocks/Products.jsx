@@ -56,10 +56,10 @@ export function Products() {
   };
 
   return (
-    <div className="container">
-      {/* Header */}
-      <div className="uppercase text-center border-t-8 bg-gray-300 py-4 text-[20px] text-primary font-bold border-primary w-full">
-        discover more
+    <div className="container mx-auto px-4">
+      {/* Discover Banner */}
+      <div className="uppercase text-center border-t-8 bg-gray-100 py-4 text-[22px] text-primary font-bold border-primary w-full tracking-wide">
+        Discover More
       </div>
 
       <div className="py-4 mb-8">
@@ -81,7 +81,7 @@ export function Products() {
                       src={product.image || FALLBACK_IMAGE}
                       alt={product.name || "Product"}
                       fill
-                      className="object-contain rounded-lg"
+                      className="object-contain"
                     />
                   </div>
 
@@ -99,7 +99,7 @@ export function Products() {
                       }}
                       className="mt-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit rounded"
                     >
-                      ADD TO CART
+                      Add to Cart
                     </button>
                   </div>
                 </div>

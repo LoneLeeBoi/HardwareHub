@@ -102,7 +102,8 @@ export async function DeleteExpense(expenseId) {
 
     return true;
   } catch (error) {
-    console.error("Failed to add product:", error);
+    console.error("Failed to add expense:", error);
     return false;
   }
 }
+  

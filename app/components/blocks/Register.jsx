@@ -4,8 +4,9 @@ import React, { useState } from "react";
 import RegisterFunction from "../functions/RegisterFunction";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import { useRouter } from "next/router";
-export function Register() {
+import Link from "next/link";
+
+export function Register({ toggleForm }) {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -56,7 +57,7 @@ export function Register() {
   };
 
   return (
-    <div className="relative z-10 flex items-center justify-center h-full">
+    <div className="relative z-10 flex items-center justify-center h-full min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
         <div className="flex items-center gap-4 mb-6">
           <div className="relative w-[150px] h-[150px]">
@@ -67,12 +68,12 @@ export function Register() {
               className="object-cover w-full h-full rounded-full"
             />
           </div>
-
           <div className="flex flex-col">
             <span className="text-3xl font-semibold">Hardware Hub</span>
             <span className="text-lg font-light">Powering Possibility</span>
           </div>
         </div>
+
         <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
           <input
             type="text"
@@ -117,11 +118,15 @@ export function Register() {
             Register
           </button>
         </form>
-        <div className="flex justify-center gap-2 pt-4">
+
+        <div className="flex justify-center gap-2 pt-4 text-sm">
           <span>Already have an account?</span>
-          <span className="font-bold text-[14px] text-blue-500 cursor-pointer">
+          <Link
+            href="/auth/login"
+            className="font-bold text-blue-500 hover:underline"
+          >
             Login
-          </span>
+          </Link>
         </div>
       </div>
     </div>

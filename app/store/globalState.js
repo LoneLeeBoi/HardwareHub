@@ -1,3 +1,5 @@
+// Fix for retaining guest cart when logging in
+
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
@@ -8,9 +10,36 @@ import {
 const globalState = create(
   persist(
     (set, get) => ({
-      isLog: true,
       isLogged: false,
+      user: null, // stores email or userId
+      carts: {}, // per-user cart: { [email]: [cartItems] }
       cart: [],
+
+      setLogin: (userEmail, user) => {
+        // ✅ Merge guest cart with user's existing cart (if any)
+        const guestCart = get().carts["guest"] || [];
+        const userCart = get().carts[userEmail] || [];
+
+        // Merge logic: keep guest items + existing user items (avoid duplicate IDs)
+        const mergedCart = [...userCart];
+        guestCart.forEach((item) => {
+          const existing = mergedCart.find((i) => i.id === item.id);
+          if (existing) {
+            existing.quantity += item.quantity || 1;
+          } else {
+            mergedCart.push(item);
+          }
+        });
+
+        const updatedCarts = { ...get().carts, [userEmail]: mergedCart, guest: [] };
+
+        set({
+          isLogged: true,
+          user,
+          cart: mergedCart,
+          carts: updatedCarts,
+        });
+      },
 
       setLogout: async (status) => {
         if (get().cart.length > 0) {
@@ -21,32 +50,49 @@ const globalState = create(
           }
         }
 
+        const currentUser = get().user;
+        const email = currentUser?.email || "guest";
+        const currentCart = get().cart;
+        const carts = { ...get().carts, [email]: currentCart };
+
         set({
           isLogged: status,
+          user: null,
           cart: [],
+          carts,
         });
       },
 
-      setCart: (newCart) => set({ cart: newCart }),
+      // Cart actions
+      setCart: (newCart) =>
+        set((state) => {
+          const email = state.user?.email || "guest";
+          const updatedCarts = { ...state.carts, [email]: newCart };
+          return { cart: newCart, carts: updatedCarts };
+        }),
 
       addToCart: (item) =>
         set((state) => {
+          let updatedCart;
           const existing = state.cart.find((i) => i.id === item.id);
 
           if (existing) {
-            return {
-              cart: state.cart.map((i) =>
-                i.id === item.id
-                  ? {
-                      ...i,
-                      quantity: (i.quantity || 1) + (item.quantity || 1),
-                    }
-                  : i
-              ),
-            };
+            updatedCart = state.cart.map((i) =>
+              i.id === item.id
+                ? {
+                    ...i,
+                    quantity: (i.quantity || 1) + (item.quantity || 1),
+                  }
+                : i
+            );
           } else {
-            return { cart: [...state.cart, item] };
+            updatedCart = [...state.cart, { ...item, quantity: item.quantity || 1 }];
           }
+
+          const email = state.user?.email || "guest";
+          const updatedCarts = { ...state.carts, [email]: updatedCart };
+
+          return { cart: updatedCart, carts: updatedCarts };
         }),
 
       removeFromCart: (itemId, cartID) => {
@@ -55,18 +101,19 @@ const globalState = create(
         if (isLogged) {
           removeProduct(cartID);
         }
-        
+
         set((state) => ({
           cart: state.cart.filter((item) => item.id !== itemId),
         }));
       },
 
       updateQuantity: (itemId, quantity) =>
-        set((state) => ({
-          cart: state.cart.map((item) =>
+        set((state) => {
+          const updatedCart = state.cart.map((item) =>
             item.id === itemId ? { ...item, quantity } : item
-          ),
-        })),
+          );
+          return { cart: updatedCart };
+        }),
 
       mergeCartOnLogin: (tempCart) => {
         const currentCart = get().cart;
@@ -87,7 +134,7 @@ const globalState = create(
       },
     }),
     {
-      name: "app-cart-storage",
+      name: "multi-user-cart-storage",
     }
   )
 );

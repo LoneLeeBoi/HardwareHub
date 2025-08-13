@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 export function AdminHeader() {
   const { setLogout } = globalState();
   const router = useRouter();
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     Cookies.remove("token");
