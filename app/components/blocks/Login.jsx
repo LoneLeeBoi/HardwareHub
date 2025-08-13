@@ -75,7 +75,7 @@ export function Login({ toggleForm }) {
         {/* Logo Section */}
         <div className="mb-6 flex items-center gap-4">
           <div className="relative flex h-[150px] w-[150px] items-center justify-center">
-            <Image src="/images/LogoTwo.png" alt="logo" fill className="object-cover" />
+            <Image src="/images/LogoTwo.png" alt="logo" fill className="object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="text-3xl font-semibold">Hardware Hub</span>
