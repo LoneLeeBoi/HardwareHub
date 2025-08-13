@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import axios from "axios";
 import searchState from "@/app/store/searchState";
 import CategoryFunctions from "../functions/CategoryFunctions";
 
 export function CategorySelection() {
-  const searchParams = searchState((state) => state.searchParams);
-
   const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -25,6 +24,20 @@ export function CategorySelection() {
     fetchCategories();
   }, []);
 
+  const handleCategoryClick = async (categoryName) => {
+    try {
+      searchState.setState({ searchParams: categoryName });
+
+      const res = await axios.get("/api/product", {
+        params: { category_name: categoryName },
+      });
+      searchState.setState({ products: res?.data?.data });
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setError("Failed to fetch products.");
+    }
+  };
+
   return (
     <div className="py-6 px-4">
       <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-center">
@@ -35,17 +48,33 @@ export function CategorySelection() {
         {categories.map((category) => (
           <div
             key={category.id}
-            onClick={() =>
-              searchState.setState({ searchParams: category.name })
-            }
-            className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center hover:shadow-md hover:scale-[1.03] transition-all duration-200 ease-in-out cursor-pointer"
+            onClick={() => handleCategoryClick(category.name)}
+            className="border rounded-lg p-4 flex flex-col items-center hover:shadow transition cursor-pointer"
           >
-            <div className=" text-center font-black text-sm text-gray-700 uppercase tracking-wide">
+            <div className="text-center font-bold text-sm uppercase flex items-center h-full">
               {category.name}
             </div>
           </div>
         ))}
       </div>
+
+      {/* Display fetched products (optional) */}
+      <div className="mt-8">
+        {products.length > 0 && (
+          <>
+            <h3 className="text-xl font-semibold mb-2">Products:</h3>
+            <ul className="space-y-2">
+              {products.map((product) => (
+                <li key={product.id} className="border p-2 rounded">
+                  {product.name}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+
+      {error && <div className="text-red-500 mt-4">{error}</div>}
     </div>
   );
 }

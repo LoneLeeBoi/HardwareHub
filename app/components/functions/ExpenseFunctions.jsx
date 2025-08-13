@@ -40,14 +40,63 @@ export async function ExpenseFunctions(params = {}) {
 export async function AddExpense(expenseData) {
   const baseUrl = "http://localhost:3000";
   const token = localStorage.getItem("token");
-
   const url = `${baseUrl}/api/expense`;
 
   try {
     const res = await axios.post(url, expenseData, {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
-         "Content-Type": "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    return { success: true };
+  } catch (error) {
+    if (error.response && error.response.status === 400) {
+      return { success: false, message: error.response.data.error };
+    }
+    console.error("Failed to add expense:", error);
+    return { success: false, message: "An unexpected error occurred." };
+  }
+}
+
+
+
+export async function EditExpense(expenseData) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+  const url = `${baseUrl}/api/expense/${expenseData.id}`;
+
+  
+ 
+  try {
+    const res = await axios.put(url, expenseData, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    if (error.response && error.response.status === 400) {
+      return { success: false, message: error.response.data.error };
+    }
+    console.error("Failed to add expense:", error);
+    return { success: false, message: "An unexpected error occurred." };
+  }
+}
+
+
+
+export async function DeleteExpense(expenseId) {
+  const baseUrl = "http://localhost:3000";
+  const token = localStorage.getItem("token");
+
+  const url = `${baseUrl}/api/expense/${expenseId}`;
+
+  try {
+    const res = await axios.delete(url, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
       },
     });
 

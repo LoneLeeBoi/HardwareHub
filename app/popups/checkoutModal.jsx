@@ -2,9 +2,20 @@
 
 import { Close } from "@/public/icons/close";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 
-export function CheckoutModal({ isOpen, onClose, cart }) {
+export function CheckoutModal({
+  isOpen,
+  onClose,
+  cart,
+  onConfirm,
+  setPaymentMethod,
+}) {
+  const methods = [
+    { id: "cash", name: "Cash on Delivery" },
+    { id: "Gcash", name: "Gcash" },
+  ];
+
   const calculateTotal = () =>
     cart.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
 
@@ -35,7 +46,6 @@ export function CheckoutModal({ isOpen, onClose, cart }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col h-full">
-
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b">
             <h2 className="text-xl font-bold text-gray-800">Checkout</h2>
@@ -44,11 +54,23 @@ export function CheckoutModal({ isOpen, onClose, cart }) {
               onClick={onClose}
             /> */}
           </div>
+          <select
+            onChange={(e) => setPaymentMethod(e.target.value)}
+            className="border p-2 rounded"
+          >
+            {methods.map((method) => (
+              <option key={method.id} value={method.id}>
+                {method.name}
+              </option>
+            ))}
+          </select>
 
           {/* Cart Items */}
           <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
             {cart.length === 0 ? (
-              <div className="text-center text-gray-500">Your cart is empty.</div>
+              <div className="text-center text-gray-500">
+                Your cart is empty.
+              </div>
             ) : (
               cart.map((item, index) => (
                 <div
@@ -80,21 +102,25 @@ export function CheckoutModal({ isOpen, onClose, cart }) {
           <div className="border-t px-6 py-4 bg-gray-50">
             <div className="flex justify-between text-lg font-semibold mb-4">
               <span>Total:</span>
-              <span className="text-green-600">{formatPrice(calculateTotal())}</span>
+              <span className="text-green-600">
+                {formatPrice(calculateTotal())}
+              </span>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm font-medium uppercase">
-              <button
+              <div
                 className="py-3 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors"
                 onClick={onClose}
               >
                 Cancel
-              </button>
-              <button className="py-3 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors">
+              </div>
+              <div
+                className="py-3 text-center rounded-lg  cursor-pointer bg-green-500 hover:bg-green-600 transition"
+                onClick={onConfirm}
+              >
                 Confirm Order
-              </button>
+              </div>
             </div>
           </div>
-
         </div>
       </div>
     </>

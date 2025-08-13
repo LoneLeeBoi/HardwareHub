@@ -50,6 +50,7 @@ export async function PUT(req, { params }) {
   const name = form.get("name");
   const price = form.get("price");
   const units = form.get("units");
+  const stock = form.get("stock");
   const category_id = form.get("category_id");
   const file = form.get("image");
 
@@ -71,12 +72,12 @@ export async function PUT(req, { params }) {
 
   return new Promise((resolve) => {
     const sql = imagePath
-      ? `UPDATE products SET user_id = ?, name = ?, price = ?,units=?, category_id = ?, image = ? WHERE id = ?`
-      : `UPDATE products SET user_id = ?, name = ?, price = ?,units=?, category_id = ? WHERE id = ?`;
+      ? `UPDATE products SET user_id = ?, name = ?, price = ?, stock = ?, units=?, category_id = ?, image = ? WHERE id = ?`
+      : `UPDATE products SET user_id = ?, name = ?, price = ?, stock = ?,units=?, category_id = ? WHERE id = ?`;
 
     const values = imagePath
-      ? [user_id, name, price, units, category_id, imagePath, id]
-      : [user_id, name, price, units, category_id, id];
+      ? [user_id, name, price, stock, units, category_id, imagePath, id]
+      : [user_id, name, price, stock, units, category_id, id];
 
     db.query(sql, values, (err) => {
       if (err) {

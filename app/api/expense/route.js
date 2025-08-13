@@ -3,40 +3,54 @@ import { db } from "@/app/lib/db";
 import { randomUUID } from "crypto";
 import { isAuthorized } from "@/app/lib/auth";
 
+
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const search = searchParams.get("search");
-  const category_id = searchParams.get("category_id");
+  const category = searchParams.get("category"); 
   const page = parseInt(searchParams.get("page") || "1", 10);
-  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const limit = parseInt(searchParams.get("limit") || "5", 10);
   const offset = (page - 1) * limit;
 
-  let baseSql = "FROM expenses WHERE deleted_at IS NULL";
   const conditions = [];
   const values = [];
 
   if (id) {
-    conditions.push("id = ?");
+    conditions.push("expenses.id = ?");
     values.push(id);
   }
 
   if (search) {
-    conditions.push("name LIKE ?");
+    conditions.push("expenses.name LIKE ?");
     values.push(`%${search}%`);
   }
 
-  if (category_id) {
-    conditions.push("category_id = ?");
-    values.push(category_id);
+  if (category) {
+    conditions.push("expenses.category = ?");
+    values.push(category);
   }
 
-  if (conditions.length > 0) {
-    baseSql += " AND " + conditions.join(" AND ");
-  }
+  const whereClause = `
+    WHERE expenses.deleted_at IS NULL
+    ${conditions.length > 0 ? " AND " + conditions.join(" AND ") : ""}
+  `;
 
-  const dataSql = `SELECT * ${baseSql} ORDER BY date DESC LIMIT ? OFFSET ?`;
-  const countSql = `SELECT COUNT(*) AS total ${baseSql}`;
+  // No join since category is stored directly in expenses
+  const dataSql = `
+    SELECT expenses.*
+    FROM expenses
+    ${whereClause}
+    ORDER BY expenses.row DESC
+    LIMIT ? OFFSET ?
+  `;
+
+  const countSql = `
+    SELECT COUNT(*) AS total
+    FROM expenses
+    ${whereClause}
+  `;
+
   const dataValues = [...values, limit, offset];
 
   return new Promise((resolve) => {
@@ -74,14 +88,33 @@ export async function GET(req) {
 export async function POST(req) {
   if (!isAuthorized(req))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { user_id, name, amount, date, category_id } = await req.json();
+
+  const { user_id, name, amount, date, category } = await req.json();
   const id = randomUUID();
+
+  // Helper: check empty/null/whitespace
+  const isEmpty = (val) => !val || val.toString().trim().length === 0;
+
+  // Validate fields
+  if (
+    isEmpty(user_id) ||
+    isEmpty(name) ||
+    isEmpty(amount) ||
+    isNaN(amount) ||
+    isEmpty(date) ||
+    isEmpty(category)
+  ) {
+    return NextResponse.json(
+      { error: "All fields are required. No empty or whitespace values allowed." },
+      { status: 400 }
+    );
+  }
 
   return new Promise((resolve) => {
     db.query(
-      `INSERT INTO expenses (id, user_id, name, amount, date, category_id)
+      `INSERT INTO expenses (id, user_id, name, amount, date, category)
        VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, user_id, name, amount, date, category_id],
+      [id, user_id.trim(), name.trim(), parseFloat(amount), date.trim(), category.trim()],
       (err) => {
         if (err) {
           return resolve(

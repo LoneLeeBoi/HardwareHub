@@ -1,20 +1,35 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export function Footer() {
+  const [user, setUser] = useState("user");
+  useEffect(() => {
+    setUser(localStorage.getItem("role"));
+  }, []);
+
+  if (user === "admin") {
+    return null;
+  }
   return (
     <footer className="border-t border-gray-200 bg-white shadow-inner">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 py-10 px-6">
         {/* Social Links */}
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold uppercase text-gray-800 mb-2">Follow Us On</h3>
-          <ul className="space-y-1 text-sm text-gray-600">
-            <li><Link href="/" className="hover:text-blue-600 transition">Facebook</Link></li>
-            <li><Link href="/" className="hover:text-pink-500 transition">Instagram</Link></li>
-            <li><Link href="/" className="hover:text-sky-500 transition">Twitter</Link></li>
-            <li><Link href="/" className="hover:text-blue-700 transition">LinkedIn</Link></li>
-          </ul>
+        <div className="flex flex-col gap-2 uppercase text-sm">
+          <h3 className="font-bold mb-2">Follow Us On</h3>
+          <Link href="/" className="hover:underline">
+            Facebook
+          </Link>
+          <Link href="/" className="hover:underline">
+            Instagram
+          </Link>
+          <Link href="/" className="hover:underline">
+            Twitter
+          </Link>
+          <Link href="/" className="hover:underline">
+            LinkedIn
+          </Link>
         </div>
 
         {/* About Us */}

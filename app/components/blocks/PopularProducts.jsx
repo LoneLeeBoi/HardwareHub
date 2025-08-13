@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ProductPopular } from "../functions/ProductFunctions";
 import Image from "next/image";
+import searchState from "@/app/store/searchState";
 import { AddToCartModal } from "@/app/popups/addToCartModal";
 
 const FALLBACK_IMAGE = "/images/fallback.png";
@@ -10,32 +11,45 @@ const FALLBACK_IMAGE = "/images/fallback.png";
 export function PopularProducts() {
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const setProducts = searchState((state) => state.setProducts);
+  const products = searchState((state) => state.products);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const result = await ProductPopular();
+      const result = await ProductPopular({ limit: 10 });
 
       if (result.success) {
         const data = result?.data?.data || [];
         setProducts(data);
-        console.log("Fetched popular products:", data);
       } else {
         setError(result.err || "Failed to fetch popular products.");
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [setProducts]);
 
+  const visibleProducts = showAll ? products : products.slice(0, 8);
+  const uniqueProducts = visibleProducts.filter(
+    (item, index, self) =>
+      index ===
+      self.findIndex(
+        (prod) => prod.name.toLowerCase() === item.name.toLowerCase()
+      )
+  );
+
+  // Group same name products when clicked
   const handleAddToCartClick = (product) => {
-    setSelectedProduct(product);
+    const sameNameProducts = products.filter(
+      (item) => item.name === product.name
+    );
+
+    setSelectedProducts(sameNameProducts);
     setIsModalOpen(true);
   };
-
-  const visibleProducts = showAll ? products : products.slice(0, 20);
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -102,7 +116,7 @@ export function PopularProducts() {
       <AddToCartModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        product={selectedProduct}
+        product={selectedProducts}
       />
     </div>
   );

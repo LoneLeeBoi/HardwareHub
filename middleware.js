@@ -5,58 +5,46 @@ export function middleware(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("token")?.value;
 
-  // Public paths that don't need protection
-  const publicPaths = ["/","/auth", "/api", "/_next", "/favicon.ico", "/images"];
-  const isPublic = publicPaths.some((path) => pathname.startsWith(path));
+  const publicPaths = ["/", "/login", "/register", "/cart", "/_next", "/favicon.ico", "/images", "/uploads"];
+  const isPublicPath = publicPaths.some((path) => pathname === path || pathname.startsWith(path + "/"));
 
-  if (isPublic) {
-    if (pathname.startsWith("/auth") && token) {
-      try {
-        const decoded = jwt.decode(token);
-        const role = decoded?.role;
-
-        if (role === "admin") {
-          return NextResponse.redirect(new URL("/admin", request.url));
-        }
-
-        if (role === "user") {
-          return NextResponse.redirect(new URL("/", request.url));
-        }
-      } catch {
-        return NextResponse.next(); // Invalid token, allow access to /auth
-      }
-    }
-
-    return NextResponse.next(); // Allow access to public
+  if (pathname.startsWith("/api")) {
+    return NextResponse.next();
   }
 
-  // If not logged in, redirect to /auth
   if (!token) {
+    if (!isPublicPath) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.decode(token);
+  } catch {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  try {
-    const decoded = jwt.decode(token);
-    const role = decoded?.role;
+  const role = decoded?.role;
 
-    if (!role) throw new Error("Invalid token");
-
-    // Admin can access all /admin routes
-    if (role === "admin" && pathname.startsWith("/admin")) {
-      return NextResponse.next();
-    }
-
-    // User routes
-    const userRoutes = ["/", "/profile", "/shop", "/orders"];
-    if (role === "user") {
-      const isAllowed = userRoutes.some((route) => pathname.startsWith(route));
-      if (!isAllowed) {
-        return NextResponse.redirect(new URL("/", request.url));
-      }
-    }
-
-    return NextResponse.next(); // If all checks pass
-  } catch {
-    return NextResponse.redirect(new URL("/auth", request.url));
+  if (!role) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
+
+  if (role === "user") {
+    if (pathname.includes("/admin") || pathname === "/login" || pathname === "/register") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  if (role === "admin") {
+    if (pathname === "/" || pathname === "/login" || pathname === "/register" || pathname === "/cart") {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  return NextResponse.redirect(new URL("/", request.url));
 }

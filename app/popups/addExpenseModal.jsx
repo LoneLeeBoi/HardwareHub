@@ -3,7 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { Close } from "@/public/icons/close"; // Make sure this exists or replace with text/icon
 import jwt from "jsonwebtoken";
-import { AddExpense } from "../components/functions/ExpenseFunctions";
+import {
+  AddExpense,
+  EditExpense,
+} from "../components/functions/ExpenseFunctions";
 import { toast } from "react-toastify";
 export function AddExpenseModal({
   isOpen,
@@ -14,7 +17,7 @@ export function AddExpenseModal({
   isEditing = false,
 }) {
   const [showModal, setShowModal] = useState(false);
- const [userId, setUserId] = useState();
+
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => setShowModal(true), 10);
@@ -61,30 +64,33 @@ export function AddExpenseModal({
     }
   };
 
+  const handleAddExpense = async () => {
+    const token = localStorage.getItem("token");
+    const decoded = jwt.decode(token);
+    const id = decoded?.id || decoded?.sub;
 
-   const handleAddExpense = async () => {
-      const token = localStorage.getItem("token");
-  const decoded = jwt.decode(token);
-  const id = decoded?.id || decoded?.sub;
-
-  const payload = {
-    ...newExpense,
-    user_id: id,
-  };
-      try {
-        const success = await AddExpense(payload);
-        if (success) {
-          toast.success("Expense added successfully!");
-          handleClose();
-          if (typeof refreshExpense === "function") refreshExpense();
-        } else {
-          toast.error("Failed to add expense. Please try again.");
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error("An unexpected error occurred.");
-      }
+    const payload = {
+      ...newExpense,
+      user_id: id,
     };
+    try {
+      const submitAction = isEditing ? EditExpense : AddExpense;
+
+      let result = await submitAction(payload);
+      if (result.success) {
+        toast.success(   EditExpense
+            ? "Expense updated successfully!"
+            : "Expense added successfully!");
+        handleClose();
+        if (typeof refreshExpense === "function") refreshExpense();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An unexpected error occurred.");
+    }
+  };
   if (!isOpen) return null;
 
   return (
@@ -109,8 +115,8 @@ export function AddExpenseModal({
 
         <div className="p-4 space-y-4">
           <div>
-              {/* Hidden or read-only field for User ID */}
-         
+            {/* Hidden or read-only field for User ID */}
+
             <label className="block text-sm font-medium">Name</label>
             <input
               type="text"
@@ -141,6 +147,8 @@ export function AddExpenseModal({
           </div>
 
           <div>
+            {/* Hidden or read-only field for User ID */}
+
             <label className="block text-sm font-medium">Category</label>
             <input
               type="text"

@@ -7,13 +7,13 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 
 export function Register({ toggleForm }) {
-    const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
-
+  const router = useRouter();
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -35,7 +35,7 @@ export function Register({ toggleForm }) {
       case 201:
       case 200:
         toast.success("Thank you.");
-        toggleForm();
+        router.push("/login");
         break;
 
       case 400:

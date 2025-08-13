@@ -12,7 +12,7 @@ export async function POST(request) {
   }
 
   return new Promise((resolve) => {
-    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+    db.query('SELECT * FROM users WHERE BINARY email = ?', [email], async (err, results) => {
       if (err) {
         resolve(NextResponse.json({ message: 'DB error' }, { status: 500 }));
         return;
@@ -32,7 +32,7 @@ export async function POST(request) {
       }
 
       const token = jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
+        { id: user.id, email: user.email, role: user.role, username:user.username },
         process.env.JWT_SECRET,
         { expiresIn: '1d' }
       );

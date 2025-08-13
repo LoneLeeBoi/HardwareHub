@@ -9,34 +9,50 @@ import {
 import { Plus } from "@/public/icons/plus";
 import { Edit } from "@/public/icons/edit";
 import { Trash } from "@/public/icons/trash";
-import { toast } from "react-toastify";
 import { ConfirmationModal } from "@/app/popups/confirmationModal";
-
+import useExpenseHandlers from "../expenses/expenseHandler";
+import Pagination from "@/app/utils/Pagination";
+import { Magnify } from "@/public/icons/magnify";
 export default function ExpensePage() {
-  const [expenses, setExpenses] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
 
-   const fetchExpenses = async () => {
-     const result = await ExpenseFunctions();
-     if (result.success) {
-       const data = result?.data?.data || [];
-       setExpenses(data);
-     } else {
-       setError(result.err || "Failed to fetch Expense.");
-     }
-   };
-   useEffect(() => {
-     fetchExpenses();
-   }, []);
+  const {
+    expenses,
+    isConfirm,
+    setExpenses,
+    setConfirm,
+    handleDeleteExpense,
+    triggerfetchExpenses,
+  } = useExpenseHandlers();
+
+  const fetchExpenses = async () => {
+    const params = searchTerm
+      ? { search: searchTerm, category_name: searchTerm }
+      : {};
+    const result = await ExpenseFunctions(params);
+    if (result.success) {
+      const data = result?.data?.data || [];
+      setExpenses(data);
+      setTotalPages(result?.data?.totalPages);
+      // triggerfetchExpenses();
+    } else {
+      setError(result.err || "Failed to fetch Expense.");
+    }
+  };
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
   const [newExpense, setNewExpense] = useState({
     name: "",
     amount: "",
     date: "",
     category: "",
-       user_id: "",
+    user_id: "",
   });
 
   // const fetchExpenses = async () => {
@@ -122,6 +138,27 @@ export default function ExpensePage() {
       {/* Table */}
       <div className="w-full">
         <h3 className="text-lg font-semibold mb-3 text-gray-800">Expenses</h3>
+        <div className="mb-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              fetchExpenses();
+            }}
+            className="flex items-center border border-gray-300 rounded-lg px-2 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+          >
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-transparent border-none !outline-none ring-0 focus:!outline-none focus:!ring-0"
+            />
+            <div className="" onClick={fetchExpenses}>
+              <Magnify className="h-7 w-7 text-gray-500 ml-2" />
+            </div>
+          </form>
+        </div>
+
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -163,24 +200,22 @@ export default function ExpensePage() {
                       <div className="text-sm text-gray-900">{expense.date}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{expense.category}</div>
+                      <div className="text-sm text-gray-900">
+                        {expense.category}
+                      </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex gap-3">
-                        <span
-                          onClick={() => handleEdit(expense)}
-                          title="Edit"
-                          className="text-blue-600 hover:text-blue-800"
-                        >
-                          <Edit className={`size-5`} />
-                        </span>
-                        <span
-                          onClick={() => handleDelete(expense.id)}
-                          title="Delete"
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          <Trash className={`size-5`} />
-                        </span>
+                    <td className="px-6 py-4 whitespace-nowrap flex items-center  gap-6">
+                      <div
+                        onClick={() => handleEdit(expense)}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline"
+                      >
+                        <Edit className={`size-6`} />
+                      </div>
+                      <div
+                        onClick={() => setConfirm(expense.id)}
+                        className="text-red-600 hover:text-red-800 cursor-pointer"
+                      >
+                        <Trash className="size-6" />
                       </div>
                     </td>
                   </tr>
@@ -188,6 +223,11 @@ export default function ExpensePage() {
               )}
             </tbody>
           </table>
+          <Pagination
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
 
@@ -196,16 +236,25 @@ export default function ExpensePage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         newExpense={newExpense}
-    handleInputChange={handleInputChange}
+        handleInputChange={handleInputChange}
         handleAddExpense={handleAddExpense}
         refreshExpense={fetchExpenses}
         isEditing={isEditing}
       />
 
       <ConfirmationModal
-        isOpen={!!confirmDeleteId}
-        onClose={() => setConfirmDeleteId(null)}
-        onConfirm={confirmDeleteExpense}
+        isOpen={isConfirm}
+        onClose={() => {
+          if (isConfirm) {
+            setConfirm("");
+          }
+        }}
+        onConfirm={() => {
+          if (isConfirm) {
+            handleDeleteExpense(isConfirm);
+            setConfirm("");
+          }
+        }}
         title="Are you sure?"
         message="This action cannot be undone."
       />

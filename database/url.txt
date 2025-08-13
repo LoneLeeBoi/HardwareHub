@@ -44,5 +44,3 @@ create: post -/api/inventory                               //required authorizat
 edit: put -/api/inventory/:id                             //required authorization Bearer
 delete: delete -/api/inventory/:id                        //required authorization Bearer
 Get specific inventory: get -/api/inventory/:id  
-
-test

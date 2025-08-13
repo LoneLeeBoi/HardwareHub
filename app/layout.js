@@ -17,15 +17,12 @@ export default function RootLayout({ children }) {
         <div className="relative min-h-screen">
           <ToastContainer
             position="top-right"
-            autoClose={1000}
+            autoClose={500}
             hideProgressBar={false}
-            pauseOnFocusLoss={false}
-            draggable
             theme="colored"
             className="z-[9999]"
             toastClassName="rounded-lg shadow-md text-sm"
             bodyClassName="p-3"
-            closeButton={false}
           />
 
           <Header />

@@ -12,7 +12,6 @@ export async function POST(request) {
       return NextResponse.json({ message: 'Username, email, and password required' }, { status: 400 });
     }
 
-    console.log('Checking existing user...');
     return new Promise((resolve) => {
       db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
         if (err) {
@@ -27,7 +26,6 @@ export async function POST(request) {
         }
 
         const hashed = await bcrypt.hash(password, 10);
-        console.log('Inserting user...');
         db.query(
           'INSERT INTO users (id, username, email, password, role) VALUES (?, ?, ?, ?, ?)',
           [randomUUID(), username, email, hashed, 'user'],

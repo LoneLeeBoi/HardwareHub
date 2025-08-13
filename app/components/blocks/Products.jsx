@@ -11,34 +11,48 @@ const FALLBACK_IMAGE = "/images/fallback.png";
 export function Products() {
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const setProducts = searchState((state) => state.setProducts);
   const products = searchState((state) => state.products);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      const result = await ProductFunctions();
+    const fetchProducts = async () => {
+      const result = await ProductFunctions({ limit: 20 });
 
       if (result.success) {
         const data = result?.data?.data || [];
         setProducts(data);
-        console.log("Fetched products:", data);
       } else {
         setError(result.err || "Failed to fetch products.");
       }
     };
 
-    fetchCategories();
+    fetchProducts();
   }, [setProducts]);
 
+  // Show all or first 20
+  const visibleProducts = showAll ? products : products.slice(0, 20);
+
+  // Remove duplicate names for display
+  const uniqueProducts = visibleProducts.filter(
+    (item, index, self) =>
+      index ===
+      self.findIndex(
+        (prod) => prod.name.toLowerCase() === item.name.toLowerCase()
+      )
+  );
+
+  // Group same name products when clicked
   const handleAddToCartClick = (product) => {
-    setSelectedProduct(product);
+    const sameNameProducts = products.filter(
+      (item) => item.name === product.name
+    );
+
+    setSelectedProducts(sameNameProducts);
     setIsModalOpen(true);
   };
-
-  const visibleProducts = showAll ? products : products.slice(0, 20);
 
   return (
     <div className="container mx-auto px-4">
@@ -52,15 +66,16 @@ export function Products() {
           <div className="text-red-500 text-center">{error}</div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {visibleProducts.map((product) => (
+            {/* Product Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {uniqueProducts.map((product) => (
                 <div
                   key={product.id}
+                  className="bg-white shadow-md rounded-xl px-4 pb-4 text-center border border-gray-200 hover:bg-gray-200 cursor-pointer"
                   onClick={() => handleAddToCartClick(product)}
-                  className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md hover:bg-gray-50 transition-all cursor-pointer"
                 >
-                  {/* Image */}
-                  <div className="relative w-full h-48 mb-4 overflow-hidden rounded-xl">
+                  {/* Product Image */}
+                  <div className="relative w-full h-48 mb-2">
                     <Image
                       src={product.image || FALLBACK_IMAGE}
                       alt={product.name || "Product"}
@@ -69,19 +84,19 @@ export function Products() {
                     />
                   </div>
 
-                  {/* Name */}
-                  <div className="text-center font-medium text-sm uppercase text-gray-700 mb-2 truncate">
+                  {/* Product Name */}
+                  <div className="font-semibold uppercase text-sm">
                     {product.name}
                   </div>
 
-                  {/* Button */}
-                  <div className="flex justify-center">
+                  {/* Add to Cart Button */}
+                  <div className="w-full flex justify-center">
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // prevent parent click
+                        e.stopPropagation(); // stop card click
                         handleAddToCartClick(product);
                       }}
-                      className="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-full transition"
+                      className="mt-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit rounded"
                     >
                       Add to Cart
                     </button>
@@ -90,7 +105,7 @@ export function Products() {
               ))}
             </div>
 
-            {/* Show More */}
+            {/* Show More Button */}
             {products.length > 20 && !showAll && (
               <div className="text-center mt-10">
                 <button
@@ -104,11 +119,11 @@ export function Products() {
           </>
         )}
 
-        {/* Modal */}
+        {/* Add to Cart Modal */}
         <AddToCartModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          product={selectedProduct}
+          product={selectedProducts}
         />
       </div>
     </div>

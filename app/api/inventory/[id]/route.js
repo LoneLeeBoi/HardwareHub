@@ -28,14 +28,13 @@ export async function PUT(req, { params }) {
   }
 
   const { id } = await params;
-  const { user_id, name, unit, stock, acquisition, retail } = await req.json();
-  console.log("id:",retail)
+  const { user_id, product_id,  stock, acquisition, retail } = await req.json();
   return new Promise((resolve) => {
     db.query(
       `UPDATE inventory 
-       SET user_id=?, name = ?, unit = ?, stock = ?, acquisition = ?, retail = ?, updated_at = CURRENT_TIMESTAMP 
+       SET user_id=?, product_id = ?,  stock = ?, acquisition = ?, retail = ?, updated_at = CURRENT_TIMESTAMP 
        WHERE id = ? AND deleted_at IS NULL`,
-      [user_id, name, unit, stock, acquisition, retail, id],
+      [user_id, product_id,  stock, acquisition, retail, id],
       (err, result) => {
         if (err) {
           return resolve(
@@ -58,7 +57,6 @@ export async function PUT(req, { params }) {
 }
 
 
-// DELETE /api/inventory/[id]
 export async function DELETE(req, { params }) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

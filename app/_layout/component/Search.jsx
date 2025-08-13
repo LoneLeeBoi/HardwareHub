@@ -10,7 +10,9 @@ export function Search() {
   const setProducts = searchState((state) => state.setProducts);
 
   const handleSearch = async () => {
-    const params = searchParams ? { search: searchParams } : {};
+    const params = searchParams
+      ? { search: searchParams, category_name: searchParams }
+      : {};
     const result = await ProductFunctions(params);
 
     if (result.success) {
@@ -34,7 +36,7 @@ export function Search() {
         type="text"
         value={searchParams}
         onChange={(e) => setSearchParams(e.target.value)}
-        onKeyDown={handleKeyDown}
+        onKeyUp={handleKeyDown}
         placeholder="Search..."
         className="w-full pl-3 pr-10 py-2 text-sm bg-transparent border-none outline-none"
         style={{
