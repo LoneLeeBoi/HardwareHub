@@ -44,14 +44,14 @@ export function Header() {
             alt="logo"
             width={70}
             height={70}
-            className="object-contain"
+            className="sm:h-[70px] sm:w-[70px] h-[50px] w-[50px] object-contain"
             priority
           />
-          <span className="text-lg font-bold">HARDWARE HUB</span>
+          <span className="text-md sm:text-lg font-bold">HARDWARE HUB</span>
         </Link>
 
         {/* Search Bar */}
-        <div className="relative w-full max-w-md mx-4 flex items-center border border-gray-300 rounded-full px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500">
+        <div className="relative w-full max-w-md mx-4 hidden sm:flex items-center border border-gray-300 rounded-full px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500">
           <Search />
         </div>
 

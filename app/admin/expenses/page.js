@@ -129,7 +129,7 @@ export default function ExpensePage() {
           </form>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>

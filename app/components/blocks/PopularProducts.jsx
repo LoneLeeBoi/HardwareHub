@@ -52,8 +52,8 @@ export function PopularProducts() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-10">
-      <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
+    <div className="container mx-auto px-4 sm:py-10">
+      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6 text-gray-800 font-serif">
         Our Popular Products
       </h2>
 
@@ -61,21 +61,21 @@ export function PopularProducts() {
         <div className="text-red-500 text-center">{error}</div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-4">
             {visibleProducts.map((product) => (
               <div
                 key={product.id}
-                className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer"
+                className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer"
                 onClick={() => handleAddToCartClick(product)}
               >
-                <div className="relative w-full h-48 mb-3 rounded-xl overflow-hidden">
+                <div className="relative w-full h-[250px] mb-3 rounded-t-2xl overflow-hidden">
                   <Image
                     src={product.image || FALLBACK_IMAGE}
                     alt={product.name || "Product"}
                     fill
-                    className="object-contain"
+                    className="object-fill h-full w-full"
                   />
-                  <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded shadow-md">
+                  <div className="absolute top-5 left-0 bg-red-600 text-white text-md font-semibold px-2 py-1 rounded shadow-md">
                     TOP
                   </div>
                 </div>
@@ -84,7 +84,7 @@ export function PopularProducts() {
                   {product.name}
                 </div>
 
-                <div className="flex justify-center">
+                <div className="flex justify-center p-4">
                   <button
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent triggering modal twice

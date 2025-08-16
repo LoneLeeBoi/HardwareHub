@@ -56,7 +56,7 @@ export function Products() {
   };
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 pt-4">
       {/* Discover Banner */}
       <div className="uppercase text-center border-t-8 bg-gray-100 py-4 text-[22px] text-primary font-bold border-primary w-full tracking-wide">
         Discover More
@@ -67,37 +67,32 @@ export function Products() {
           <div className="text-red-500 text-center">{error}</div>
         ) : (
           <>
-            {/* Product Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {uniqueProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white shadow-md rounded-xl px-4 pb-4 text-center border border-gray-200 hover:bg-gray-200 cursor-pointer"
+                  className="bg-white  shadow-md rounded-2xl  pb-4 text-center border border-gray-200 hover:bg-gray-200 cursor-pointer"
                   onClick={() => handleAddToCartClick(product)}
                 >
-                  {/* Product Image */}
-                  <div className="relative w-full h-48 mb-2">
+                  <div className="relative w-full  mb-2 h-[250px]">
                     <Image
                       src={product.image || FALLBACK_IMAGE}
                       alt={product.name || "Product"}
-                      fill
-                      className="object-contain"
+                      width={500}
+                      height={500}
+                      className="object-fill rounded-t-2xl h-full w-full"
                     />
                   </div>
-
-                  {/* Product Name */}
                   <div className="font-semibold uppercase text-sm">
                     {product.name}
                   </div>
-
-                  {/* Add to Cart Button */}
                   <div className="w-full flex justify-center">
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // stop card click
+                        e.stopPropagation(); 
                         handleAddToCartClick(product);
                       }}
-                      className="mt-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit rounded"
+                      className="mt-4 mx-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit rounded"
                     >
                       Add to Cart
                     </button>

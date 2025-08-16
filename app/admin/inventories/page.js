@@ -66,7 +66,7 @@ const Page = () => {
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold text-gray-900">INVENTORY TRACKER</h2>
-      <div className="border border-gray-200 rounded p-4">
+      <div className="border border-gray-200 rounded p-4 my-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
           <input
             type="text"
@@ -80,77 +80,76 @@ const Page = () => {
           />
         </div>
 
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-100 text-left">
-              <th className="p-2">Name</th>
-              <th className="p-2">Unit</th>
-              <th className="p-2">Stock</th>
-              <th className="p-2">Status</th>
-              <th className="p-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inventory.length > 0 ? (
-              inventory.map((item) => {
-                let status;
-
-                if (item.stock <= 0) {
-                  status = <span>Empty Stock</span>;
-                } else if (item.stock > 10) {
-                  status = (
-                    <span className="flex items-center gap-1 justify-center w-[62px] h-[30px] bg-green-500 text-xs py-1 rounded-md border border-black text-white font-semibold">
-                      Good
-                    </span>
-                  );
-                } else if (item.stock <= 5) {
-                  status = (
-                    <span className="flex items-center gap-1 justify-center w-[62px] h-[30px] bg-red-300 text-xs py-1 animate-pulse rounded-md border border-red-500 text-red-500">
-                      <Warning />
-                       Low
-                    </span>
-                  );
-                } else if (item.stock >= 5) {
-                  status = (
-                    <span className="bg-yellow-100 flex items-center gap-1 justify-center w-[62px] h-[30px] text-xs py-1 rounded-md border border-yellow-300 text-yellow-600">
-                    Warning
-                  </span>
-                  
-                  );
-                }
-
-                return (
-                  <tr key={item.id}>
-                    <td className="p-2">{item.name}</td>
-                    <td className="p-2">{item.units}</td>
-                    <td className="p-2">{item.stock}</td>
-                    <td className="p-2">{status}</td>
-
-                    <td className="px-6 py-4 whitespace-nowrap flex gap-2">
-                      <div
-                        onClick={() => {
-                          setModalOpen(true);
-                          setIsEditing(false);
-                          setDefaultUnit(item.units);
-                          setDefaultName(item.id)
-                        }}
-                        className="text-white shadow-lg bg-blue-500 p-2 rounded-md cursor-pointer"
-                      >
-                        <Plus className="size-5" />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center p-2">
-                  No results found.
-                </td>
+        <div className="overflow-auto max-h-[400px]">
+          <table className="w-full text-sm min-w-[600px]">
+            <thead>
+              <tr className="bg-gray-100 text-left">
+                <th className="p-2">Name</th>
+                <th className="p-2">Unit</th>
+                <th className="p-2">Stock</th>
+                <th className="p-2">Status</th>
+                <th className="p-2">Action</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {inventory.length > 0 ? (
+                inventory.map((item) => {
+                  let status;
+                  if (item.stock <= 0) {
+                    status = <span>Empty Stock</span>;
+                  } else if (item.stock > 10) {
+                    status = (
+                      <span className="flex items-center gap-1 justify-center w-[62px] h-[30px] bg-green-500 text-xs py-1 rounded-md border border-black text-white font-semibold">
+                        Good
+                      </span>
+                    );
+                  } else if (item.stock <= 5) {
+                    status = (
+                      <span className="flex items-center gap-1 justify-center w-[62px] h-[30px] bg-red-300 text-xs py-1 animate-pulse rounded-md border border-red-500 text-red-500">
+                        <Warning />
+                        Low
+                      </span>
+                    );
+                  } else if (item.stock >= 5) {
+                    status = (
+                      <span className="bg-yellow-100 flex items-center gap-1 justify-center w-[62px] h-[30px] text-xs py-1 rounded-md border border-yellow-300 text-yellow-600">
+                        Warning
+                      </span>
+                    );
+                  }
+
+                  return (
+                    <tr key={item.id}>
+                      <td className="p-2">{item.name}</td>
+                      <td className="p-2">{item.units}</td>
+                      <td className="p-2">{item.stock}</td>
+                      <td className="p-2">{status}</td>
+                      <td className="px-6 py-4 whitespace-nowrap flex gap-2">
+                        <div
+                          onClick={() => {
+                            setModalOpen(true);
+                            setIsEditing(false);
+                            setDefaultUnit(item.units);
+                            setDefaultName(item.id);
+                          }}
+                          className="text-white shadow-lg bg-blue-500 p-2 rounded-md cursor-pointer"
+                        >
+                          <Plus className="size-5" />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-center p-2">
+                    No results found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
         <Pagination
           currentPage={page}

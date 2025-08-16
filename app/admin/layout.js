@@ -1,18 +1,13 @@
-import { AdminHeader } from "./_Adminlayout/AdminHeader";
 import { Sidebar } from "./_Adminlayout/Sidebar";
 
 export default function RootLayout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
-      <AdminHeader />
-      {/* Sidebar + Page Content */}
-      <div className="flex flex-1">
-        {/* Sidebar - Fixed width */}
-        <aside className="w-64 bg-gray-100 border-r flex-shrink-0">
+      <div className="sm:flex flex-1">
+        <aside className="sm:w-64 bg-gray-100 border-r sm:flex-shrink-0">
           <Sidebar />
         </aside>
-        {/* Page content - Takes remaining width */}
-        <main className="flex-1 min-w-0 overflow-hidden">
+        <main className="sm:flex-1 overflow-hidden">
           {children}
         </main>
       </div>

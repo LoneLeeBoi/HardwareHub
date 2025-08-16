@@ -55,7 +55,7 @@ export default function Page() {
   };
 
   return (
-    <div className="container my-4">
+    <div className="container my-4 px-4">
       {/* Header */}
       <div className="uppercase text-center border-t-8 bg-gray-300 py-4 text-[20px] text-primary font-bold border-primary w-full">
         discover more

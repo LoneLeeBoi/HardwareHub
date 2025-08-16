@@ -14,11 +14,14 @@ import { Cart } from "@/public/icons/cart";
 import { User } from "@/public/icons/user";
 import { Info } from "@/public/icons/info";
 import { Cogs } from "@/public/icons/cogs";
+import Bars from "@/public/icons/bars";
+import { Close } from "@/public/icons/close";
 
 export function Menu() {
   const { isLogged, cart, setLogout, setCart } = globalState();
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const notifications = [
     { amount: "123.01", date: "July 30, 2025" },
@@ -42,90 +45,197 @@ export function Menu() {
 
   return (
     <>
-      {/* Cart */}
-      <Link href="/cart" className="relative px-2 py-2 hover:bg-gray-200 rounded-full group">
-        <Cart className="w-5 h-5" />
-        {cart.length > 0 && (
-          <div className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-md">
-            {cart.length}
-          </div>
-        )}
-        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition pointer-events-none z-50">
-          View Cart
-        </span>
-      </Link>
-
-      {/* Not Authenticated */}
-      {!isAuthenticated && (
-        <DropdownWithTooltip
-          trigger={
-            <div className="relative px-2 py-2 hover:bg-gray-200 rounded-full group">
-              <Cogs className="w-5 h-5" />
-            </div>
-          }
-          tooltip="Account"
+      {/* Desktop Menu */}
+      <div className="hidden sm:flex items-center space-x-2">
+        {/* Cart */}
+        <Link
+          href="/cart"
+          className="relative px-2 py-2 hover:bg-gray-200 rounded-full group"
         >
-          <ul className="text-sm text-gray-700">
-            <Link href="/login" className="block px-4 py-2 hover:bg-gray-100">Login</Link>
-            <Link href="/register" className="block px-4 py-2 hover:bg-gray-100">Register</Link>
-          </ul>
-        </DropdownWithTooltip>
-      )}
+          <Cart className="w-5 h-5" />
+          {cart.length > 0 && (
+            <div className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-md">
+              {cart.length}
+            </div>
+          )}
+          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition pointer-events-none z-50">
+            View Cart
+          </span>
+        </Link>
 
-      {/* Authenticated */}
-      {isAuthenticated && (
-        <div className="flex items-center space-x-2">
-          {/* Notifications */}
+        {/* Not Authenticated */}
+        {!isAuthenticated && (
           <DropdownWithTooltip
             trigger={
               <div className="relative px-2 py-2 hover:bg-gray-200 rounded-full group">
-                <Bell className="w-5 h-5" />
-                {notifications.length > 0 && (
-                  <div className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-md">
-                    {notifications.length}
-                  </div>
-                )}
-                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition pointer-events-none z-50">
-                  Notifications
-                </span>
-              </div>
-            }
-            tooltip="Notifications"
-          >
-            <ul className="text-sm text-gray-700 max-h-60 overflow-y-auto w-64">
-              {notifications.length === 0 ? (
-                <li className="px-4 py-2 text-center text-gray-500">No new notifications</li>
-              ) : (
-                notifications.map((notif, index) => (
-                  <li key={index} className="flex space-x-2 px-4 py-2 hover:bg-gray-100">
-                    <Info className="size-16 mt-1 text-red-500" />
-                    <span className="text-sm">
-                      Your debt payment of <strong>₱{notif.amount}</strong> is due on <strong>{notif.date}</strong>.
-                    </span>
-                  </li>
-                ))
-              )}
-            </ul>
-          </DropdownWithTooltip>
-
-          {/* User */}
-          <DropdownWithTooltip
-            trigger={
-              <div className="relative px-2 py-2 hover:bg-gray-200 rounded-full group">
-                <User className="w-5 h-5" />
+                <Cogs className="w-5 h-5" />
               </div>
             }
             tooltip="Account"
           >
             <ul className="text-sm text-gray-700">
-              <Link href="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
-              <li onClick={handleLogout} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                Logout
-              </li>
+              <Link href="/login" className="block px-4 py-2 hover:bg-gray-100">
+                Login
+              </Link>
+              <Link
+                href="/register"
+                className="block px-4 py-2 hover:bg-gray-100"
+              >
+                Register
+              </Link>
             </ul>
           </DropdownWithTooltip>
+        )}
+
+        {/* Authenticated */}
+        {isAuthenticated && (
+          <>
+            {/* Notifications */}
+            <DropdownWithTooltip
+              trigger={
+                <div className="relative px-2 py-2 hover:bg-gray-200 rounded-full group">
+                  <Bell className="w-5 h-5" />
+                  {notifications.length > 0 && (
+                    <div className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-md">
+                      {notifications.length}
+                    </div>
+                  )}
+                </div>
+              }
+              tooltip="Notifications"
+            >
+              <ul className="text-sm text-gray-700 max-h-60 overflow-y-auto w-64">
+                {notifications.length === 0 ? (
+                  <li className="px-4 py-2 text-center text-gray-500">
+                    No new notifications
+                  </li>
+                ) : (
+                  notifications.map((notif, index) => (
+                    <li
+                      key={index}
+                      className="flex space-x-2 px-4 py-2 hover:bg-gray-100"
+                    >
+                      <Info className="w-5 h-5 text-red-500 mt-1" />
+                      <span className="text-sm">
+                        Your debt payment of <strong>₱{notif.amount}</strong> is
+                        due on <strong>{notif.date}</strong>.
+                      </span>
+                    </li>
+                  ))
+                )}
+              </ul>
+            </DropdownWithTooltip>
+
+            {/* User */}
+            <DropdownWithTooltip
+              trigger={
+                <div className="relative px-2 py-2 hover:bg-gray-200 rounded-full group">
+                  <User className="w-5 h-5" />
+                </div>
+              }
+              tooltip="Account"
+            >
+              <ul className="text-sm text-gray-700">
+                <Link
+                  href="/profile"
+                  className="block px-4 py-2 hover:bg-gray-100"
+                >
+                  Profile
+                </Link>
+                <li
+                  onClick={handleLogout}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  Logout
+                </li>
+              </ul>
+            </DropdownWithTooltip>
+          </>
+        )}
+      </div>
+
+      {/* Mobile Menu - Fullscreen Modal */}
+      <div className="sm:hidden">
+        <div
+          onClick={() => setMobileMenuOpen(true)}
+          className="p-2 rounded-md hover:bg-gray-200"
+        >
+          <Bars className="w-6 h-6" />
         </div>
-      )}
+        <div
+          className={`fixed inset-0 z-50 flex transition-opacity duration-500 ${
+            mobileMenuOpen
+              ? "bg-black bg-opacity-70 opacity-100"
+              : "opacity-0 pointer-events-none"
+          }`}
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          {/* Sidebar */}
+          <div
+            className={`bg-white transition-transform duration-500 ease-in-out h-full p-6 flex flex-col w-[80%] transform ${
+              mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
+            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+          >
+            {/* Close Button */}
+            <div
+              onClick={() => setMobileMenuOpen(false)}
+              className="self-end text-gray-600 hover:text-black cursor-pointer"
+            >
+              <Close className="w-6 h-6 stroke-2" />
+            </div>
+
+            {/* Menu Items */}
+            <nav className="mt-6 flex flex-col space-y-4 text-lg font-medium">
+              <Link
+                href="/cart"
+                className="hover:text-blue-600"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Cart {cart.length > 0 && <span>({cart.length})</span>}
+              </Link>
+
+              {!isAuthenticated ? (
+                <>
+                  <Link
+                    href="/login"
+                    className="hover:text-blue-600"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="hover:text-blue-600"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Register
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/profile"
+                    className="hover:text-blue-600"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Profile
+                  </Link>
+                  <div
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-left hover:text-blue-600 cursor-pointer"
+                  >
+                    Logout
+                  </div>
+                </>
+              )}
+            </nav>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

@@ -128,9 +128,9 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-6 ">
         {/* Products Table */}
-        <div className="col-span-8">
+        <div className="col-span-12 md:col-span-8">
           <h3 className="text-lg font-semibold mb-3 text-gray-800">Products</h3>
 
           <div className="mb-4">
@@ -244,7 +244,7 @@ export default function Page() {
         </div>
 
         {/* Categories Table */}
-        <div className="w-full col-span-4">
+        <div className="w-full col-span-12  md:col-span-4">
           <h3 className="text-lg font-semibold mb-3 text-gray-800">
             Categories
           </h3>
@@ -302,7 +302,6 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Product Group View Modal */}
       {selectedGroup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-1/2">
