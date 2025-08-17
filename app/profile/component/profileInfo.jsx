@@ -18,7 +18,7 @@ export default function ProfileInfo() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false); // true = edit, false = add
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -50,7 +50,6 @@ export default function ProfileInfo() {
 
   const handlerEditSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     const token = localStorage.getItem("token");
@@ -60,7 +59,6 @@ export default function ProfileInfo() {
     }
 
     setLoading(true);
-
     try {
       const success = await EditUser(formData);
       toast[success ? "success" : "error"](
@@ -72,7 +70,7 @@ export default function ProfileInfo() {
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast.error("An unexpected error occurred while updating the profile");
+      toast.error("Unexpected error while updating profile");
     } finally {
       setLoading(false);
     }
@@ -80,7 +78,6 @@ export default function ProfileInfo() {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     const token = localStorage.getItem("token");
@@ -90,7 +87,6 @@ export default function ProfileInfo() {
     }
 
     setLoading(true);
-
     try {
       const success = await AddDetails(formData);
       toast[success ? "success" : "error"](
@@ -103,7 +99,7 @@ export default function ProfileInfo() {
       }
     } catch (error) {
       console.error("Error adding profile:", error);
-      toast.error("An unexpected error occurred while adding the profile");
+      toast.error("Unexpected error while adding profile");
     } finally {
       setLoading(false);
     }
@@ -128,7 +124,7 @@ export default function ProfileInfo() {
       }
     } catch (error) {
       console.error("Error fetching details:", error);
-      toast.error("An error occurred while fetching profile details");
+      toast.error("Error fetching profile details");
     }
   };
 
@@ -152,26 +148,28 @@ export default function ProfileInfo() {
   }, []);
 
   return (
-    <div className="flex-1 mx-auto p-6 bg-white shadow rounded">
-      <h2 className="text-lg font-semibold mb-4">
+    <div className="flex-1 max-w-2xl mx-auto p-6 bg-white shadow rounded-lg">
+      {/* Title */}
+      <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center">
         {isEditMode ? "Edit Profile" : "Add Profile"}
       </h2>
 
+      {/* Form */}
       <form
         onSubmit={isEditMode ? handlerEditSubmit : handleAddSubmit}
-        className="space-y-4"
+        className="space-y-5"
       >
         {["firstname", "lastname", "address", "contact"].map((field) => (
           <div key={field}>
-            <label className="block text-sm font-medium capitalize">
+            <label className="block text-sm font-medium capitalize text-gray-700 mb-1">
               {field.replace("name", " Name")}
             </label>
             <input
-              type="text"
+              type={field === "contact" ? "tel" : "text"}
               name={field}
               value={formData[field] || ""}
               onChange={handleChange}
-              className="mt-1 block w-full border rounded p-2"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               required
             />
           </div>
@@ -180,7 +178,7 @@ export default function ProfileInfo() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-70"
         >
           {loading
             ? isEditMode

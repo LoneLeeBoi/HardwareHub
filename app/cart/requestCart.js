@@ -157,30 +157,36 @@ export default function RequestCart() {
   };
 
   const SkeletonItem = () => (
-    <div className="p-6 flex items-center justify-between animate-pulse">
-      <div className="flex items-center space-x-4 flex-1">
+    <div className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-pulse">
+      {/* Left side */}
+      <div className="flex items-start sm:items-center space-x-3 sm:space-x-4 flex-1">
         <div className="w-4 h-4 bg-gray-300 rounded" />
-        <div className="w-20 h-20 bg-gray-200 rounded-lg" />
+        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-200 rounded-lg" />
         <div className="flex-1 space-y-2">
           <div className="w-1/2 h-4 bg-gray-300 rounded" />
           <div className="w-2/3 h-3 bg-gray-200 rounded" />
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <div className="w-6 h-6 bg-gray-300 rounded" />
             <div className="w-4 h-4 bg-gray-300 rounded" />
             <div className="w-6 h-6 bg-gray-300 rounded" />
-            <div className="w-20 h-3 bg-gray-200 rounded ml-4" />
+            <div className="w-20 h-3 bg-gray-200 rounded sm:ml-4" />
           </div>
         </div>
       </div>
-      <div className="w-20 h-8 bg-gray-300 rounded" />
+  
+      {/* Right side (Remove button placeholder) */}
+      <div className="w-full sm:w-20 h-8 bg-gray-300 rounded" />
     </div>
   );
+  
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-        <p className="text-gray-600 mt-2">
+    <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+      <header className="mb-6 sm:mb-8 text-center sm:text-left">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          Shopping Cart
+        </h1>
+        <p className="text-gray-600 mt-2 text-sm sm:text-base">
           {isLoading
             ? "Loading items..."
             : `${cart.length} item(s) in your cart`}
@@ -194,18 +200,18 @@ export default function RequestCart() {
           ))}
         </div>
       ) : cart.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="text-center py-10 sm:py-12">
           <div className="text-gray-400 mb-4 flex justify-center">
             <img
               src={"/images/Cart.png"}
               alt={"Cart"}
-              className="w-70 object-cover"
+              className="w-36 sm:w-72 object-cover"
             />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
             Your cart is empty
           </h2>
-          <p className="text-gray-500 mb-6">
+          <p className="text-gray-500 text-sm sm:text-base mb-6">
             Add some items to get started with your order.
           </p>
         </div>
@@ -216,33 +222,34 @@ export default function RequestCart() {
               {cart.map((item, index) => (
                 <div
                   key={`${item.id}-${index}`}
-                  className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors duration-150"
+                  className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:bg-gray-50 transition-colors duration-150"
                 >
-                  <div className="flex items-center space-x-4 flex-1">
+                  {/* Item details */}
+                  <div className="flex items-start sm:items-center space-x-3 sm:space-x-4 flex-1">
                     <input
                       type="checkbox"
                       checked={selectedItems.includes(item.id)}
                       onChange={() => handleCheckboxChange(item.id)}
                       className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-1"
-                      style={{ width: "fit-content" }}
                     />
                     <div className="flex-shrink-0">
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-20 h-20 object-contain rounded-lg border border-gray-200"
+                        className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg border border-gray-200"
                       />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
                         {item.name}
                       </h3>
                       {item.description && (
-                        <p className="text-sm text-gray-500 mb-2 line-clamp-2">
+                        <p className="text-xs sm:text-sm text-gray-500 mb-2 line-clamp-2">
                           {item.description}
                         </p>
                       )}
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
+                      <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-600">
+                        {/* Quantity controls */}
                         <div className="flex items-center gap-2">
                           <div
                             onClick={() =>
@@ -253,7 +260,7 @@ export default function RequestCart() {
                           >
                             <Minus className="size-4 stroke-2" />
                           </div>
-                          <span className="px-2 text-lg">
+                          <span className="px-1 sm:px-2 text-base sm:text-lg">
                             {item.quantity || 1}
                           </span>
                           <div
@@ -265,9 +272,9 @@ export default function RequestCart() {
                             <Plus className="size-4 stroke-2" />
                           </div>
                         </div>
-                        <span>•</span>
+                        <span className="hidden sm:inline">•</span>
                         <span>{formatPrice(item.price)} each</span>
-                        <span>•</span>
+                        <span className="hidden sm:inline">•</span>
                         <span className="font-medium text-gray-900">
                           {formatPrice(item.price * (item.quantity || 1))}
                         </span>
@@ -275,10 +282,11 @@ export default function RequestCart() {
                     </div>
                   </div>
 
-                  <div className="flex-shrink-0 ml-4">
+                  {/* Remove button */}
+                  <div className="flex-shrink-0 sm:ml-4 text-right">
                     <button
                       onClick={() => handleRemoveItem(item)}
-                      className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                      className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                       aria-label={`Remove ${item.name} from cart`}
                     >
                       Remove
@@ -289,20 +297,21 @@ export default function RequestCart() {
             </div>
           </div>
 
-          <div className="mt-8 bg-gray-50 rounded-lg p-6">
-            <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold text-gray-900">
+          {/* Checkout section */}
+          <div className="mt-6 sm:mt-8 bg-gray-50 rounded-lg p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
+              <span className="text-base sm:text-lg font-semibold text-gray-900">
                 Selected Total:
               </span>
-              <span className="text-2xl font-bold text-gray-900">
+              <span className="text-xl sm:text-2xl font-bold text-gray-900">
                 {formatPrice(calculateTotal())}
               </span>
             </div>
-            <div className="mt-6 text-right">
+            <div className="mt-4 sm:mt-6 text-center sm:text-right">
               <button
                 onClick={() => setIsCheckoutOpen(true)}
                 disabled={selectedItems.length === 0}
-                className={`px-6 py-3 rounded-lg transition font-semibold text-sm uppercase ${
+                className={`w-full sm:w-auto px-5 sm:px-6 py-3 rounded-lg transition font-semibold text-xs sm:text-sm uppercase ${
                   selectedItems.length === 0
                     ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                     : "bg-blue-600 text-white hover:bg-blue-700"

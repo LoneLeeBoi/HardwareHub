@@ -30,11 +30,12 @@ export default function OrderSection() {
   const [page, setPage] = useState("cart");
 
   return (
-    <div className="container mx-auto flex flex-col md:flex-row gap-6">
+    <div className="container mx-auto flex flex-col md:flex-row gap-6 md:px-0">
       {/* Order Content */}
       {page === "cart" && (
         <div className="flex-1 bg-white rounded-xl border shadow-md border-gray-200 p-6 pb-12">
-          <div className="flex items-center space-x-4 border-b pb-4 mb-6">
+          {/* Tabs */}
+          <div className="flex flex-wrap items-center space-x-4 border-b pb-4 mb-6">
             {["Purchase History", "Check Debt", "My Orders"].map((tab) => (
               <div
                 key={tab}
@@ -50,8 +51,8 @@ export default function OrderSection() {
             ))}
           </div>
 
-          {/* Scrollable Table */}
-          <div className="overflow-auto max-h-[400px]">
+          {/* Responsive Table / Card */}
+          <div className="overflow-auto max-h-[400px] hidden md:block">
             <table className="w-full text-sm text-left">
               <thead className="sticky top-0 bg-white z-10 shadow-sm">
                 <tr className="text-gray-700 border-b">
@@ -85,6 +86,41 @@ export default function OrderSection() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="space-y-4 md:hidden">
+            {purchaseHistory.map((item) => (
+              <div
+                key={item.id}
+                className="border rounded-lg p-4 shadow-sm bg-gray-50"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <img
+                    src={item.image}
+                    alt={item.product}
+                    className="w-10 h-10 object-cover rounded"
+                  />
+                  <span className="font-semibold">{item.product}</span>
+                </div>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Date:</span> {item.date}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Time:</span> {item.time}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Price:</span> ₱
+                  {item.price.toFixed(2)}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Quantity:</span> {item.quantity}
+                </p>
+                <p className="text-sm text-green-600 font-bold">
+                  Total: ₱{(item.price * item.quantity).toFixed(2)}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       )}
