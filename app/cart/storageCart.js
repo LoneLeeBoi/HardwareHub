@@ -7,6 +7,7 @@ import { Plus } from "@/public/icons/plus";
 import { Minus } from "@/public/icons/minus";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import Link from "next/link";
 export default function StorageCart() {
   const { cart, removeFromCart, updateQuantity, isLogged } = globalState();
   const [selectedItems, setSelectedItems] = useState([]);
@@ -126,6 +127,7 @@ export default function StorageCart() {
           <p className="text-gray-500 text-sm sm:text-base mb-6">
             Add some items to get started with your order.
           </p>
+          <Link className="hover:underline text-secondary" href={`/`}>Back to homepage</Link>
         </div>
       ) : (
         <>

@@ -85,7 +85,7 @@ export function AddToCartModal({ isOpen, onClose, product }) {
       >
         <div className="flex flex-col h-full min-h-0">
           {/* Close Button */}
-          <div className="flex justify-end mb-4">
+          <div className="absolute top-4 right-4">
             <div
               onClick={onClose}
               className="p-1 hover:bg-gray-100 rounded transition-colors"
@@ -96,7 +96,7 @@ export function AddToCartModal({ isOpen, onClose, product }) {
           </div>
 
           {/* Header */}
-          <h2 className="text-xl font-black mb-4">ADD TO CART</h2>
+          <div className="text-xl font-black mb-4">ADD TO CART</div>
 
           {/* Scrollable Content */}
           <div className="flex-1 min-h-0 overflow-y-auto">
@@ -153,24 +153,24 @@ export function AddToCartModal({ isOpen, onClose, product }) {
             <div className="mb-6">
               <label className="block font-semibold mb-2">Quantity:</label>
               <div className="flex items-center gap-3 w-fit">
-                <button
+                <div
                   className="p-2 rounded border hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1}
                   aria-label="Decrease quantity"
                 >
                   <Minus className="size-4 stroke-3" />
-                </button>
+                </div>
                 <span className="text-xl font-semibold min-w-[2rem] text-center">
                   {quantity}
                 </span>
-                <button
+                <div
                   className="p-2 rounded border hover:bg-gray-100 transition-colors"
                   onClick={() => setQuantity(quantity + 1)}
                   aria-label="Increase quantity"
                 >
                   <Plus className="size-4 stroke-3" />
-                </button>
+                </div>
               </div>
             </div>
 
@@ -182,28 +182,27 @@ export function AddToCartModal({ isOpen, onClose, product }) {
 
           {/* Actions - Fixed at bottom */}
           <div className="mt-auto pt-4 border-t">
-            <div className="grid grid-cols-3 gap-2 text-white uppercase text-sm font-semibold">
-              <button
-                className="py-3 bg-red-600 text-center hover:bg-red-700 transition-colors rounded"
+            <div className="grid grid-cols-3 gap-2 text-white uppercase text-[10px] font-semibold">
+              <div
+                className="py-3 bg-red-600 text-center hover:bg-red-700 transition-colors rounded cursor-pointer"
                 onClick={onClose}
               >
                 Close
-              </button>
-              <button
-                className="py-3 bg-blue-600 text-center hover:bg-blue-700 transition-colors rounded"
+              </div>
+              <div
+                className="py-3 bg-blue-600 text-center hover:bg-blue-700 transition-colors rounded  cursor-pointer"
                 onClick={() => {
-                  // Add your buy now logic here
                   console.log("Buy now clicked");
                 }}
               >
                 Buy Now
-              </button>
-              <button
-                className="py-3 bg-green-600 text-center hover:bg-green-700 transition-colors rounded"
+              </div>
+              <div
+                className="py-3 bg-green-600 text-center hover:bg-green-700 transition-colors rounded  cursor-pointer"
                 onClick={handleAddToCart}
               >
                 Add to Cart
-              </button>
+              </div>
             </div>
           </div>
         </div>

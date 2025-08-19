@@ -7,7 +7,6 @@ import Link from "next/link";
 import { Search } from "./component/Search";
 import jwt from "jsonwebtoken";
 
-
 export function Header() {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -37,17 +36,16 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 shadow-lg bg-white">
       <div className="container mx-auto flex justify-between items-center py-6 px-4">
-        {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
           <Image
             src="/images/Logo.png"
             alt="logo"
             width={70}
             height={70}
-            className="sm:h-[70px] sm:w-[70px] h-[50px] w-[50px] object-contain"
+            className="sm:h-[70px] sm:w-[70px] h-[50px] w-[50px] object-fill"
             priority
           />
-          <span className="text-md sm:text-lg font-bold">HARDWARE HUB</span>
+          <span className="text-md sm:text-lg font-bold font-wix">HARDWARE HUB</span>
         </Link>
 
         {/* Search Bar */}

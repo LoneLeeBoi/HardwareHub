@@ -9,15 +9,19 @@ export function CategorySelection() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [error, setError] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
+      setLoading(true);
       const res = await CategoryFunctions();
 
       if (res.success) {
         setCategories(res.data);
+        setLoading(false);
       } else {
         setError(res.err || "Failed to fetch categories");
+        setLoading(false);
       }
     };
 
@@ -39,40 +43,53 @@ export function CategorySelection() {
   };
 
   return (
-    <div className="pt-6 sm:py-6 px-4">
-      <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-center font-serif">
+    <div className="pt-6">
+      <h2 className="text-2xl sm:text-3xl font-bold font-wix mb-6">
         Select a Category
       </h2>
 
       <div>
         {/* Mobile: Select */}
         <div className="block sm:hidden">
-          <select
-            onChange={(e) => handleCategoryClick(e.target.value)}
-            className="w-full border rounded-lg p-3"
-          >
-            <option value="">Select Category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.name}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+          {isLoading ? (
+            <div className="w-full border rounded-lg p-3 animate-pulse bg-gray-500 h-12" />
+          ) : (
+            <select
+              onChange={(e) => handleCategoryClick(e.target.value)}
+              className="w-full border rounded-lg p-3"
+            >
+              <option value="">Select Category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* Desktop: Grid */}
         <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-6">
-          {categories.map((category) => (
-            <div
-              key={category.id}
-              onClick={() => handleCategoryClick(category.name)}
-              className="border rounded-lg p-4 flex flex-col items-center hover:shadow transition cursor-pointer"
-            >
-              <div className="text-center font-bold text-sm uppercase flex items-center h-full">
-                {category.name}
-              </div>
-            </div>
-          ))}
+          {isLoading
+            ? Array.from({ length: 7 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="border rounded-lg p-4 flex flex-col items-center animate-pulse"
+                >
+                  <div className="h-12 w-20 bg-gray-200 rounded" />
+                </div>
+              ))
+            : categories.map((category) => (
+                <div
+                  key={category.id}
+                  onClick={() => handleCategoryClick(category.name)}
+                  className="border rounded-lg p-4 flex flex-col items-center hover:shadow transition cursor-pointer"
+                >
+                  <div className="text-center font-bold text-sm uppercase flex items-center h-full">
+                    {category.name}
+                  </div>
+                </div>
+              ))}
         </div>
       </div>
 

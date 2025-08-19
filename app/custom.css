@@ -1,16 +1,19 @@
 @import "tailwindcss";
 
-.text-primary {
+/* === CUSTOM UTILITIES === */
+/* .text-primary {
   color: #d6b913;
 }
 
 .bg-primary {
   background-color: #d6b913;
 }
+
 .border-primary {
   @apply border-[#d6b913];
-}
+} */
 
+/* === FORM INPUTS === */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -27,31 +30,20 @@ button {
   @apply py-3 px-4 bg-blue-600 text-white rounded-lg hover:opacity-90 transition w-full cursor-pointer;
 }
 
-.link {
-  @apply cursor-pointer;
-}
+.link,
 svg {
   @apply cursor-pointer;
 }
 
+/* === ANIMATIONS === */
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .animate-fade-in {
@@ -60,11 +52,4 @@ svg {
 
 .animate-scale-in {
   animation: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.container{
-  @apply mx-auto
-}
-
-select {
-  @apply h-[45px];
 }

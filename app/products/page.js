@@ -8,17 +8,32 @@ import { ProductFunctions } from "../components/functions/ProductFunctions";
 
 const FALLBACK_IMAGE = "/images/fallback.png";
 
+// 🔹 Skeleton Loader Component
+function ProductSkeleton() {
+  return (
+    <div className="bg-white shadow-md rounded-xl text-center border border-gray-200 animate-pulse">
+      <div className="relative w-full h-[150px] mb-2 bg-gray-200 rounded-lg"></div>
+      <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+      <div className="p-2">
+      <div className="h-8 bg-gray-200 rounded w-full"/>
+      </div>
+    </div>
+  );
+}
+
 export default function Page() {
   const [error, setError] = useState("");
   const [showAll, setShowAll] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true); // 🔹 add loading state
 
   const setProducts = searchState((state) => state.setProducts);
   const products = searchState((state) => state.products);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       const result = await ProductFunctions({ limit: 20 });
 
       if (result.success) {
@@ -27,6 +42,7 @@ export default function Page() {
       } else {
         setError(result.err || "Failed to fetch products.");
       }
+      setLoading(false);
     };
 
     fetchProducts();
@@ -61,52 +77,56 @@ export default function Page() {
         discover more
       </div>
 
-      <div className="py-4 mb-8">
+      <div className="py-4 ">
         {error ? (
           <div className="text-red-500 text-center">{error}</div>
         ) : (
           <>
             {/* Product Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {uniqueProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white shadow-md rounded-xl px-4 pb-4 text-center border border-gray-200 hover:bg-gray-200 cursor-pointer"
-                  onClick={() => handleAddToCartClick(product)}
-                >
-                  {/* Product Image */}
-                  <div className="relative w-full h-48 mb-2">
-                    <Image
-                      src={product.image || FALLBACK_IMAGE}
-                      alt={product.name || "Product"}
-                      fill
-                      className="object-contain rounded-lg"
-                    />
-                  </div>
-
-                  {/* Product Name */}
-                  <div className="font-semibold uppercase text-sm">
-                    {product.name}
-                  </div>
-
-                  {/* Add to Cart Button */}
-                  <div className="w-full flex justify-center">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // stop card click
-                        handleAddToCartClick(product);
-                      }}
-                      className="mt-4 text-xs text-white py-2 font-black px-3 bg-red-700 hover:bg-red-800 w-fit rounded"
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {loading
+                ? Array.from({ length: 10 }).map((_, i) => (
+                    <ProductSkeleton key={i} />
+                  ))
+                : uniqueProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      className="bg-white shadow-md rounded-xl text-center border border-gray-200 hover:bg-gray-200 cursor-pointer"
+                      onClick={() => handleAddToCartClick(product)}
                     >
-                      ADD TO CART
-                    </button>
-                  </div>
-                </div>
-              ))}
+                      {/* Product Image */}
+                      <div className="relative w-full h-[150px] mb-2">
+                        <Image
+                          src={product.image || FALLBACK_IMAGE}
+                          alt={product.name || "Product"}
+                          fill
+                          className="object-contain rounded-lg"
+                        />
+                      </div>
+
+                      {/* Product Name */}
+                      <div className="font-semibold uppercase text-sm">
+                        {product.name}
+                      </div>
+
+                      {/* Add to Cart Button */}
+                      <div className="w-full flex justify-center p-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToCartClick(product);
+                          }}
+                          className=" text-xs text-white font-black rounded"
+                        >
+                          ADD TO CART
+                        </button>
+                      </div>
+                    </div>
+                  ))}
             </div>
 
             {/* Show More Button */}
-            {products.length > 20 && !showAll && (
+            {!loading && products.length > 20 && !showAll && (
               <div className="text-center mt-6">
                 <button
                   onClick={() => setShowAll(true)}
