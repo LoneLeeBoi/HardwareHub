@@ -13,7 +13,7 @@ export default function RequestCart() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [paymentMethod, setPaymentMethod] = useState("Cash On Delivery");
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000);
@@ -73,7 +73,7 @@ export default function RequestCart() {
 
     if (paymentMethod === "Gcash") {
       try {
-        const res = await fetch("/api/order", {
+        const res = await fetch("/api/order/gcash", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(orderData),
@@ -110,7 +110,7 @@ export default function RequestCart() {
       }
     } else {
       try {
-        const res = await fetch("/api/order/cash", {
+        const res = await fetch("/api/order/COD", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(orderData),
@@ -138,7 +138,7 @@ export default function RequestCart() {
             console.log("Updated Cart after removal:", updatedCart);
           }
 
-          console.log("Cash order placed successfully", data);
+          console.log("Cash on Delivery order placed successfully", data);
           toast.success("Order placed successfully!");
           setTimeout(() => {
             window.location.href = "/";

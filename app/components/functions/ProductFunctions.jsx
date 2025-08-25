@@ -2,7 +2,7 @@ import axios from "axios";
 import jwt from "jsonwebtoken";
 
 export async function ProductFunctions(params = {}) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
 
   const queryString = Object.keys(params).length
@@ -38,7 +38,7 @@ export async function ProductFunctions(params = {}) {
 }
 
 export async function ProductPopular(params = {}) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
 
   const queryString = Object.keys(params).length
@@ -74,7 +74,7 @@ export async function ProductPopular(params = {}) {
 }
 
 export async function AddProduct(productData) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const decoded = jwt.decode(localStorage.getItem("token"));
   const url = `${baseUrl}/api/product`;
@@ -108,7 +108,7 @@ export async function AddProduct(productData) {
 }
 
 export async function EditProduct(productData) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const url = `${baseUrl}/api/product/${productData.id}`;
 
@@ -144,7 +144,7 @@ export async function EditProduct(productData) {
 }
 
 export async function DeleteProduct(productId) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
 
   const url = `${baseUrl}/api/product/${productId}`;

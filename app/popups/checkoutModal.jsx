@@ -12,7 +12,7 @@ export function CheckoutModal({
   setPaymentMethod,
 }) {
   const methods = [
-    { id: "cash", name: "Cash on Delivery" },
+    { id: "Cash On Delivery", name: "Cash On Delivery" },
     { id: "Gcash", name: "Gcash" },
   ];
 

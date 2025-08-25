@@ -9,7 +9,7 @@ export default function ProductsTable() {
   useEffect(() => {
   const fetchProducts = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/product");
+      const res = await fetch("https://w0q5x1x4-3000.asse.devtunnels.ms/api/product");
       const data = await res.json();
       setProducts(data); 
     } catch (error) {

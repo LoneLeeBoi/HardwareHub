@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 export async function InventoryFunctions(params = {}) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
 
   const queryString = Object.keys(params).length
@@ -38,7 +38,7 @@ export async function InventoryFunctions(params = {}) {
 }
 
 export async function AddInventory(inventoryData) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
 
   const url = `${baseUrl}/api/inventory`;
@@ -62,7 +62,7 @@ export async function AddInventory(inventoryData) {
 
 
 export async function EditInventory(inventoryData) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const url = `${baseUrl}/api/inventory/${inventoryData.id}`;
 
@@ -85,7 +85,7 @@ export async function EditInventory(inventoryData) {
 
 
 export async function DeleteInventory(inventoryId) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
 
   const url = `${baseUrl}/api/inventory/${inventoryId}`;

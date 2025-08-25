@@ -10,8 +10,8 @@ export async function GET(req) {
 
   const categoryName = searchParams.get("category_name");
   const searchQuery = searchParams.get("search");
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const limit =parseInt(searchParams.get("limit") || "5", 10);;
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit =parseInt(searchParams.get("limit") || "20");
   const offset = (page - 1) * limit;
 
   const conditions = [];

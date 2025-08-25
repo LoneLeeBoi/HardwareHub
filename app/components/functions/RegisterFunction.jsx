@@ -1,5 +1,5 @@
 export default async function RegisterFunction({ username, email, password }) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const url = `${baseUrl}/api/register`;
 
   try {

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export async function getUserCart() {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const url = `${baseUrl}/api/cart?user_id=${localStorage.getItem("id")}`;
 
   const token = localStorage.getItem("token");
@@ -32,7 +32,7 @@ export async function getUserCart() {
 }
 
 export async function addUserCart(cart) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const url = `${baseUrl}/api/cart`;
   const token = localStorage.getItem("token");
   const id = localStorage.getItem("id");
@@ -74,7 +74,7 @@ export async function addUserCart(cart) {
 }
 
 export async function removeProduct(id) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const url = `${baseUrl}/api/cart/${id}`;
   const token = localStorage.getItem("token");
 

@@ -12,7 +12,7 @@ import Warning from "@/public/icons/warning";
 const Page = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
   const [inventory, setInventory] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -38,7 +38,7 @@ const Page = () => {
       queryParams.append("limit", limit.toString());
 
       const res = await fetch(
-        `http://localhost:3000/api/inventory?${queryParams}`
+        `https://w0q5x1x4-3000.asse.devtunnels.ms/api/inventory?${queryParams}`
       );
       const json = await res.json();
 

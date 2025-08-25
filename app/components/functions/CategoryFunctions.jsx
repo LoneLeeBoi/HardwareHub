@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export default async function CategoryFunctions() {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const url = `${baseUrl}/api/product/categories`;
 
   const token = localStorage.getItem("token");
@@ -32,7 +32,7 @@ export default async function CategoryFunctions() {
 }
 
 export async function AddCategory(props) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const url = `${baseUrl}/api/product/categories`;
 
   const token = localStorage.getItem("token");
@@ -71,7 +71,7 @@ export async function AddCategory(props) {
 }
 
 export async function EditCategory(props) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const url = `${baseUrl}/api/product/categories/${props.id}`;
 
@@ -106,7 +106,7 @@ export async function EditCategory(props) {
 }
 
 export async function DeleteCategory(id) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const url = `${baseUrl}/api/product/categories/${id}`;
 

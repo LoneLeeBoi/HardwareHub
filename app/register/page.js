@@ -43,7 +43,7 @@ export default function Page() {
     switch (result.status) {
       case 201:
       case 200:
-        toast.success("Thank you.");
+        toast.success("Thank you for creating your account, you can now login.");
         router.push("/login");
         break;
 

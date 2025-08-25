@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export async function UserFunctions(params = {}) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
 
   const queryString = Object.keys(params).length
@@ -37,7 +37,7 @@ export async function UserFunctions(params = {}) {
 }
 
 export async function DeleteUser(productId) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
 
   const url = `${baseUrl}/api/user/${productId}`;
@@ -58,7 +58,7 @@ export async function DeleteUser(productId) {
 }
 
 export async function EditUser(UserData) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const id = localStorage.getItem("id");
   const url = `${baseUrl}/api/user/${id}`;
@@ -88,7 +88,7 @@ export async function EditUser(UserData) {
 }
 
 export async function AddDetails(UserData) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const id = localStorage.getItem("id");
   const url = `${baseUrl}/api/user/${id}`;
@@ -118,7 +118,7 @@ export async function AddDetails(UserData) {
 }
 
 export async function GetDetails(id) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const url = `${baseUrl}/api/user/${id}`;
 
@@ -141,7 +141,7 @@ export async function GetDetails(id) {
 }
 
 export async function PasswordValidation(password) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const id = localStorage.getItem("id");
 
@@ -158,7 +158,7 @@ export async function PasswordValidation(password) {
 }
 
 export async function ChangeUserPassword(password) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const id = localStorage.getItem("id");
 

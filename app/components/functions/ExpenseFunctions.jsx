@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 export async function ExpenseFunctions(params = {}) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
 
   const queryString = Object.keys(params).length
@@ -38,7 +38,7 @@ export async function ExpenseFunctions(params = {}) {
 }
 
 export async function AddExpense(expenseData) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const url = `${baseUrl}/api/expense`;
 
@@ -62,7 +62,7 @@ export async function AddExpense(expenseData) {
 
 
 export async function EditExpense(expenseData) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
   const url = `${baseUrl}/api/expense/${expenseData.id}`;
 
@@ -88,7 +88,7 @@ export async function EditExpense(expenseData) {
 
 
 export async function DeleteExpense(expenseId) {
-  const baseUrl = "http://localhost:3000";
+  const baseUrl = "https://w0q5x1x4-3000.asse.devtunnels.ms";
   const token = localStorage.getItem("token");
 
   const url = `${baseUrl}/api/expense/${expenseId}`;

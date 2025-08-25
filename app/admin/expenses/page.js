@@ -27,6 +27,22 @@ export default function ExpensePage() {
     triggerfetchExpenses,
   } = useExpenseHandlers();
 
+  useState(async () => {
+    try {
+      const params = { page: currentPage, limit: 10 };
+
+      const result = await ExpenseFunctions(params);
+      console.log("page", currentPage);
+      if (result.success) {
+        setExpenses(result.data.data || []);
+      } else {
+        console.error("Search failed:", result.err);
+        setProducts([]);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  }, [currentPage]);
   const fetchExpenses = async () => {
     const params = searchTerm
       ? { search: searchTerm, category_name: searchTerm }

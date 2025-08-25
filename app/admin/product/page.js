@@ -60,7 +60,7 @@ export default function Page() {
 
   useState(async () => {
     try {
-      const params = { page: currentPage };
+      const params = { page: currentPage, limit:10 };
 
       const result = await ProductFunctions(params);
       console.log("page", currentPage);
